@@ -1,6 +1,6 @@
 ﻿namespace ProjectX.Common
 {
-    public readonly struct Result
+    public readonly struct Result 
     {
         public ResultStatus Status { get; }
 

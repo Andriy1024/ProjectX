@@ -1,6 +1,8 @@
-﻿namespace ProjectX.Common
+﻿using MediatR;
+
+namespace ProjectX.Common
 {
-    public interface IDomainEvent
+    public interface IDomainEvent : INotification
     {
     }
 }
