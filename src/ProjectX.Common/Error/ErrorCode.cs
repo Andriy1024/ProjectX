@@ -7,5 +7,9 @@
         InvalidData,
         InvalidPermission,
         NotFound,
+
+        //Identity
+        NoIdentityIdInAccessToken,
+        NoIdentityRoleInAccessToken
     }
 }
