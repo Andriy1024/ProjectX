@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\ProjectX.Common.Infrastructure\ProjectX.Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\ProjectX.Identity.Application\ProjectX.Identity.Application.csproj" />
+    <ProjectReference Include="..\ProjectX.Identity.Persistence\ProjectX.Identity.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>
