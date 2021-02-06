@@ -10,7 +10,7 @@ namespace ProjectX.Identity.Domain
         public DateTime CreatedAt { get; private set; }
         public DateTime UpdatedAt { get; private set; }
         
-        public SessionExpiration Expiration { get; private set; }
+        public SessionLifetime Lifetime { get; private set; }
 
         public bool IsActive { get; private set; }
 
@@ -23,7 +23,7 @@ namespace ProjectX.Identity.Domain
             User = user;
             CreatedAt = createdAt;
             UpdatedAt = CreatedAt;
-            Expiration = SessionExpiration.Create(CreatedAt);
+            Lifetime = SessionLifetime.Create(CreatedAt);
             IsActive = true;
         }
 
@@ -33,13 +33,13 @@ namespace ProjectX.Identity.Domain
             UpdatedAt = deactivationTime;
         }
 
-        public void Refresh(DateTime refreshTime)
+        public void RefreshLifetime(DateTime refreshTime)
         {
             if (!IsActive)
                 throw new InvalidOperationException("Inactive session can not be refreshed.");
 
             UpdatedAt = refreshTime;
-            Expiration = SessionExpiration.Create(UpdatedAt);
+            Lifetime = SessionLifetime.Create(UpdatedAt);
         }
     }
 }

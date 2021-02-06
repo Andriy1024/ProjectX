@@ -43,7 +43,7 @@ namespace ProjectX.Identity.Infrastructure
                 throw new NotFoundException(ErrorCode.SessionNotFound);
 
             if (session.IsActive)
-                session.Refresh(dateTime);
+                session.RefreshLifetime(dateTime);
             else
                 session = user.CreateSession(Guid.NewGuid(), dateTime);
 
@@ -60,12 +60,12 @@ namespace ProjectX.Identity.Infrastructure
 
         public async Task PutActiveSessionsInBlackListAsync(long userId, CancellationToken cancellationToken)
         {
-            var expireDate = DateTime.UtcNow.AddSeconds(SessionExpiration.AccessTokenLifetime);
-            var sessions = await _dbContext.Sessions.Where(s => s.UserId == userId && s.Expiration.AccessTokenExpiresAt <= expireDate).ToArrayAsync(cancellationToken);
+            var expireDate = DateTime.UtcNow.AddSeconds(SessionLifetime.AccessTokenLifetime);
+            var sessions = await _dbContext.Sessions.Where(s => s.UserId == userId && s.Lifetime.AccessTokenExpiresAt <= expireDate).ToArrayAsync(cancellationToken);
             if (sessions.Length == 0)
                 return;
 
-            var timeSpan = TimeSpan.FromSeconds(SessionExpiration.AccessTokenLifetime);
+            var timeSpan = TimeSpan.FromSeconds(SessionLifetime.AccessTokenLifetime);
             foreach (var session in sessions)
             {
                 session.Deactivate(DateTime.UtcNow);

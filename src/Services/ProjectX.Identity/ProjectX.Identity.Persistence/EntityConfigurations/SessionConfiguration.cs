@@ -16,10 +16,10 @@ namespace ProjectX.Identity.Persistence.EntityConfigurations
                    .WithMany(u => u.Sessions)
                    .HasForeignKey(s => s.UserId);
 
-            builder.OwnsOne(s => s.Expiration, e => 
+            builder.OwnsOne(s => s.Lifetime, e => 
             {
-                e.Property(t => t.AccessTokenExpiresAt).HasColumnName(nameof(SessionExpiration.AccessTokenExpiresAt));
-                e.Property(t => t.RefreshTokenExpiresAt).HasColumnName(nameof(SessionExpiration.RefreshTokenExpiresAt));
+                e.Property(t => t.AccessTokenExpiresAt).HasColumnName(nameof(SessionLifetime.AccessTokenExpiresAt));
+                e.Property(t => t.RefreshTokenExpiresAt).HasColumnName(nameof(SessionLifetime.RefreshTokenExpiresAt));
             });
         }
     }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ProjectX.Identity.Domain
 {
-    public sealed class SessionExpiration : ValueObject
+    public sealed class SessionLifetime : ValueObject
     {
         /// <summary>
         /// One hour
@@ -16,13 +16,13 @@ namespace ProjectX.Identity.Domain
         /// </summary>
         public static int RefreshTokenLifetime = 1296000;
 
-        public static SessionExpiration Create(DateTime dateTime) => new SessionExpiration() 
+        public static SessionLifetime Create(DateTime dateTime) => new SessionLifetime() 
         {
             AccessTokenExpiresAt = dateTime.AddSeconds(AccessTokenLifetime),
             RefreshTokenExpiresAt = dateTime.AddSeconds(RefreshTokenLifetime)
         };
 
-        private SessionExpiration() {}
+        private SessionLifetime() {}
 
         public DateTime AccessTokenExpiresAt { get; private set; }
         public DateTime RefreshTokenExpiresAt { get; private set; }

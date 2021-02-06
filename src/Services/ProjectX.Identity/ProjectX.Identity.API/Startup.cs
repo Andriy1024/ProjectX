@@ -14,6 +14,7 @@ using UserEntity = ProjectX.Identity.Domain.UserEntity;
 using RoleEntity = ProjectX.Identity.Domain.RoleEntity;
 using ProjectX.Common.Infrastructure.Extensions;
 using System.Reflection;
+using ProjectX.Identity.Persistence;
 
 namespace ProjectX.Identity.API
 {
@@ -38,7 +39,8 @@ namespace ProjectX.Identity.API
                     .Services
                     .AddIdentityServer4(DBConnectionString, typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)
                     .AddStartupTasks()
-                    .AddScopedCache();
+                    .AddScopedCache()
+                    .AddHostedService<SessionCleanupWorker>();
 
             base.ConfigureServices(services);
         }

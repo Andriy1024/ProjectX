@@ -57,8 +57,8 @@ namespace ProjectX.Identity.Persistence.IdentityServer
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPasswordAndClientCredentials,
                     AllowOfflineAccess = true,
                     UpdateAccessTokenClaimsOnRefresh = true,
-                    AccessTokenLifetime = SessionExpiration.AccessTokenLifetime,
-                    SlidingRefreshTokenLifetime = SessionExpiration.RefreshTokenLifetime,
+                    AccessTokenLifetime = SessionLifetime.AccessTokenLifetime,
+                    SlidingRefreshTokenLifetime = SessionLifetime.RefreshTokenLifetime,
                     //when refreshing the token, the lifetime of the refresh token will be renewed (by the amount specified in SlidingRefreshTokenLifetime).
                     RefreshTokenExpiration = TokenExpiration.Sliding,
                     //the refresh token handle will be updated when refreshing tokens
@@ -88,8 +88,8 @@ namespace ProjectX.Identity.Persistence.IdentityServer
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPasswordAndClientCredentials,
                     AllowOfflineAccess = true,
                     UpdateAccessTokenClaimsOnRefresh = true,
-                    AccessTokenLifetime = SessionExpiration.AccessTokenLifetime,
-                    SlidingRefreshTokenLifetime = SessionExpiration.RefreshTokenLifetime,
+                    AccessTokenLifetime = SessionLifetime.AccessTokenLifetime,
+                    SlidingRefreshTokenLifetime = SessionLifetime.RefreshTokenLifetime,
                     //when refreshing the token, the lifetime of the refresh token will be renewed (by the amount specified in SlidingRefreshTokenLifetime).
                     RefreshTokenExpiration = TokenExpiration.Sliding,
                     //the refresh token handle will be updated when refreshing tokens
@@ -120,8 +120,8 @@ namespace ProjectX.Identity.Persistence.IdentityServer
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     RequireClientSecret = false,
                     AllowOfflineAccess = true,
-                    AccessTokenLifetime = SessionExpiration.AccessTokenLifetime,
-                    SlidingRefreshTokenLifetime = SessionExpiration.RefreshTokenLifetime,
+                    AccessTokenLifetime = SessionLifetime.AccessTokenLifetime,
+                    SlidingRefreshTokenLifetime = SessionLifetime.RefreshTokenLifetime,
                     //when refreshing the token, the lifetime of the refresh token will be renewed (by the amount specified in SlidingRefreshTokenLifetime).
                     RefreshTokenExpiration = TokenExpiration.Sliding,
                     //the refresh token handle will be updated when refreshing tokens
