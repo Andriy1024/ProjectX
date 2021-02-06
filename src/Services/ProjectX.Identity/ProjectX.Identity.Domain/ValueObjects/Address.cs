@@ -3,22 +3,22 @@ using System.Collections.Generic;
 
 namespace ProjectX.Identity.Domain
 {
-    public sealed class AddressObject : ValueObject
+    public sealed class Address : ValueObject
     {
         public string Country { get; private set; }
         public string City { get; private set; }
-        public string Address { get; private set; }
+        public string Strret { get; private set; }
 
         /// <summary>
         /// For ORM
         /// </summary>
-        private AddressObject() {}
+        private Address() {}
 
-        public AddressObject(string country, string city, string address)
+        public Address(string country, string city, string street)
         {
             Country = country;
             City = city;
-            Address = address;
+            Strret = street;
         }
 
         protected override IEnumerable<object> GetAtomicValues() =>
@@ -26,7 +26,7 @@ namespace ProjectX.Identity.Domain
             {
                 Country,
                 City,
-                Address
+                Strret
             };
     }
 }

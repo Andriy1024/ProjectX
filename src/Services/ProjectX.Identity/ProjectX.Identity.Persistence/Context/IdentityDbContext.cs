@@ -9,6 +9,7 @@ namespace ProjectX.Identity.Persistence
     {
         public override DbSet<UserEntity> Users { get; set; }
         public override DbSet<RoleEntity> Roles { get; set; }
+        public DbSet<SessionEntity> Sessions { get; set; }
 
         public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options)
         {
@@ -19,6 +20,7 @@ namespace ProjectX.Identity.Persistence
             base.OnModelCreating(builder);
 
             builder.ApplyConfiguration(new UserConfiguration());
+            builder.ApplyConfiguration(new SessionConfiguration());
         }
     }
 }

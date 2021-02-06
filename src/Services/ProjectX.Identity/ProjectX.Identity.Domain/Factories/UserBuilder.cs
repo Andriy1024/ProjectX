@@ -27,7 +27,7 @@ namespace ProjectX.Identity.Domain
                 return this;
             }
 
-            public Builder Address(AddressObject address) 
+            public Builder Address(Address address) 
             {
                 Utill.ThrowIfNull(address, nameof(address));
                 EnsureCreated();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ProjectX.Common;
+using System;
 using System.Collections.Generic;
 
 namespace ProjectX.Identity.Domain
@@ -13,9 +14,11 @@ namespace ProjectX.Identity.Domain
 
         public string LastName { get; protected set; }
 
-        public AddressObject Address { get; protected set; }
+        public Address Address { get; protected set; }
 
-        public Builder Factory => new Builder();
+        public ICollection<SessionEntity> Sessions { get; private set; } = new List<SessionEntity>();
+
+        public static Builder Factory => new Builder();
 
         protected UserEntity() {}
 
@@ -30,5 +33,17 @@ namespace ProjectX.Identity.Domain
         public void ClearDomainEvents() => _domainEvents?.Clear();
         
         public bool IsTransient() => Id.Equals(default(long));
+
+        public void SetName(string firstName, string lastName) 
+        {
+            FirstName = firstName;
+            LastName = lastName;
+        }
+
+        public SessionEntity CreateSession(Guid id, DateTime createdAt)
+        {
+            var session = new SessionEntity(this, id, createdAt);
+            return session;
+        }
     }
 }

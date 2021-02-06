@@ -24,9 +24,9 @@ namespace ProjectX.Identity.Persistence.EntityConfigurations
 
             builder.OwnsOne(u => u.Address, a => 
             {
-                a.Property(a => a.Country).HasColumnName(nameof(AddressObject.Country));
-                a.Property(a => a.City).HasColumnName(nameof(AddressObject.City));
-                a.Property(a => a.Address).HasColumnName(nameof(AddressObject.Address));
+                a.Property(a => a.Country).HasColumnName(nameof(Address.Country));
+                a.Property(a => a.City).HasColumnName(nameof(Address.City));
+                a.Property(a => a.Strret).HasColumnName(nameof(Address.Strret));
             });
         }
     }

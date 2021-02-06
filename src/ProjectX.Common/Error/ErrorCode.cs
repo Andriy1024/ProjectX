@@ -10,6 +10,7 @@
 
         //Identity
         NoIdentityIdInAccessToken,
-        NoIdentityRoleInAccessToken
+        NoIdentityRoleInAccessToken,
+        SessionNotFound
     }
 }
