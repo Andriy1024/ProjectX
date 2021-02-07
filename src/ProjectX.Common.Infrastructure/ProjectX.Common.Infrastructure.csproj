@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProjectX.Common\ProjectX.Common.csproj" />
+    <ProjectReference Include="..\ProjectX.Redis\ProjectX.Redis.csproj" />
   </ItemGroup>
 
 </Project>

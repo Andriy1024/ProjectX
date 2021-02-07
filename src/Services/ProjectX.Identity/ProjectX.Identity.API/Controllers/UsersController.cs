@@ -8,7 +8,6 @@ namespace ProjectX.Identity.API.Controllers
     public class UsersController : ApiController
     {
         [HttpGet]
-        public async Task<IActionResult> GetUsersAsync() =>
-            Ok();
+        public async Task<IActionResult> GetUsersAsync() => Ok();
     }
 }

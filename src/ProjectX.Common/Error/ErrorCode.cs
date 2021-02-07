@@ -11,6 +11,7 @@
         //Identity
         NoIdentityIdInAccessToken,
         NoIdentityRoleInAccessToken,
-        SessionNotFound
+        SessionNotFound,
+        SessionInBlackList
     }
 }
