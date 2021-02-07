@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StackExchange.Redis.Extensions.AspNetCore" Version="6.3.6" />
+    <PackageReference Include="StackExchange.Redis.Extensions.System.Text.Json" Version="6.3.6" />
+  </ItemGroup>
+
+</Project>

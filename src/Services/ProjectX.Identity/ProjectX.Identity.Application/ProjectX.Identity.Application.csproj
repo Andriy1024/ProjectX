@@ -8,4 +8,10 @@
     <ProjectReference Include="..\ProjectX.Identity.Domain\ProjectX.Identity.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\" />
+    <Folder Include="Dtos\" />
+    <Folder Include="Queries\" />
+  </ItemGroup>
+
 </Project>
