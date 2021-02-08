@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using System.Threading.Tasks;
 
-namespace ProjectX.Common.Infrastructure.DataAccess
+namespace ProjectX.Common.DataAccess
 {
     public interface ITransactionActions
     {

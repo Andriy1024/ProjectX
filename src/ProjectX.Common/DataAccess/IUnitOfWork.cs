@@ -2,8 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ProjectX.Common.Infrastructure.DataAccess
+namespace ProjectX.Common.DataAccess
 {
+
     public interface IUnitOfWork : IDisposable
     {
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
