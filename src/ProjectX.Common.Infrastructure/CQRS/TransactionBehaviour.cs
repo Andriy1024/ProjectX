@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ProjectX.Common.DataAccess;
 using ProjectX.Common.Infrastructure.DataAccess;
 using ProjectX.Common.IntegrationEvents;
 using System;
