@@ -15,6 +15,8 @@ using RoleEntity = ProjectX.Identity.Domain.RoleEntity;
 using ProjectX.Common.Infrastructure.Extensions;
 using System.Reflection;
 using ProjectX.Identity.Persistence;
+using ProjectX.Common.Email;
+using ProjectX.Redis.Configuration;
 
 namespace ProjectX.Identity.API
 {
@@ -40,7 +42,10 @@ namespace ProjectX.Identity.API
                     .AddIdentityServer4(DBConnectionString, typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)
                     .AddStartupTasks()
                     .AddScopedCache()
-                    .AddHostedService<SessionCleanupWorker>();
+                    .AddHostedService<SessionCleanupWorker>()
+                    .AddEmailServices(Configuration)
+                    .AddRedisServices(Configuration)
+                    .AddSessionBlackListService();
 
             base.ConfigureServices(services);
         }

@@ -17,6 +17,7 @@ namespace ProjectX.Identity.Domain
         public Address Address { get; protected set; }
 
         public ICollection<SessionEntity> Sessions { get; private set; } = new List<SessionEntity>();
+        public ICollection<UserRoleEntity> UserRoles { get; private set; } = new List<UserRoleEntity>();
 
         public static Builder Factory => new Builder();
 

@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\ProjectX.Common.Email\ProjectX.Common.Email.csproj" />
     <ProjectReference Include="..\..\..\ProjectX.Common.Infrastructure\ProjectX.Common.Infrastructure.csproj" />
     <ProjectReference Include="..\ProjectX.Identity.Application\ProjectX.Identity.Application.csproj" />
     <ProjectReference Include="..\ProjectX.Identity.Persistence\ProjectX.Identity.Persistence.csproj" />

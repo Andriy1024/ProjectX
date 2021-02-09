@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using ProjectX.Common.BlackList;
 using ProjectX.Common.Cache;
+using ProjectX.Common.Infrastructure.BlackList;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -95,6 +97,8 @@ namespace ProjectX.Common.Infrastructure.Extensions
 
         public static IServiceCollection AddScopedCache(this IServiceCollection services)
              => services.AddScoped(typeof(IScopedCache<,>), typeof(ScopedCache<,>));
-        
+
+        public static IServiceCollection AddSessionBlackListService(this IServiceCollection services)
+            => services.AddSingleton<ISessionBlackList, SessionBlackList>();
     }
 }

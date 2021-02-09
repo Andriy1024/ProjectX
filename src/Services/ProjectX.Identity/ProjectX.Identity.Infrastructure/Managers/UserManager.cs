@@ -11,12 +11,16 @@ using ProjectX.Common.Exceptions;
 using ProjectX.Common;
 using System.Threading;
 using System.Linq;
+using ProjectX.Common.BlackList;
+using Microsoft.Extensions.DependencyInjection;
+using System.Linq.Expressions;
 
 namespace ProjectX.Identity.Infrastructure
 {
     public sealed class UserManager : UserManager<UserEntity>
     {
         readonly IdentityDbContext _dbContext;
+        readonly Lazy<ISessionBlackList> _blackList;
 
         public UserManager(IUserStore<UserEntity> store,
            IOptions<IdentityOptions> optionsAccessor,
@@ -27,13 +31,19 @@ namespace ProjectX.Identity.Infrastructure
            IdentityErrorDescriber errors,
            IServiceProvider services,
            ILogger<UserManager<UserEntity>> logger,
-           IdentityDbContext dbContext)
+           IdentityDbContext dbContext,
+           IServiceProvider serviceProvider)
            : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
-           {
-                _dbContext = dbContext;
-           }
+        {
+            _dbContext = dbContext;
+            _blackList = new Lazy<ISessionBlackList>(() => serviceProvider.GetRequiredService<ISessionBlackList>());
+        }
 
-
+        public Task<UserEntity> GetUserWithRolesAsync(Expression<Func<UserEntity, bool>> expression, CancellationToken cancellationToken = default)
+            => _dbContext.Users.Include(u => u.UserRoles)
+                               .ThenInclude(r => r.Role)
+                               .FirstOrDefaultAsync(expression, cancellationToken);
+        
         #region Session actions
 
         public async Task<SessionEntity> UpdateSessionAsync(UserEntity user, string sessionId, DateTime dateTime)
@@ -69,8 +79,7 @@ namespace ProjectX.Identity.Infrastructure
             foreach (var session in sessions)
             {
                 session.Deactivate(DateTime.UtcNow);
-#warning TO DO:
-                //await _blackList.AddToBlackListAsync(session.Id, timeSpan);
+                await _blackList.Value.AddToBlackListAsync(session.Id, timeSpan);
             }
             await _dbContext.SaveChangesAsync();
         }
