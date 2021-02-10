@@ -15,8 +15,8 @@ using RoleEntity = ProjectX.Identity.Domain.RoleEntity;
 using ProjectX.Common.Infrastructure.Extensions;
 using System.Reflection;
 using ProjectX.Identity.Persistence;
-using ProjectX.Common.Email;
 using ProjectX.Redis.Configuration;
+using ProjectX.Common.Email;
 
 namespace ProjectX.Identity.API
 {
