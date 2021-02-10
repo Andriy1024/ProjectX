@@ -7,7 +7,7 @@ namespace ProjectX.Identity.Domain
     {
         public string Country { get; private set; }
         public string City { get; private set; }
-        public string Strret { get; private set; }
+        public string Street { get; private set; }
 
         /// <summary>
         /// For ORM
@@ -18,7 +18,7 @@ namespace ProjectX.Identity.Domain
         {
             Country = country;
             City = city;
-            Strret = street;
+            Street = street;
         }
 
         protected override IEnumerable<object> GetAtomicValues() =>
@@ -26,7 +26,7 @@ namespace ProjectX.Identity.Domain
             {
                 Country,
                 City,
-                Strret
+                Street
             };
     }
 }

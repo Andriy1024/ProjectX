@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ProjectX.Identity.Domain
 {
-    public class RoleEntity : IdentityRole<long>
+    public sealed class RoleEntity : IdentityRole<long>
     {
         public ICollection<UserRoleEntity> UserRoles { get; private set; } = new List<UserRoleEntity>();
 

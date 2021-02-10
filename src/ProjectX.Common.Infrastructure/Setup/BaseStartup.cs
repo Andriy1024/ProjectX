@@ -41,7 +41,7 @@ namespace ProjectX.Common.Infrastructure.Setup
             Assemblies = paths.Select(path => Assembly.Load(AssemblyName.GetAssemblyName(path))).ToArray();
         }
 
-        public virtual void ConfigureServices(IServiceCollection services)
+        public virtual IServiceCollection BaseConfigure(IServiceCollection services)
              => services.AddOptions()
                         .AddHttpContextAccessor()
                         .Configure<BaseOptions>(Configuration)
@@ -65,9 +65,10 @@ namespace ProjectX.Common.Infrastructure.Setup
 
                             return new BadRequestObjectResult(ResponseFactory.InvalidData(ErrorCode.InvalidData, errors));
                         })
-                        .AddFluentValidation(t => t.RegisterValidatorsFromAssemblies(Assemblies));
+                        .AddFluentValidation(t => t.RegisterValidatorsFromAssemblies(Assemblies))
+                        .Services;
 
-        public virtual void Configure(IApplicationBuilder app)
+        public virtual IApplicationBuilder BaseConfigure(IApplicationBuilder app)
               => app.UseRouting()
                     .UseCors("CustomPolicy")
                     .UseMiddleware<ErrorHandlerMiddleware>()

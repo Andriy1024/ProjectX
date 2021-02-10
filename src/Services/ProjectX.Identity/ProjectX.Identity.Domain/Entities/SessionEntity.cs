@@ -2,7 +2,7 @@
 
 namespace ProjectX.Identity.Domain
 {
-    public class SessionEntity
+    public sealed class SessionEntity
     {
         public string Id { get; private set; }
         public long UserId { get; private set; }

@@ -26,7 +26,7 @@ namespace ProjectX.Identity.Persistence.EntityConfigurations
             {
                 a.Property(a => a.Country).HasColumnName(nameof(Address.Country));
                 a.Property(a => a.City).HasColumnName(nameof(Address.City));
-                a.Property(a => a.Strret).HasColumnName(nameof(Address.Strret));
+                a.Property(a => a.Street).HasColumnName(nameof(Address.Street));
             });
         }
     }

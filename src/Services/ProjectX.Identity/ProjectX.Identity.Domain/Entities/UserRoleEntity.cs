@@ -2,7 +2,7 @@
 
 namespace ProjectX.Identity.Domain
 {
-    public class UserRoleEntity : IdentityUserRole<long>
+    public sealed class UserRoleEntity : IdentityUserRole<long>
     {
         public UserEntity User { get; set; }
         public RoleEntity Role { get; set; }
@@ -15,6 +15,8 @@ namespace ProjectX.Identity.Domain
         {
             User = user;
             Role = role;
+            User.UserRoles.Add(this);
+            Role.UserRoles.Add(this);
         }
     }
 }

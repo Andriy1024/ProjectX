@@ -12,6 +12,9 @@
         NoIdentityIdInAccessToken,
         NoIdentityRoleInAccessToken,
         SessionNotFound,
-        SessionInBlackList
+        SessionInBlackList,
+
+        EmailNotAvailable,
+        UserNotFound
     }
 }

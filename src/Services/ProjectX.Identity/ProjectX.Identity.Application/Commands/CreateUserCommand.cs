@@ -11,6 +11,7 @@ namespace ProjectX.Identity.Application
         public string Email { get; set; }
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
+        public AddressDto Address { get; set; }
     }
 
     public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
@@ -22,6 +23,7 @@ namespace ProjectX.Identity.Application
             RuleFor(c => c.Email).EmailAddress();
             RuleFor(c => c.Password).Password();
             RuleFor(c => c.ConfirmPassword).Equal(c => c.Password);
+            RuleFor(c => c.Address).NotNull().SetValidator(new AddressDtoValidator());
         }
     }
 }

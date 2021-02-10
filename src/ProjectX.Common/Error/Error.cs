@@ -16,16 +16,16 @@
         public static Error ServerError(ErrorCode code, string message = null)
             => new Error(ErrorType.ServerError, code, message);
 
-        public static Error ServerError(string message)
+        public static Error ServerError(string message = null)
             => new Error(ErrorType.ServerError, ErrorCode.ServerError, message);
 
-        public static Error NotFound(ErrorCode code, string message)
+        public static Error NotFound(ErrorCode code, string message = null)
             => new Error(ErrorType.NotFound, code, message);
 
-        public static Error InvalidData(ErrorCode code, string message)
+        public static Error InvalidData(ErrorCode code, string message = null)
             => new Error(ErrorType.InvalidData, code, message);
 
-        public static Error InvalidPermission(ErrorCode code, string message)
+        public static Error InvalidPermission(ErrorCode code, string message = null)
             => new Error(ErrorType.InvalidPermission, code, message);
 
         public override string ToString()

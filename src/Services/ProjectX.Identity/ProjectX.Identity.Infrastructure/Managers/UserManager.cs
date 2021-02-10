@@ -19,8 +19,8 @@ namespace ProjectX.Identity.Infrastructure
 {
     public sealed class UserManager : UserManager<UserEntity>
     {
-        readonly IdentityDbContext _dbContext;
-        readonly Lazy<ISessionBlackList> _blackList;
+        public readonly IdentityDbContext DbContext;
+        private readonly Lazy<ISessionBlackList> _blackList;
 
         public UserManager(IUserStore<UserEntity> store,
            IOptions<IdentityOptions> optionsAccessor,
@@ -35,20 +35,27 @@ namespace ProjectX.Identity.Infrastructure
            IServiceProvider serviceProvider)
            : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
         {
-            _dbContext = dbContext;
+            DbContext = dbContext;
             _blackList = new Lazy<ISessionBlackList>(() => serviceProvider.GetRequiredService<ISessionBlackList>());
         }
 
-        public Task<UserEntity> GetUserWithRolesAsync(Expression<Func<UserEntity, bool>> expression, CancellationToken cancellationToken = default)
-            => _dbContext.Users.Include(u => u.UserRoles)
-                               .ThenInclude(r => r.Role)
-                               .FirstOrDefaultAsync(expression, cancellationToken);
+        public async Task<ResultOf<UserEntity>> GetUserWithRolesAsync(Expression<Func<UserEntity, bool>> expression, CancellationToken cancellationToken = default)
+        {
+            var user = await DbContext.Users.Include(u => u.UserRoles)
+                                            .ThenInclude(r => r.Role)
+                                            .FirstOrDefaultAsync(expression, cancellationToken);
+
+            if (user == null)
+                return Error.NotFound(ErrorCode.UserNotFound);
+
+            return user;
+        } 
         
         #region Session actions
 
         public async Task<SessionEntity> UpdateSessionAsync(UserEntity user, string sessionId, DateTime dateTime)
         {
-            var session = await _dbContext.Sessions.FirstOrDefaultAsync(s => s.Id == sessionId);
+            var session = await DbContext.Sessions.FirstOrDefaultAsync(s => s.Id == sessionId);
             if (session == null)
                 throw new NotFoundException(ErrorCode.SessionNotFound);
 
@@ -57,21 +64,21 @@ namespace ProjectX.Identity.Infrastructure
             else
                 session = user.CreateSession(Guid.NewGuid(), dateTime);
 
-            await _dbContext.SaveChangesAsync();
+            await DbContext.SaveChangesAsync();
             return session;
         }
 
         public async Task<SessionEntity> CreateSessionAsync(UserEntity user, DateTime dateTime)
         {
             var session = user.CreateSession(Guid.NewGuid(), dateTime);
-            await _dbContext.SaveChangesAsync();
+            await DbContext.SaveChangesAsync();
             return session;
         }
 
         public async Task PutActiveSessionsInBlackListAsync(long userId, CancellationToken cancellationToken)
         {
             var expireDate = DateTime.UtcNow.AddSeconds(SessionLifetime.AccessTokenLifetime);
-            var sessions = await _dbContext.Sessions.Where(s => s.UserId == userId && s.Lifetime.AccessTokenExpiresAt <= expireDate).ToArrayAsync(cancellationToken);
+            var sessions = await DbContext.Sessions.Where(s => s.UserId == userId && s.Lifetime.AccessTokenExpiresAt <= expireDate).ToArrayAsync(cancellationToken);
             if (sessions.Length == 0)
                 return;
 
@@ -81,7 +88,7 @@ namespace ProjectX.Identity.Infrastructure
                 session.Deactivate(DateTime.UtcNow);
                 await _blackList.Value.AddToBlackListAsync(session.Id, timeSpan);
             }
-            await _dbContext.SaveChangesAsync();
+            await DbContext.SaveChangesAsync();
         }
 
         #endregion

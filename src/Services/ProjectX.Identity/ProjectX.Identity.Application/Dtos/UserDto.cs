@@ -14,6 +14,8 @@ namespace ProjectX.Identity.Application
 
         public bool EmailAlreadyConfirmed { get; set; }
 
+        public AddressDto Address { get;set; }
+
         public IEnumerable<RoleDto> Roles { get; set; }
     }
 }

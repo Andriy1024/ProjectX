@@ -17,43 +17,42 @@ using System.Reflection;
 using ProjectX.Identity.Persistence;
 using ProjectX.Redis.Configuration;
 using ProjectX.Common.Email;
+using ProjectX.Common.Infrastructure.BlackList;
 
 namespace ProjectX.Identity.API
 {
-    public class Startup : BaseStartup<IdentityOptions>
+    public sealed class Startup : BaseStartup<IdentityOptions>
     {
         public Startup(IWebHostEnvironment environment, ILoggerFactory loggerFactory, IConfiguration configuration) 
             : base(environment, loggerFactory, configuration)
         {
         }
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDbContext<IdentityDbContext>(options => options.UseNpgsql(DBConnectionString))
-                    .AddIdentity<UserEntity, RoleEntity>(options =>
-                    {
-                        options.User.RequireUniqueEmail = true;
-                    })
-                    .AddRoles<RoleEntity>()
-                    .AddEntityFrameworkStores<IdentityDbContext>()
-                    .AddUserManager<UserManager>()
-                    .AddDefaultTokenProviders()
-                    .Services
-                    .AddIdentityServer4(DBConnectionString, typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)
-                    .AddStartupTasks()
-                    .AddScopedCache()
-                    .AddHostedService<SessionCleanupWorker>()
-                    .AddEmailServices(Configuration)
-                    .AddRedisServices(Configuration)
-                    .AddSessionBlackListService();
+        public void ConfigureServices(IServiceCollection services) 
+                 => BaseConfigure(services)
+                   .AddDbContext<IdentityDbContext>(options => options.UseNpgsql(DBConnectionString))
+                   .AddIdentity<UserEntity, RoleEntity>(options =>
+                   {
+                       options.User.RequireUniqueEmail = true;
+                   })
+                   .AddRoles<RoleEntity>()
+                   .AddEntityFrameworkStores<IdentityDbContext>()
+                   .AddUserManager<UserManager>()
+                   .AddDefaultTokenProviders()
+                   .Services
+                   .AddIdentityServer4(DBConnectionString, typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)
+                   .AddStartupTasks()
+                   .AddScopedCache()
+                   .AddHostedService<SessionCleanupWorker>()
+                   .AddEmailServices(Configuration)
+                   .AddRedisServices(Configuration)
+                   .AddSessionBlackListService();
 
-            base.ConfigureServices(services);
-        }
-
-        public override void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app)
         {
-            base.Configure(app);
-            app.UseIdentityServer();
+            app.UseMiddleware<BlackListMiddleware>(); 
+                BaseConfigure(app)
+               .UseIdentityServer();
         }
     }
 }

@@ -35,6 +35,14 @@ namespace ProjectX.Identity.Domain
                 return this;
             }
 
+            public Builder Role(RoleEntity role)
+            {
+                Utill.ThrowIfNull(role, nameof(role));
+                EnsureCreated();
+                new UserRoleEntity(Entity, role);
+                return this;
+            }
+
             protected override void EnsureCreated() => Entity ??= new UserEntity();
 
             public override UserEntity Build() =>
