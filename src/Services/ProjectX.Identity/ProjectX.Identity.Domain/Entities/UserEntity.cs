@@ -46,5 +46,10 @@ namespace ProjectX.Identity.Domain
             var session = new SessionEntity(this, id, createdAt);
             return session;
         }
+
+        public void Update(Address address) 
+        {
+            Address = address;
+        }
     }
 }
