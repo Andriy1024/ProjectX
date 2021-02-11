@@ -10,20 +10,20 @@ using System.Threading.Tasks;
 namespace ProjectX.Core.DataAccess
 {
     public interface IRepository<TEntity>
+        where TEntity : class
     {
         #region Methods with automapper
         Task<TOut[]> GetAsync<TOut>(IMapper mapper, IOrderingOptions ordering = null, CancellationToken cancellationToken = default);
-
         Task<TOut[]> GetAsync<TOut>(Expression<Func<TEntity, bool>> expression, IMapper mapper, IOrderingOptions ordering = null, CancellationToken cancellationToken = default);
         Task<IPaginatedResponse<TOut[]>> GetAsync<TOut>(IMapper mapper, IPaginationOptions pagination, IOrderingOptions ordering = null, CancellationToken cancellationToken = default);
         Task<IPaginatedResponse<TOut[]>> GetAsync<TOut>(Expression<Func<TEntity, bool>> expression, IMapper mapper, IPaginationOptions pagination, IOrderingOptions ordering = null, CancellationToken cancellationToken = default);
 
-        Task<TOut> FirstOrDefaultAsync<TOut>(Expression<Func<TEntity, bool>> expression, IMapper mapper, CancellationToken cancellationToken = default);
+        Task<ResultOf<TOut>> FirstOrDefaultAsync<TOut>(Expression<Func<TEntity, bool>> expression, IMapper mapper, CancellationToken cancellationToken = default) where TOut : class;
         #endregion
 
         #region Get
-        Task<TEntity> FirstOrDefaultAsync(CancellationToken cancellationToken = default);
-        Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default);
+        Task<ResultOf<TEntity>> FirstOrDefaultAsync(CancellationToken cancellationToken = default);
+        Task<ResultOf<TEntity>> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default);
 
         Task<TEntity[]> GetAsync(IOrderingOptions ordering = null, CancellationToken cancellationToken = default);
         Task<TEntity[]> GetAsNoTrackingAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default);

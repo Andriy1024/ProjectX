@@ -10,6 +10,6 @@ namespace ProjectX.Blog.Application
 {
     public interface IArticleRepository : IRepository<ArticleEntity>
     {
-        public Task<ResultOf<ArticleEntity>> GetArticleWithDependetEntitiesAsync(Expression<Func<ArticleEntity, bool>> expression, CancellationToken cancellationToken = default);
+        public Task<ResultOf<ArticleEntity>> GetFullArticleAsync(Expression<Func<ArticleEntity, bool>> expression, CancellationToken cancellationToken = default);
     }
 }
