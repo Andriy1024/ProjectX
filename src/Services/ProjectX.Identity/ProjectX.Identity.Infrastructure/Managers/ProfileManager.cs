@@ -1,9 +1,9 @@
 ﻿using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
-using ProjectX.Common.Auth;
-using ProjectX.Common.Cache;
-using ProjectX.Common.Infrastructure.Auth;
+using ProjectX.Core.Auth;
+using ProjectX.Core.Cache;
+using ProjectX.Infrastructure.Auth;
 using ProjectX.Identity.Domain;
 using System;
 using System.Collections.Generic;

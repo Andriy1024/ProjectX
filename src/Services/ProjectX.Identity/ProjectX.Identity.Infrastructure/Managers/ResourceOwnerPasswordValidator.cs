@@ -4,7 +4,7 @@ using IdentityServer4.Services;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using ProjectX.Common.Cache;
+using ProjectX.Core.Cache;
 using System.Threading.Tasks;
 using static IdentityModel.OidcConstants;
 

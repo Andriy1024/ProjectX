@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ProjectX.Common;
+using ProjectX.Core;
 using ProjectX.Identity.Application;
 using ProjectX.Identity.Domain;
 using System.Threading;

@@ -7,11 +7,11 @@ using Microsoft.Extensions.Options;
 using ProjectX.Identity.Persistence;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using ProjectX.Common.Exceptions;
-using ProjectX.Common;
+using ProjectX.Core.Exceptions;
+using ProjectX.Core;
 using System.Threading;
 using System.Linq;
-using ProjectX.Common.BlackList;
+using ProjectX.Core.BlackList;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq.Expressions;
 

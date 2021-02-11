@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using ProjectX.Common;
-using ProjectX.Common.Extensions;
+using ProjectX.Core;
+using ProjectX.Core.Extensions;
 
 namespace ProjectX.Identity.Application
 {

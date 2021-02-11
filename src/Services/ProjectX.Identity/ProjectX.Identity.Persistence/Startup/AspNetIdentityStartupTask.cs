@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ProjectX.Common;
-using ProjectX.Common.Auth;
+using ProjectX.Core;
+using ProjectX.Core.Auth;
 using ProjectX.Identity.Domain;
 using System;
 using System.Threading;

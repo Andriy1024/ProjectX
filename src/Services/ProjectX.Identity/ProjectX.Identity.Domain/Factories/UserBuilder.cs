@@ -1,4 +1,4 @@
-﻿using ProjectX.Common;
+﻿using ProjectX.Core;
 using System;
 
 namespace ProjectX.Identity.Domain

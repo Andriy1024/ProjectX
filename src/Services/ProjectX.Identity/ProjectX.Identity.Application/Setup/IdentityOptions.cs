@@ -1,4 +1,4 @@
-﻿using ProjectX.Common.Setup;
+﻿using ProjectX.Core.Setup;
 
 namespace ProjectX.Identity.Application
 {

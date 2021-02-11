@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using ProjectX.Common;
+using ProjectX.Core;
 using System;
 using System.Collections.Generic;
 

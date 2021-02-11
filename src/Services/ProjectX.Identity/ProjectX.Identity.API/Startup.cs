@@ -5,19 +5,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ProjectX.Common.Infrastructure.Setup;
+using ProjectX.Infrastructure.Setup;
 using ProjectX.Identity.Infrastructure;
 using ProjectX.Identity.Infrastructure.Extensions;
 using IdentityDbContext = ProjectX.Identity.Persistence.IdentityDbContext;
 using IdentityOptions = ProjectX.Identity.Application.IdentityOptions;
 using UserEntity = ProjectX.Identity.Domain.UserEntity;
 using RoleEntity = ProjectX.Identity.Domain.RoleEntity;
-using ProjectX.Common.Infrastructure.Extensions;
+using ProjectX.Infrastructure.Extensions;
 using System.Reflection;
 using ProjectX.Identity.Persistence;
 using ProjectX.Redis.Configuration;
-using ProjectX.Common.Email;
-using ProjectX.Common.Infrastructure.BlackList;
+using ProjectX.Infrastructure.BlackList;
+using ProjectX.Email;
 
 namespace ProjectX.Identity.API
 {

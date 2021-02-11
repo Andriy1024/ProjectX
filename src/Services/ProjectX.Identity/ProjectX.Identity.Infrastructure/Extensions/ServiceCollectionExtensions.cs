@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using ProjectX.Common;
+using ProjectX.Core;
 using ProjectX.Identity.Domain;
 using ProjectX.Identity.Infrastructure.Managers;
 using ProjectX.Identity.Persistence.Startup;

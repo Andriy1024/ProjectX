@@ -1,9 +1,9 @@
 ﻿using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Microsoft.Extensions.Logging;
-using ProjectX.Common;
-using ProjectX.Common.Exceptions;
-using ProjectX.Common.JSON;
+using ProjectX.Core;
+using ProjectX.Core.Exceptions;
+using ProjectX.Core.JSON;
 using System;
 using System.Threading.Tasks;
 

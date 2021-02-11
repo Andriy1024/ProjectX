@@ -1,7 +1,7 @@
 ﻿using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.EntityFrameworkCore;
-using ProjectX.Common;
+using ProjectX.Core;
 using ProjectX.Identity.Persistence.IdentityServer;
 using System.Linq;
 using System.Threading;
@@ -30,7 +30,7 @@ namespace ProjectX.Identity.Persistence.Startup
             {
                 if (clients.TryGetValue(config.ClientId, out var entity))
                 {
-                    ApllyChanges(entity, config);
+                    ApplyChanges(entity, config);
                 }
                 else
                 {
@@ -58,7 +58,7 @@ namespace ProjectX.Identity.Persistence.Startup
             await _configurationDb.SaveChangesAsync();
         }
 
-        public void ApllyChanges(IdentityServer4.EntityFramework.Entities.Client entity, IdentityServer4.Models.Client config)
+        public void ApplyChanges(IdentityServer4.EntityFramework.Entities.Client entity, IdentityServer4.Models.Client config)
         {
             var newScopes = config.AllowedScopes.Except(entity.AllowedScopes.Select(t => t.Scope));
             if (newScopes.Any())

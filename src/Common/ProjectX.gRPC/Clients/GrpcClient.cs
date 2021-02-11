@@ -1,18 +1,18 @@
 ﻿using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using ProjectX.Common;
-using ProjectX.Common.Auth;
-using ProjectX.Common.Exceptions;
-using ProjectX.Common.JSON;
+using ProjectX.Core;
+using ProjectX.Core.Auth;
+using ProjectX.Core.Exceptions;
+using ProjectX.Core.JSON;
 using ProjectX.Protos;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ProjectX.gRPC.Clients
+namespace ProjectX.gRPC
 {
-    public abstract class GrpcClient<TClient>
+    internal abstract class GrpcClient<TClient>
         where TClient : Grpc.Core.ClientBase<TClient>
     {
         readonly ITokenProvider _tokenProvider;

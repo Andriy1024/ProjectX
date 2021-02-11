@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using ProjectX.Common.Infrastructure.Extensions;
+using ProjectX.Infrastructure.Extensions;
 
 namespace ProjectX.Identity.API
 {

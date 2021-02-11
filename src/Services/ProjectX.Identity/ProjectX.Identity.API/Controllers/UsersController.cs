@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using ProjectX.Common.Infrastructure.Controllers;
+using ProjectX.Infrastructure.Controllers;
 using ProjectX.Identity.Application;
 
 namespace ProjectX.Identity.API.Controllers
