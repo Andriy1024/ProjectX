@@ -1,6 +1,8 @@
-﻿namespace ProjectX.Core.IntegrationEvents
+﻿using MediatR;
+
+namespace ProjectX.Core.IntegrationEvents
 {
-    public interface IIntegrationEvent 
+    public interface IIntegrationEvent : INotification 
     {
     }
 }
