@@ -8,7 +8,7 @@ namespace ProjectX.Blog.Domain
     {
         public long AuthorId { get; private set; }
         public AuthorEntity Author { get; private set; }
-        public string Tittle { get; private set; }
+        public string Title { get; private set; }
         public string Body { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime UpdatedAt { get; private set; }
@@ -27,9 +27,9 @@ namespace ProjectX.Blog.Domain
             AddDomainEvent(new ArticleDeleted(this));
         }
 
-        public void UpdateTittle(string tittle) 
+        public void UpdateTitle(string title) 
         {
-            Tittle = tittle;
+            Title = title;
             UpdatedAt = DateTime.UtcNow;
             AddDomainEvent(new ArticleTittleUpdated(this));
         }

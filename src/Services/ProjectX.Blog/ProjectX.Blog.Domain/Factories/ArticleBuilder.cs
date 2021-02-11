@@ -11,7 +11,7 @@ namespace ProjectX.Blog.Domain
             {
                 Entity = new ArticleEntity()
                 {
-                    Tittle = tittle,
+                    Title = tittle,
                     Body = body
                 };
 
@@ -27,7 +27,7 @@ namespace ProjectX.Blog.Domain
 
             public override ArticleEntity Build()
             {
-                if (Entity == null || Entity.Author == null || Entity.Tittle == null || Entity.Body == null)
+                if (Entity == null || Entity.Author == null || Entity.Title == null || Entity.Body == null)
                     throw new InvalidOperationException("Article not fully initialized.");
 
                 Entity.CreatedAt = Entity.UpdatedAt = DateTime.UtcNow;

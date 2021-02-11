@@ -15,6 +15,15 @@ namespace ProjectX.Blog.Domain
             return this;
         }
 
+        public ArticleSpecificationBuilder WhereAuthor(long? id)
+        {
+            if (id.HasValue) 
+            {
+                SetSpecification(new ArticleAuthorSpecefication(new[] { id.Value }));
+            }
+            return this;
+        }
+
         public ArticleSpecificationBuilder Search(string search) 
         {
             if (string.IsNullOrEmpty(search)) 

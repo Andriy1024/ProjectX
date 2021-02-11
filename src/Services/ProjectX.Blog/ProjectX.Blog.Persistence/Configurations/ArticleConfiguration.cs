@@ -11,7 +11,7 @@ namespace ProjectX.Blog.Persistence.Configurations
             builder.ToTable("Article", BlogDbContext.SchemaName);
             builder.Ignore(e => e.DomainEvents);
             builder.HasKey(e => e.Id);
-            builder.Property(e => e.Tittle).IsRequired();
+            builder.Property(e => e.Title).IsRequired();
             builder.Property(e => e.Body).IsRequired();
             builder.HasMany(e => e.Comments)
                    .WithOne(e => e.Article)

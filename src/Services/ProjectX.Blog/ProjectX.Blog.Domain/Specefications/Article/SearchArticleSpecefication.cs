@@ -16,6 +16,6 @@ namespace ProjectX.Blog.Domain
         }
 
         public override Expression<Func<ArticleEntity, bool>> ToExpression()
-            => a => a.Tittle.Contains(_search);
+            => a => a.Title.Contains(_search);
     }
 }
