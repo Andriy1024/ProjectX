@@ -15,6 +15,11 @@
         SessionInBlackList,
 
         EmailNotAvailable,
-        UserNotFound
+        UserNotFound,
+
+        //Blog
+        ArticleNotFound,
+        CommentNotFound,
+        AuthorNotFound
     }
 }
