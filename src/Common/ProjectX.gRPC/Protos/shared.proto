@@ -1,0 +1,26 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "ProjectX.Protos";
+
+message ErrorResponse {
+	string message = 1;
+	GRPCErrorType type = 2;
+	int32 code = 3;
+}
+
+enum GRPCErrorType {
+	ServerError = 0;
+	NotFound = 1;
+    InvalidData = 2;
+    InvalidPermission = 3;
+}
+
+message DecimalValue {
+
+    // Whole units part of the amount
+    int64 units = 1;
+
+    // Nano units of the amount (10^-9)
+    // Must be same sign as units
+    sfixed32 nanos = 2;
+}
