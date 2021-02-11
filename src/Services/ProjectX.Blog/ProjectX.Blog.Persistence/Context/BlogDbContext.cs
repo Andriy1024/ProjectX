@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ProjectX.Blog.Domain;
+using ProjectX.Blog.Persistence.Configurations;
 using ProjectX.Core.DataAccess;
 using ProjectX.Infrastructure.DataAccess;
 
@@ -24,10 +25,10 @@ namespace ProjectX.Blog.Persistence
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            //builder.ApplyConfiguration(new AuthorConfiguration());
-            //builder.ApplyConfiguration(new ArticleConfiguration());
-            //builder.ApplyConfiguration(new CommentConfiguration());
-         
+            builder.ApplyConfiguration(new AuthorConfiguration());
+            builder.ApplyConfiguration(new ArticleConfiguration());
+            builder.ApplyConfiguration(new CommentConfiguration());
+
             base.OnModelCreating(builder);
         }
     }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProjectX.Blog.Application;
+using ProjectX.Blog.Infrastructure.Extensions;
 using ProjectX.Infrastructure.Setup;
 
 namespace ProjectX.Blog.API
@@ -18,6 +19,7 @@ namespace ProjectX.Blog.API
         public void ConfigureServices(IServiceCollection services)
         {
             BaseConfigure(services);
+                //.AddStartupTasks();
         }
 
         public void Configure(IApplicationBuilder app)

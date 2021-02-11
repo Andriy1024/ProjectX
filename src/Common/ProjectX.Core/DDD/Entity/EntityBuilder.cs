@@ -25,7 +25,7 @@ namespace ProjectX.Core
         protected virtual void EnsureCreated()
         {
             if (Entity == null)
-                throw new InvalidOperationException("Entity was not created.");
+                throw new InvalidOperationException($"{typeof(TEntity).Name} was not created.");
         }
 
         protected virtual void Clear()

@@ -18,6 +18,8 @@ namespace ProjectX.Blog.Persistence.Configurations
                    .HasForeignKey(e => e.ArticleId)
                    .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Property(w => w.RowVersion).IsRowVersion();
+
             var timeRowsFieldMetadata = builder.Metadata.FindNavigation(nameof(ArticleEntity.Comments));
             timeRowsFieldMetadata.SetField("_comments");
             timeRowsFieldMetadata.SetPropertyAccessMode(PropertyAccessMode.Field);

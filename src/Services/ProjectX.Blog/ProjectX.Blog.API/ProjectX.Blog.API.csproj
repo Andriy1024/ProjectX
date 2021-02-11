@@ -8,5 +8,9 @@
     <ProjectReference Include="..\ProjectX.Blog.Infrastructure\ProjectX.Blog.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 
 </Project>
