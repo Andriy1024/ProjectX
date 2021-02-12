@@ -3,7 +3,11 @@ using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ProjectX.Core.Auth;
+using ProjectX.Infrastructure.Polly;
+using System;
 
 namespace ProjectX.Infrastructure.Auth
 {
@@ -30,5 +34,19 @@ namespace ProjectX.Infrastructure.Auth
                     options.RoleClaimType = JwtClaimTypes.Role;
                 })
                 .Services;
+
+        public static void AddTokenProvider(this IServiceCollection services, IConfiguration configuration, string identityUrl, int retryCount = 2)
+        {
+            services.Configure<TokenProviderOptions>(configuration.GetSection("TokenProviderOptions"));
+
+            services.AddHttpClient("tokenClient", client =>
+            {
+                client.BaseAddress = new Uri(identityUrl);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            })
+            .AddPolicyHandler(RetryPolicies.GetHttpRetryPolicy<TokenProvider>(services, retryCount));
+
+            services.AddSingleton<ITokenProvider, TokenProvider>();
+        }
     }
 }
