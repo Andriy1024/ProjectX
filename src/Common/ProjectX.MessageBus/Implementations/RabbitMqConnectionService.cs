@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ProjectX.Core.Threading;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
@@ -154,15 +155,8 @@ namespace ProjectX.MessageBus.Implementations
 
         private bool IsDisposed()
         {
-            _syncRoot.EnterReadLock();
-            try
-            {
+            using (new ReadLock(_syncRoot))
                 return _isDisposed;
-            }
-            finally
-            {
-                _syncRoot.ExitReadLock();
-            }
         }
 
         #endregion

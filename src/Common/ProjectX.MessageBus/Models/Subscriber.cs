@@ -4,9 +4,9 @@ using System;
 
 namespace ProjectX.MessageBus
 {
-    public class SubscriberInfo
+    public class Subscriber
     {
-        public SubscriberInfo(Type eventType, 
+        public Subscriber(Type eventType, 
                               IModel channel, 
                               QueueOptions queue, 
                               ExchangeOptions exchange, 

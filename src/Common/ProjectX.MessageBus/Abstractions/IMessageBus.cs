@@ -2,16 +2,19 @@
 
 namespace ProjectX.MessageBus
 {
-    public interface IEventBus
+    public interface IMessageBus
     {
-        void Subscribe<T, TH>(IEventBusProperties properties)
+        void Subscribe<T>(SubscribeOptions properties)
             where T : IIntegrationEvent;
 
-        void Unsubscribe<T, TH>(IEventBusProperties properties)
+        void Unsubscribe<T>(SubscribeOptions properties)
             where T : IIntegrationEvent;
 
-        void Publish(IIntegrationEvent integrationEvent, IEventBusProperties properties);
-        void AddPublisher(IEventBusProperties properties);
-        bool RemovePublisher(IEventBusProperties properties);
+        void Publish<T>(T integrationEvent, PublishOptions properties)
+            where T : IIntegrationEvent;
+
+        void AddPublisher(PublishOptions properties);
+
+        bool RemovePublisher(PublishOptions properties);
     }
 }

@@ -1,44 +1,46 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ProjectX.Core;
+using ProjectX.Core.Exceptions;
 using ProjectX.Core.IntegrationEvents;
 using ProjectX.Core.Threading;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProjectX.MessageBus.Implementations
 {
-    public sealed class RabbitMqEventBus : IEventBus
+    public sealed class RabbitMqMessageBus : IMessageBus
     {
         #region Private members
 
         private readonly ReaderWriterLockSlim _syncRootForSubscribers = new ReaderWriterLockSlim();
-        private readonly Dictionary<SubscriptionKey, SubscriberInfo> _subscribers = new Dictionary<SubscriptionKey, SubscriberInfo>();
+        private readonly Dictionary<SubscriptionKey, Subscriber> _subscribers = new Dictionary<SubscriptionKey, Subscriber>();
 
         private readonly ReaderWriterLockSlim _syncRootForPublishers = new ReaderWriterLockSlim();
-        private readonly Dictionary<SubscriptionKey, IModel> _publishers = new Dictionary<SubscriptionKey, IModel>();
+        private readonly Dictionary<SubscriptionKey, Publisher> _publishers = new Dictionary<SubscriptionKey, Publisher>();
 
         private readonly IRabbitMqConnectionService _connectionService;
-        private readonly ILogger<RabbitMqEventBus> _logger;
+        private readonly ILogger<RabbitMqMessageBus> _logger;
 
-        private readonly IIntegrationEventSerializer _serializer;
+        private readonly IMessageSerializer _serializer;
         private readonly MessageBusOptions _messageBusOptions;
-
+        private readonly IMessageDispatcher _dispatcher;
         #endregion
 
         #region Constructors
 
-        public RabbitMqEventBus(IRabbitMqConnectionService connectionService,
-            IIntegrationEventSerializer serializer,
-            ILogger<RabbitMqEventBus> logger,
+        public RabbitMqMessageBus(IRabbitMqConnectionService connectionService,
+            IMessageDispatcher dispatcher,
+            IMessageSerializer serializer,
+            ILogger<RabbitMqMessageBus> logger,
             IOptions<MessageBusOptions> options)
         {
             _connectionService = connectionService;
+            _dispatcher = dispatcher;
             _serializer = serializer;
             _logger = logger;
             _messageBusOptions = options.Value;
@@ -48,116 +50,55 @@ namespace ProjectX.MessageBus.Implementations
 
         #region IRabbitMqEventBus members
 
-        private IModel InitPublisher(RabbitMqEventBusProperties properties)
+        public void AddPublisher(PublishOptions properties)
         {
-            var key = GetSubscriptionKey(properties.Exchange, properties.RoutingKey);
-            _syncRootForPublishers.EnterReadLock();
-            try
-            {
-                if (_publishers.TryGetValue(key, out IModel channel))
-                    return channel;
-            }
-            finally
-            {
-                _syncRootForPublishers.ExitReadLock();
-            }
-
-            var newChannel = _connectionService.CreateChannel();
-            newChannel.ExchangeDeclare(exchange: properties.Exchange, type: properties.IsDirectExchange ? DirectExchangeType : FanoutExchangeType);
-
-            _syncRootForPublishers.EnterWriteLock();
-            try
-            {
-                if (_publishers.TryGetValue(key, out IModel existedChannel))
-                {
-                    if (!newChannel.IsClosed)
-                    {
-                        newChannel.Close();
-                        newChannel.Dispose();
-                    }
-
-                    return existedChannel;
-                }
-                else
-                {
-                    _publishers.Add(key, newChannel);
-                    _logger.LogInformation($"Added publisher to exchange {properties.Exchange.Value} with routing_key {properties.RoutingKey}.");
-                    return newChannel;
-                }
-            }
-            finally
-            {
-                _syncRootForPublishers.ExitWriteLock();
-            }
+            Utill.ThrowIfNull(properties, nameof(properties));
+            Validate(properties.Exchange);
+            InitPublisher(properties);
         }
 
-        public void AddPublisher(IEventBusProperties properties)
+        public bool RemovePublisher(PublishOptions properties)
         {
-            if (!(properties is RabbitMqEventBusProperties rabbitMqProperties))
-                throw new ArgumentException($"Invalid type for {nameof(properties)}");
+            Utill.ThrowIfNull(properties, nameof(properties));
+            Utill.ThrowIfNullOrEmpty(properties.RoutingKey, nameof(properties.RoutingKey));
+            Validate(properties.Exchange);
 
-            var exchange = rabbitMqProperties.Exchange.Value;
-            var routingKey = rabbitMqProperties.RoutingKey;
+            var key = GetSubscriptionKey(properties.Exchange.Name, properties.RoutingKey);
 
-            if (!_connectionService.IsConnected)
-                _connectionService.TryConnect();
-
-            InitPublisher(rabbitMqProperties);
-        }
-
-        public bool RemovePublisher(IEventBusProperties properties)
-        {
-            if (!(properties is RabbitMqEventBusProperties rabbitMqProperties))
-                throw new ArgumentException($"Invalid type for {nameof(properties)}");
-
-            var key = GetSubscriptionKey(rabbitMqProperties.Exchange, rabbitMqProperties.RoutingKey);
-
-            IModel channel;
+            Publisher publisher = null;
             var result = false;
 
-            _syncRootForPublishers.EnterWriteLock();
-            try
+            using (new WriteLock(_syncRootForPublishers)) 
             {
-                if (_publishers.TryGetValue(key, out channel))
+                if (_publishers.TryGetValue(key, out publisher))
                     result = _publishers.Remove(key);
-            }
-            finally
-            {
-                _syncRootForPublishers.ExitWriteLock();
+                else
+                    return true;
             }
 
             if (result)
             {
-                lock (channel)
-                {
-                    channel.Close();
-                    channel.Dispose();
-                }
+                publisher.Close();
 
-                _logger.LogInformation($"Removed publisher to exchange {rabbitMqProperties.Exchange.Value} with routing_key {rabbitMqProperties.RoutingKey}.");
+                _logger.LogInformation($"Removed publisher:{publisher}");
             }
 
             return result;
         }
 
-        public void Publish(IIntegrationEvent integrationEvent, IEventBusProperties properties)
+        public void Publish<T>(T integrationEvent, PublishOptions properties)
+            where T : IIntegrationEvent
         {
-            if (!(properties is RabbitMqEventBusProperties rabbitMqProperties))
-                throw new ArgumentException($"Invalid type for {nameof(properties)}");
+            Utill.ThrowIfNull(properties, nameof(properties));
+            Validate(properties.Exchange);
+            if (properties.Exchange.IsFanout && string.IsNullOrEmpty(properties.RoutingKey))
+                properties.RoutingKey = GetRoutingKey<T>();
 
-            var exchange = rabbitMqProperties.Exchange;
-            if (string.IsNullOrEmpty(exchange))
-                throw new ArgumentException($"Parameter {nameof(exchange)} can't be null or empty.");
+            byte[] body = _serializer.SerializeToBytes(integrationEvent);
 
-            var routingKey = rabbitMqProperties.RoutingKey;
-            if (rabbitMqProperties.IsDirectExchange && string.IsNullOrEmpty(routingKey))
-                throw new ArgumentException($"Parameter {nameof(routingKey)} can't be null or empty for Direct exchange type.");
+            var publisher = InitPublisher(properties);
 
-            if (!_connectionService.IsConnected)
-                _connectionService.TryConnect();
-
-            IModel channel = InitPublisher(rabbitMqProperties);
-            Publish(channel, exchange, routingKey, null, integrationEvent);
+            publisher.Publish(properties: null, message: body);
         }
                         
         private static string GetRoutingKey<T>() => typeof(T).Name;
@@ -172,7 +113,7 @@ namespace ProjectX.MessageBus.Implementations
             Utill.ThrowIfNull(exchange.Type, nameof(exchange.Type));
         }
 
-        public void Subscribe<T, TH>(RabbitMqEventBusProperties properties)
+        public void Subscribe<T>(SubscribeOptions properties)
             where T : IIntegrationEvent
         {
             Utill.ThrowIfNull(properties, nameof(properties));
@@ -202,7 +143,7 @@ namespace ProjectX.MessageBus.Implementations
                 if (_subscribers.ContainsKey(key))
                 {
                     //TO DO: consider about this.
-                    subscriptionInfo.Channel.Dispose();
+                    subscriptionInfo.Channel.Close();
                     return;
                 }
                 else 
@@ -214,7 +155,7 @@ namespace ProjectX.MessageBus.Implementations
             _logger.LogInformation($"New subscription: {subscriptionInfo}");
         }
 
-        public void Unsubscribe<T>(RabbitMqEventBusProperties properties)
+        public void Unsubscribe<T>(SubscribeOptions properties)
             where T : IIntegrationEvent
         {
             Utill.ThrowIfNull(properties, nameof(properties));
@@ -225,7 +166,7 @@ namespace ProjectX.MessageBus.Implementations
 
             var key = GetSubscriptionKey(exchangeName, routingKey);
 
-            SubscriberInfo subscriptionInfo = null;
+            Subscriber subscriptionInfo = null;
             
             bool exists = false;
 
@@ -249,7 +190,6 @@ namespace ProjectX.MessageBus.Implementations
                 {
                     subscriptionInfo.Channel.QueueUnbind(queue: subscriptionInfo.Queue.Name, exchange: exchangeName, routingKey: routingKey);
                     subscriptionInfo.Channel.Close();
-                    subscriptionInfo.Channel.Dispose();
                 }
             }
 
@@ -280,14 +220,7 @@ namespace ProjectX.MessageBus.Implementations
 
         #region Private methods
 
-        private void Publish(IModel channel, string exchange, string routingKey, IBasicProperties basicProperties, IIntegrationEvent integrationEvent)
-        {
-            byte[] body = _serializer.SerializeToBytes(integrationEvent);
-
-            channel.BasicPublish(exchange, routingKey, basicProperties, body);
-        }
-
-        private SubscriberInfo CreateSubscriberChannel<T>(RabbitMqEventBusProperties properties)
+        private Subscriber CreateSubscriberChannel<T>(SubscribeOptions properties)
             where T : IIntegrationEvent
         {
             if (!_connectionService.IsConnected && !_connectionService.TryConnect())
@@ -318,46 +251,94 @@ namespace ProjectX.MessageBus.Implementations
                 CreateSubscriberChannel<T>(properties);
             };
 
-            return new SubscriberInfo(eventType: typeof(T), channel, properties.Queue, properties.Exchange, properties.Consumer);
+            return new Subscriber(eventType: typeof(T), channel, properties.Queue, properties.Exchange, properties.Consumer);
         }
 
         private async Task OnMessageReceived(object sender, BasicDeliverEventArgs ea)
         {
             var key = GetSubscriptionKey(ea.Exchange, ea.RoutingKey);
-            await ProcessMessage(key, ea.Body.ToArray());
+            await ProcessMessage(ea, key);
         }
 
-        private async Task ProcessMessage(SubscriptionKey key, byte[] message)
+        private async Task ProcessMessage(BasicDeliverEventArgs ea, SubscriptionKey key)
         {
-            SubscriberInfo subscriptionInfo = null;
-            var isExist = false;
+            Subscriber subscriptionInfo = null;
+            var isSubscriberExist = false;
 
             using (new ReadLock(_syncRootForSubscribers)) 
-            {
-                isExist = _subscribers.TryGetValue(key, out subscriptionInfo);
-            }
+                isSubscriberExist = _subscribers.TryGetValue(key, out subscriptionInfo);
 
-            if (!isExist) 
+            if (!isSubscriberExist) 
             {
                 _logger.LogError($"Subscriber: {key} was not found.");
                 return;
             }
-
+            bool success = true;
             try
             {
-                IIntegrationEvent integrationEvent = (IIntegrationEvent)_serializer.Deserialize(message, subscriptionInfo.EventType);
-               
-                //await subscriptionInfo.EventHandler.HandleAsync(integrationEvent);
+                var integrationEvent = (IIntegrationEvent)_serializer.Deserialize(ea.Body.Span, subscriptionInfo.EventType);
+                await _dispatcher.HandleAsync(integrationEvent);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                success = ex is InvalidPermissionException || 
+                          ex is InvalidDataException || 
+                          ex is NotFoundException;
+            }
+            finally 
+            {
+                if (!subscriptionInfo.Consumer.Autoack) 
+                {
+                    if (success) 
+                        subscriptionInfo.Channel.BasicAck(ea.DeliveryTag, false);
+                    else
+                        subscriptionInfo.Channel.BasicNack(ea.DeliveryTag, false, subscriptionInfo.Consumer.RequeueFailedMessages);
+                }
             }
         }
 
         private SubscriptionKey GetSubscriptionKey(string exchange, string routingKey)
         {
             return new SubscriptionKey(exchange, routingKey);
+        }
+
+        private Publisher InitPublisher(PublishOptions properties)
+        {
+            if (!_connectionService.IsConnected)
+                _connectionService.TryConnect();
+
+            var exchange = properties.Exchange;
+            var key = GetSubscriptionKey(exchange.Name, properties.RoutingKey);
+
+            using (new ReadLock(_syncRootForPublishers))
+            {
+                if (_publishers.TryGetValue(key, out var publisher))
+                    return publisher;
+            }
+
+            var newChannel = _connectionService.CreateChannel();
+            newChannel.ExchangeDeclare(exchange: exchange.Name, type: exchange.Type, durable: exchange.Durable, autoDelete: exchange.AutoDelete);
+
+            using (new WriteLock(_syncRootForPublishers))
+            {
+                if (_publishers.TryGetValue(key, out var existedPublisher))
+                {
+                    if (!newChannel.IsClosed)
+                    {
+                        newChannel.Close();
+                    }
+
+                    return existedPublisher;
+                }
+                else
+                {
+                    var publisher = new Publisher(exchange, properties.RoutingKey, newChannel);
+                    _publishers.Add(key, publisher);
+                    _logger.LogInformation($"Added publisher: {publisher}");
+                    return publisher;
+                }
+            }
         }
 
         #endregion
