@@ -36,7 +36,9 @@ namespace ProjectX.MessageBus.Implementations
                 VirtualHost = rabbitMqConnectionOptions.Value.VirtualHost,
                 HostName = rabbitMqConnectionOptions.Value.HostName,
                 Port = Convert.ToInt32(rabbitMqConnectionOptions.Value.Port),
-                DispatchConsumersAsync = true
+                DispatchConsumersAsync = true,
+                AutomaticRecoveryEnabled = true,
+                NetworkRecoveryInterval = TimeSpan.FromSeconds(5)
             };
         }
 

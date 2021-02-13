@@ -4,13 +4,11 @@ namespace ProjectX.MessageBus
 {
     public interface IEventBus
     {
-        void Subscribe<T, TH>(IEventBusProperties properties, TH handler)
-            where T : IIntegrationEvent
-            where TH : IIntegrationEventHandler<T>;
+        void Subscribe<T, TH>(IEventBusProperties properties)
+            where T : IIntegrationEvent;
 
         void Unsubscribe<T, TH>(IEventBusProperties properties)
-            where T : IIntegrationEvent
-            where TH : IIntegrationEventHandler<T>;
+            where T : IIntegrationEvent;
 
         void Publish(IIntegrationEvent integrationEvent, IEventBusProperties properties);
         void AddPublisher(IEventBusProperties properties);

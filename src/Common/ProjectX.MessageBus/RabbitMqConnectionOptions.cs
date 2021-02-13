@@ -14,4 +14,12 @@ namespace ProjectX.MessageBus
 
         public string Port { get; set; }
     }
+
+    public sealed class MessageBusOptions : IOptions 
+    {
+        /// <summary>
+        /// The name of the connecting server. For example: IdentityServer.
+        /// </summary>
+        public string ConnectionName { get; set; }
+    }
 }
