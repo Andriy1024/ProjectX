@@ -1,10 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Polly;
 using ProjectX.Core.Threading;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ.Client.Exceptions;
 using System;
 using System.IO;
+using System.Net.Sockets;
 using System.Threading;
 
 namespace ProjectX.MessageBus.Implementations
@@ -18,6 +21,7 @@ namespace ProjectX.MessageBus.Implementations
         private IConnection _connection;
 
         private bool _isDisposed;
+        private readonly int _retryCount;
 
         readonly ReaderWriterLockSlim _syncRoot = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
@@ -26,6 +30,7 @@ namespace ProjectX.MessageBus.Implementations
         public RabbitMqConnectionService(IOptions<RabbitMqConnectionOptions> rabbitMqConnectionOptions, ILogger<RabbitMqConnectionService> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _retryCount = 3;
 
             if (rabbitMqConnectionOptions == null || rabbitMqConnectionOptions.Value == null)
                 throw new ArgumentNullException(nameof(rabbitMqConnectionOptions));
@@ -49,15 +54,8 @@ namespace ProjectX.MessageBus.Implementations
         {
             get
             {
-                _syncRoot.EnterReadLock();
-                try
-                {
+                using (new ReadLock(_syncRoot))
                     return _connection != null && _connection.IsOpen && !_isDisposed;
-                }
-                finally
-                {
-                    _syncRoot.ExitReadLock();
-                }
             }
         }
 
@@ -66,15 +64,8 @@ namespace ProjectX.MessageBus.Implementations
             if (!IsConnected)
                 throw new InvalidOperationException("No RabbitMQ connections are available to perform this action");
 
-            _syncRoot.EnterReadLock();
-            try
-            {
+            using (new ReadLock(_syncRoot))
                 return _connection.CreateModel();
-            }
-            finally
-            {
-                _syncRoot.ExitReadLock();
-            }
         }
 
         public bool TryConnect()
@@ -82,42 +73,36 @@ namespace ProjectX.MessageBus.Implementations
             if (IsConnected)
                 return true;
 
-            var connected = false;
-
             _logger.LogInformation("RabbitMQ Client is trying to connect");
-
-            _syncRoot.EnterWriteLock();
-            try
+            using (new WriteLock(_syncRoot)) 
             {
-                _connection = _connectionFactory.CreateConnection();
+                var policy = Policy.Handle<SocketException>()
+                                   .Or<BrokerUnreachableException>()
+                                   .WaitAndRetry(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+                                   {
+                                       _logger.LogWarning(ex, "RabbitMQ Client could not connect after {TimeOut}s ({ExceptionMessage})", $"{time.TotalSeconds:n1}", ex.Message);
+                                   });
+
+                policy.Execute(() => _connection = _connectionFactory.CreateConnection());
 
                 if (_connection != null && _connection.IsOpen)
                 {
-                    //_connection.RecoverySucceeded += OnConnectionRecoverySucceeded;
                     _connection.ConnectionShutdown += OnConnectionShutdown;
-                    _connection.ConnectionUnblocked += OnConnectionUnblocked;
                     _connection.CallbackException += OnCallbackException;
                     _connection.ConnectionBlocked += OnConnectionBlocked;
+                    //_connection.ConnectionUnblocked += OnConnectionUnblocked;
+                    //_connection.RecoverySucceeded += OnConnectionRecoverySucceeded;
                     //_connection.ConnectionRecoveryError += OnConnectionRecoveryError;
 
-                    connected = true;
+                    _logger.LogInformation($"RabbitMQ persistent connection acquired a connection {_connection.Endpoint.HostName} and is subscribed to failure events");
+                    return true;
                 }
                 else
                 {
-                    connected = false;
+                    _logger.LogCritical("FATAL ERROR: RabbitMQ connections could not be created and opened");
+                    return false;
                 }
             }
-            finally
-            {
-                _syncRoot.ExitWriteLock();
-            }
-
-            if (connected)
-                _logger.LogInformation($"RabbitMQ persistent connection acquired a connection {_connection.Endpoint.HostName} and is subscribed to failure events");
-            else
-                _logger.LogCritical("FATAL ERROR: RabbitMQ connections could not be created and opened");
-
-            return connected;
         }
 
         #endregion
@@ -126,8 +111,7 @@ namespace ProjectX.MessageBus.Implementations
 
         public void Dispose()
         {
-            _syncRoot.EnterWriteLock();
-            try
+            using (new WriteLock(_syncRoot)) 
             {
                 if (_isDisposed)
                     return;
@@ -142,10 +126,6 @@ namespace ProjectX.MessageBus.Implementations
                 {
                     _logger.LogError(ex, ex.Message);
                 }
-            }
-            finally
-            {
-                _syncRoot.ExitWriteLock();
             }
         }
 
