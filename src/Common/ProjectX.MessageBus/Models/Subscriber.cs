@@ -6,11 +6,12 @@ namespace ProjectX.MessageBus
 {
     public class Subscriber
     {
-        public Subscriber(Type eventType, 
-                              IModel channel, 
-                              QueueOptions queue, 
-                              ExchangeOptions exchange, 
-                              ConsumerOptions consumer)
+        public Subscriber(SubscriptionKey key,
+                          Type eventType, 
+                          IModel channel, 
+                          QueueOptions queue, 
+                          ExchangeOptions exchange, 
+                          ConsumerOptions consumer)
         {
             Utill.ThrowIfNull(eventType, nameof(eventType));
             Utill.ThrowIfNull(channel, nameof(channel));
@@ -18,12 +19,15 @@ namespace ProjectX.MessageBus
             Utill.ThrowIfNull(exchange, nameof(exchange));
             Utill.ThrowIfNull(consumer, nameof(consumer));
 
+            Key = key;
             EventType = eventType;
             Channel = channel;
             Queue = queue;
             Exchange = exchange;
             Consumer = consumer;
         }
+
+        public SubscriptionKey Key { get; }
 
         public Type EventType { get; }
 

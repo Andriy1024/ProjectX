@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Polly;
+using Polly.CircuitBreaker;
 using ProjectX.Core.Threading;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -19,20 +20,21 @@ namespace ProjectX.MessageBus.Implementations
         private readonly IConnectionFactory _connectionFactory;
         private readonly ILogger<RabbitMqConnectionService> _logger;
         private IConnection _connection;
-
         private bool _isDisposed;
-        private readonly int _retryCount;
-
-        readonly ReaderWriterLockSlim _syncRoot = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-
+        private readonly ReaderWriterLockSlim _syncRoot = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        private readonly CircuitBreakerPolicy _circuitBreaker;
+        private readonly MessageBusOptions _options;
+        
         #endregion
 
-        public RabbitMqConnectionService(IOptions<RabbitMqConnectionOptions> rabbitMqConnectionOptions, ILogger<RabbitMqConnectionService> logger)
+        public RabbitMqConnectionService(IOptions<RabbitMqConnectionOptions> rabbitMqConnectionOptions,
+            IOptions<MessageBusOptions> messageBusOptions,
+            ILogger<RabbitMqConnectionService> logger)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _retryCount = 3;
+            _logger = logger;
+            _options = MessageBusOptions.Validate(messageBusOptions.Value);
 
-            if (rabbitMqConnectionOptions == null || rabbitMqConnectionOptions.Value == null)
+            if (rabbitMqConnectionOptions.Value == null)
                 throw new ArgumentNullException(nameof(rabbitMqConnectionOptions));
 
             _connectionFactory = new ConnectionFactory
@@ -46,6 +48,8 @@ namespace ProjectX.MessageBus.Implementations
                 AutomaticRecoveryEnabled = true,
                 NetworkRecoveryInterval = TimeSpan.FromSeconds(5)
             };
+
+            _circuitBreaker = Policy.Handle<Exception>().CircuitBreaker(_options.Resilience.ExceptionsAllowedBeforeBreaking, TimeSpan.FromSeconds(_options.Resilience.DurationOfBreak));
         }
 
         #region IRabbitMqConnectionService members
@@ -74,16 +78,17 @@ namespace ProjectX.MessageBus.Implementations
                 return true;
 
             _logger.LogInformation("RabbitMQ Client is trying to connect");
+
             using (new WriteLock(_syncRoot)) 
             {
-                var policy = Policy.Handle<SocketException>()
-                                   .Or<BrokerUnreachableException>()
-                                   .WaitAndRetry(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
-                                   {
-                                       _logger.LogWarning(ex, "RabbitMQ Client could not connect after {TimeOut}s ({ExceptionMessage})", $"{time.TotalSeconds:n1}", ex.Message);
-                                   });
+                var retryPolicy = Policy.Handle<SocketException>()
+                                        .Or<BrokerUnreachableException>()
+                                        .WaitAndRetry(_options.Resilience.RetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+                                        {
+                                            _logger.LogWarning(ex, "RabbitMQ Client could not connect after {TimeOut}s ({ExceptionMessage})", $"{time.TotalSeconds:n1}", ex.Message);
+                                        });
 
-                policy.Execute(() => _connection = _connectionFactory.CreateConnection());
+                _circuitBreaker.Wrap(retryPolicy).Execute(() => _connectionFactory.CreateConnection());
 
                 if (_connection != null && _connection.IsOpen)
                 {

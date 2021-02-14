@@ -1,13 +1,17 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Polly;
+using Polly.CircuitBreaker;
 using ProjectX.Core;
 using ProjectX.Core.Exceptions;
 using ProjectX.Core.IntegrationEvents;
 using ProjectX.Core.Threading;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ.Client.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,8 +31,11 @@ namespace ProjectX.MessageBus.Implementations
         private readonly ILogger<RabbitMqMessageBus> _logger;
 
         private readonly IMessageSerializer _serializer;
-        private readonly MessageBusOptions _messageBusOptions;
         private readonly IMessageDispatcher _dispatcher;
+
+        private readonly MessageBusOptions _options;
+        private readonly CircuitBreakerPolicy _circuitBreaker;
+     
         #endregion
 
         #region Constructors
@@ -43,7 +50,8 @@ namespace ProjectX.MessageBus.Implementations
             _dispatcher = dispatcher;
             _serializer = serializer;
             _logger = logger;
-            _messageBusOptions = options.Value;
+            _options = MessageBusOptions.Validate(options.Value);
+            _circuitBreaker = Policy.Handle<Exception>().CircuitBreaker(_options.Resilience.ExceptionsAllowedBeforeBreaking, TimeSpan.FromSeconds(_options.Resilience.DurationOfBreak));
         }
 
         #endregion
@@ -80,7 +88,7 @@ namespace ProjectX.MessageBus.Implementations
             {
                 publisher.Close();
 
-                _logger.LogInformation($"Removed publisher:{publisher}");
+                _logger.LogInformation($"Removed publisher: {publisher}");
             }
 
             return result;
@@ -94,23 +102,18 @@ namespace ProjectX.MessageBus.Implementations
             if (properties.Exchange.IsFanout && string.IsNullOrEmpty(properties.RoutingKey))
                 properties.RoutingKey = GetRoutingKey<T>();
 
-            byte[] body = _serializer.SerializeToBytes(integrationEvent);
+            var body = _serializer.SerializeToBytes(integrationEvent);
 
             var publisher = InitPublisher(properties);
 
-            publisher.Publish(properties: null, message: body);
-        }
-                        
-        private static string GetRoutingKey<T>() => typeof(T).Name;
+            var retryPolicy = Policy.Handle<SocketException>()
+                                    .Or<BrokerUnreachableException>()
+                                    .WaitAndRetry(_options.Resilience.RetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+                                    {
+                                        _logger.LogWarning(ex, "RabbitMQ Client could not connect after {TimeOut}s ({ExceptionMessage})", $"{time.TotalSeconds:n1}", ex.Message);
+                                    });
 
-        private static string GetQueueName(string connectionName, string exchange, string routingKey) 
-            => $"{connectionName}/{exchange}.{routingKey}";
-
-        private static void Validate(ExchangeOptions exchange) 
-        {
-            Utill.ThrowIfNull(exchange, nameof(exchange));
-            Utill.ThrowIfNull(exchange.Name, nameof(exchange.Name));
-            Utill.ThrowIfNull(exchange.Type, nameof(exchange.Type));
+            _circuitBreaker.Wrap(retryPolicy).Execute(() => publisher.Publish(properties: null, message: body));
         }
 
         public void Subscribe<T>(SubscribeOptions properties)
@@ -123,7 +126,7 @@ namespace ProjectX.MessageBus.Implementations
                 properties.Queue.RoutingKey = GetRoutingKey<T>();
 
             if (string.IsNullOrEmpty(properties.Queue.Name))
-                properties.Queue.Name = GetQueueName(_messageBusOptions.ConnectionName, properties.Exchange.Name, properties.Queue.RoutingKey);
+                properties.Queue.Name = GetQueueName(properties.Exchange.Name, properties.Queue.RoutingKey);
 
             var key = GetSubscriptionKey(properties.Exchange.Name, properties.Queue.RoutingKey);
 
@@ -136,7 +139,7 @@ namespace ProjectX.MessageBus.Implementations
                 }
             }
 
-            var subscriptionInfo = CreateSubscriberChannel<T>(properties);
+            var subscriptionInfo = CreateSubscriberChannel<T>(key, properties);
 
             using (new WriteLock(_syncRootForSubscribers)) 
             {
@@ -171,10 +174,8 @@ namespace ProjectX.MessageBus.Implementations
             bool exists = false;
 
             using (new ReadLock(_syncRootForSubscribers)) 
-            {
                 exists = _subscribers.TryGetValue(key, out subscriptionInfo);
-            }
-
+            
             if (!exists) 
             {
                 _logger.LogError($"Subscriber: {key} was not found.");
@@ -193,10 +194,8 @@ namespace ProjectX.MessageBus.Implementations
                 }
             }
 
-            using (new WriteLock(_syncRootForSubscribers)) 
-            {
+            using (new WriteLock(_syncRootForSubscribers))
                 _subscribers.Remove(key);
-            }
         }
 
         #endregion
@@ -220,7 +219,19 @@ namespace ProjectX.MessageBus.Implementations
 
         #region Private methods
 
-        private Subscriber CreateSubscriberChannel<T>(SubscribeOptions properties)
+        private string GetRoutingKey<T>() => typeof(T).Name;
+
+        private string GetQueueName(string exchange, string routingKey)
+            => $"{_options.ConnectionName}/{exchange}.{routingKey}";
+
+        private void Validate(ExchangeOptions exchange)
+        {
+            Utill.ThrowIfNull(exchange, nameof(exchange));
+            Utill.ThrowIfNull(exchange.Name, nameof(exchange.Name));
+            Utill.ThrowIfNull(exchange.Type, nameof(exchange.Type));
+        }
+
+        private Subscriber CreateSubscriberChannel<T>(SubscriptionKey key, SubscribeOptions properties)
             where T : IIntegrationEvent
         {
             if (!_connectionService.IsConnected && !_connectionService.TryConnect())
@@ -248,49 +259,65 @@ namespace ProjectX.MessageBus.Implementations
 
                 channel.Dispose();
 
-                CreateSubscriberChannel<T>(properties);
+                CreateSubscriberChannel<T>(key, properties);
             };
 
-            return new Subscriber(eventType: typeof(T), channel, properties.Queue, properties.Exchange, properties.Consumer);
+            return new Subscriber(key, eventType: typeof(T), channel, properties.Queue, properties.Exchange, properties.Consumer);
         }
 
         private async Task OnMessageReceived(object sender, BasicDeliverEventArgs ea)
         {
             var key = GetSubscriptionKey(ea.Exchange, ea.RoutingKey);
-            await ProcessMessage(ea, key);
-        }
 
-        private async Task ProcessMessage(BasicDeliverEventArgs ea, SubscriptionKey key)
-        {
             Subscriber subscriptionInfo = null;
             var isSubscriberExist = false;
 
-            using (new ReadLock(_syncRootForSubscribers)) 
+            using (new ReadLock(_syncRootForSubscribers))
                 isSubscriberExist = _subscribers.TryGetValue(key, out subscriptionInfo);
 
-            if (!isSubscriberExist) 
+            if (!isSubscriberExist)
             {
                 _logger.LogError($"Subscriber: {key} was not found.");
                 return;
             }
+
+            var message = (IIntegrationEvent)_serializer.Deserialize(ea.Body.Span, subscriptionInfo.EventType);
+
+            await ProcessMessage(message, subscriptionInfo, ea);
+        }
+
+        private async Task ProcessMessage(IIntegrationEvent message, Subscriber subscriptionInfo, BasicDeliverEventArgs ea)
+        {
+            var retryPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(2, i => TimeSpan.FromSeconds(2));
             bool success = true;
             try
             {
-                var integrationEvent = (IIntegrationEvent)_serializer.Deserialize(ea.Body.Span, subscriptionInfo.EventType);
-                await _dispatcher.HandleAsync(integrationEvent);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-                success = ex is InvalidPermissionException || 
-                          ex is InvalidDataException || 
-                          ex is NotFoundException;
-            }
-            finally 
-            {
-                if (!subscriptionInfo.Consumer.Autoack) 
+                await retryPolicy.ExecuteAsync(async () =>
                 {
-                    if (success) 
+                    try
+                    {
+                        await _dispatcher.HandleAsync(message);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, ex.Message);
+
+                        if (IsCustomError(ex))
+                            return;
+
+                        throw;
+                    }
+                });
+            }
+            catch
+            {
+                success = false;
+            }
+            finally
+            {
+                if (!subscriptionInfo.Consumer.Autoack)
+                {
+                    if (success)
                         subscriptionInfo.Channel.BasicAck(ea.DeliveryTag, false);
                     else
                         subscriptionInfo.Channel.BasicNack(ea.DeliveryTag, false, subscriptionInfo.Consumer.RequeueFailedMessages);
@@ -298,15 +325,21 @@ namespace ProjectX.MessageBus.Implementations
             }
         }
 
-        private SubscriptionKey GetSubscriptionKey(string exchange, string routingKey)
+        private bool IsCustomError(Exception ex) => ex switch 
         {
-            return new SubscriptionKey(exchange, routingKey);
-        }
+            InvalidPermissionException e => true,
+            InvalidDataException e => true,
+            NotFoundException e => true,
+            _ => false
+        };
 
+        private SubscriptionKey GetSubscriptionKey(string exchange, string routingKey)
+            => new SubscriptionKey(exchange, routingKey);
+        
         private Publisher InitPublisher(PublishOptions properties)
         {
             if (!_connectionService.IsConnected)
-                _connectionService.TryConnect();
+                 _connectionService.TryConnect();
 
             var exchange = properties.Exchange;
             var key = GetSubscriptionKey(exchange.Name, properties.RoutingKey);

@@ -19,6 +19,7 @@ namespace ProjectX.MessageBus
 
         public void Publish(IBasicProperties properties, byte[] message) 
         {
+            //properties ??= Channel.CreateBasicProperties(); //neet to investigate
             lock (_sync) 
             {
                 Channel.BasicPublish(Exchange.Name.Value, RoutingKey, properties, message);
