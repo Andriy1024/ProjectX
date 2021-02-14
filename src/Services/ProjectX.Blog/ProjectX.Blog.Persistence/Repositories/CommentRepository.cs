@@ -4,7 +4,7 @@ using ProjectX.Core;
 using ProjectX.Core.DataAccess;
 using ProjectX.Infrastructure.DataAccess;
 
-namespace ProjectX.Blog.Persistence.Repositories
+namespace ProjectX.Blog.Persistence
 {
     public sealed class CommentRepository : Repository<CommentEntity>, ICommentRepository
     {

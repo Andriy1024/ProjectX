@@ -27,6 +27,14 @@ namespace ProjectX.Infrastructure.Controllers
             return MapError(response);
         }
 
+        protected IActionResult MapResponse<T>(T response)
+        {
+            if (response == null)
+                throw new ArgumentNullException(nameof(response));
+
+            return Ok(ResponseFactory.Success(response));
+        }
+
         protected IActionResult MapResponse(IResponse response)
         {
             if (response == null)
