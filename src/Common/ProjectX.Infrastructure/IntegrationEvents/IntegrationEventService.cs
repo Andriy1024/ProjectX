@@ -1,4 +1,5 @@
 ﻿using ProjectX.Core.IntegrationEvents;
+using ProjectX.MessageBus;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -21,12 +22,12 @@ namespace ProjectX.Infrastructure.IntegrationEvents
 
         readonly Queue<IntegrationEventWithProperties> _integrationEvents = new Queue<IntegrationEventWithProperties>();
 
-        //readonly IEventBus _eventBus;
+        readonly IMessageBus _eventBus;
 
-        //public IntegrationEventService(IEventBus eventBus)
-        //{
-        //    _eventBus = eventBus;
-        //}
+        public IntegrationEventService(IMessageBus eventBus)
+        {
+            _eventBus = eventBus;
+        }
 
         public void Add(IIntegrationEvent integrationEvent, IEventBusProperties eventBusProperties)
         {
@@ -35,8 +36,8 @@ namespace ProjectX.Infrastructure.IntegrationEvents
 
         public Task PublishEventsThroughEventBusAsync()
         {
-            //while (_integrationEvents.TryDequeue(out IntegrationEventWithProperties eventWithProperties))
-            //    _eventBus.Publish(eventWithProperties.IntegrationEvent, eventWithProperties.EventBusProperties);
+            while (_integrationEvents.TryDequeue(out IntegrationEventWithProperties eventWithProperties))
+                   _eventBus.Publish(eventWithProperties.IntegrationEvent, eventWithProperties.EventBusProperties);
 
             return Task.CompletedTask;
         }

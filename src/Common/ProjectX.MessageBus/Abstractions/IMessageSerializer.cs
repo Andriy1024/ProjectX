@@ -1,10 +1,11 @@
-﻿using ProjectX.Core.JSON;
-using System;
+﻿using System;
 
 namespace ProjectX.MessageBus
 {
-    public interface IMessageSerializer : ISystemTextJsonSerializer
+    public interface IMessageSerializer 
     {
         object Deserialize(ReadOnlySpan<byte> obj, Type type);
+
+        byte[] SerializeToBytes<TIn>(TIn item);
     }
 }

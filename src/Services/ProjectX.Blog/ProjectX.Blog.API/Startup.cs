@@ -5,7 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProjectX.Blog.Application;
 using ProjectX.Blog.Infrastructure.Extensions;
+using ProjectX.Infrastructure.Extensions;
 using ProjectX.Infrastructure.Setup;
+using ProjectX.MessageBus.Configuration;
 
 namespace ProjectX.Blog.API
 {
@@ -18,8 +20,11 @@ namespace ProjectX.Blog.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            BaseConfigure(services);
-                //.AddStartupTasks();
+             BaseConfigure(services)
+            .AddRabbitMqMessageBus(Configuration)
+            .AddIntegrationEventService()
+            .AddPipelineBehaviours()
+            .AddStartupTasks();
         }
 
         public void Configure(IApplicationBuilder app)

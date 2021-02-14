@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Polly;
 using Polly.CircuitBreaker;
 using ProjectX.Core.Threading;
+using ProjectX.MessageBus.Configuration;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
@@ -23,30 +24,22 @@ namespace ProjectX.MessageBus.Implementations
         private bool _isDisposed;
         private readonly ReaderWriterLockSlim _syncRoot = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         private readonly CircuitBreakerPolicy _circuitBreaker;
-        private readonly MessageBusOptions _options;
+        private readonly MessageBusConfiguration _options;
         
         #endregion
 
-        public RabbitMqConnectionService(IOptions<RabbitMqConnectionOptions> rabbitMqConnectionOptions,
-            IOptions<MessageBusOptions> messageBusOptions,
-            ILogger<RabbitMqConnectionService> logger)
+        public RabbitMqConnectionService(IOptions<MessageBusConfiguration > messageBusOptions, ILogger<RabbitMqConnectionService> logger)
         {
             _logger = logger;
-            _options = MessageBusOptions.Validate(messageBusOptions.Value);
-
-            if (rabbitMqConnectionOptions.Value == null)
-                throw new ArgumentNullException(nameof(rabbitMqConnectionOptions));
-
+            _options = MessageBusConfiguration .Validate(messageBusOptions.Value);
             _connectionFactory = new ConnectionFactory
             {
-                UserName = rabbitMqConnectionOptions.Value.UserName,
-                Password = rabbitMqConnectionOptions.Value.Password,
-                VirtualHost = rabbitMqConnectionOptions.Value.VirtualHost,
-                HostName = rabbitMqConnectionOptions.Value.HostName,
-                Port = Convert.ToInt32(rabbitMqConnectionOptions.Value.Port),
+                UserName = _options.Connection.UserName,
+                Password = _options.Connection.Password,
+                VirtualHost = _options.Connection.VirtualHost,
+                HostName = _options.Connection.HostName,
+                Port = Convert.ToInt32(_options.Connection.Port),
                 DispatchConsumersAsync = true,
-                AutomaticRecoveryEnabled = true,
-                NetworkRecoveryInterval = TimeSpan.FromSeconds(5)
             };
 
             _circuitBreaker = Policy.Handle<Exception>().CircuitBreaker(_options.Resilience.ExceptionsAllowedBeforeBreaking, TimeSpan.FromSeconds(_options.Resilience.DurationOfBreak));

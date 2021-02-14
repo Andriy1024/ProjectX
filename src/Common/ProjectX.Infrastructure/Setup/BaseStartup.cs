@@ -16,6 +16,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using ProjectX.Core;
+using ProjectX.Core.JSON;
+using ProjectX.Infrastructure.JSON;
 
 namespace ProjectX.Infrastructure.Setup
 {
@@ -52,12 +54,17 @@ namespace ProjectX.Infrastructure.Setup
                         .AddIdentityServerAuthentication(AppOptions.ApiName, AppOptions.IdentityUrl)
                         .AddMediatR(Assemblies)
                         .AddAutoMapper(Assemblies)
+                        .AddSingleton<IJsonSerializer, DefaultJsonSerializer>()
+                        .AddSingleton<ISystemTextJsonSerializer, SystemTextJsonSerializer>()
                         .AddCors(o => o.AddPolicy("CustomPolicy", 
                                  b => b.AllowAnyOrigin()
                                        .AllowAnyHeader()
                                        .AllowAnyMethod()))
                         .AddMvc()
-                        .AddJsonOptions(options => { })
+                        .AddJsonOptions(options =>
+                        {
+                             options.JsonSerializerOptions.Converters.Add(new JsonNonStringKeyDictionaryConverterFactory());
+                        })
                         .ConfigureApiBehaviorOptions(o => o.InvalidModelStateResponseFactory = c =>
                         {
                             var errors = string.Join(' ', c.ModelState.Values.Where(v => v.Errors.Count > 0)

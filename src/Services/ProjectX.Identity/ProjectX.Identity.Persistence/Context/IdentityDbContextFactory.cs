@@ -2,5 +2,5 @@
 
 namespace ProjectX.Identity.Persistence.Context
 {
-    public class IdentityDbContextFactory : DbContextFactory<IdentityDbContext> { }
+    public class IdentityDbContextFactory : DbContextWithMediatRFactory<IdentityDbContext> { }
 }

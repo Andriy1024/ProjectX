@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProjectX.Core;
 using ProjectX.Core.DataAccess;
 using ProjectX.Core.IntegrationEvents;
-using ProjectX.Infrastructure.DataAccess;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,26 +14,29 @@ namespace ProjectX.Infrastructure.CQRS
     public abstract class TransactionBehaviour<TRequest, TResponse, TDbContext> : IPipelineBehavior<TRequest, TResponse>
         where TDbContext : DbContext, ITransactionActions
     {
-        protected readonly ILogger<TransactionBehaviour<TRequest, TResponse, TDbContext>> Logger;
-        protected readonly TDbContext DbContext;
-        protected readonly IIntegrationEventService IntegrationEventService;
+        protected ILogger<TransactionBehaviour<TRequest, TResponse, TDbContext>> Logger { get; private set; }
+        protected TDbContext DbContext { get; private set; }
+        protected IIntegrationEventService IntegrationEventService { get; private set; }
+        
+        protected readonly IServiceProvider ServiceProvider;
 
-        public TransactionBehaviour(TDbContext dbContext,
-            IIntegrationEventService integrationEventService,
-            ILogger<TransactionBehaviour<TRequest, TResponse, TDbContext>> logger)
+        public TransactionBehaviour(IServiceProvider serviceProvider)
         {
-            DbContext = dbContext ?? throw new ArgumentException(nameof(BaseDbContext<TDbContext>));
-            IntegrationEventService = integrationEventService ?? throw new ArgumentException(nameof(integrationEventService));
-            Logger = logger ?? throw new ArgumentException(nameof(ILogger));
+            ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
         public virtual async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
             if (!(request is ICommand<TResponse> || request is ICommand))
                 return await next();
+            
+            DbContext = ServiceProvider.GetRequiredService<TDbContext>();
 
             if (DbContext.HasActiveTransaction)
                 return await next();
+
+            Logger = ServiceProvider.GetRequiredService<ILogger<TransactionBehaviour<TRequest, TResponse, TDbContext>>>();
+            IntegrationEventService = ServiceProvider.GetRequiredService<IIntegrationEventService>();
 
             var response = default(TResponse);
             bool success = true;

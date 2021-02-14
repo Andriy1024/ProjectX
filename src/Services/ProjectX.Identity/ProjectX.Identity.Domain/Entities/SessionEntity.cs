@@ -21,8 +21,7 @@ namespace ProjectX.Identity.Domain
             Id = id.ToString();
             UserId = user.Id;
             User = user;
-            CreatedAt = createdAt;
-            UpdatedAt = CreatedAt;
+            UpdatedAt = CreatedAt = createdAt;
             Lifetime = SessionLifetime.Create(CreatedAt);
             IsActive = true;
         }

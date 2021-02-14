@@ -8,7 +8,4 @@ namespace ProjectX.Core.IntegrationEvents
 
         void Add(IIntegrationEvent integrationEvent, IEventBusProperties eventBusProperties);
     }
-
-
-    public interface IEventBusProperties { }
 }

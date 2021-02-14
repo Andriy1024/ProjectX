@@ -2,7 +2,9 @@
 using Microsoft.OpenApi.Models;
 using ProjectX.Core.BlackList;
 using ProjectX.Core.Cache;
+using ProjectX.Core.IntegrationEvents;
 using ProjectX.Infrastructure.BlackList;
+using ProjectX.Infrastructure.IntegrationEvents;
 using ProjectX.Redis.Abstractions;
 using ProjectX.Redis.Implementations;
 using System;
@@ -104,5 +106,8 @@ namespace ProjectX.Infrastructure.Extensions
             => services
                 .AddSingleton<ISessionsRedisClient, SessionsRedisClient>()
                 .AddSingleton<ISessionBlackList, SessionBlackList>();
+
+        public static IServiceCollection AddIntegrationEventService(this IServiceCollection services)
+            => services.AddScoped<IIntegrationEventService, IntegrationEventService>();
     }
 }

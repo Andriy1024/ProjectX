@@ -1,6 +1,6 @@
 ﻿namespace ProjectX.MessageBus
 {
-    public class SubscribeOptions
+    public class RabbitMqMessageBusProperties 
     {
         public ExchangeOptions Exchange { get; set; } = new ExchangeOptions();
 

@@ -6,6 +6,7 @@ using ProjectX.Core;
 using ProjectX.Core.Exceptions;
 using ProjectX.Core.IntegrationEvents;
 using ProjectX.Core.Threading;
+using ProjectX.MessageBus.Configuration;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
@@ -33,7 +34,7 @@ namespace ProjectX.MessageBus.Implementations
         private readonly IMessageSerializer _serializer;
         private readonly IMessageDispatcher _dispatcher;
 
-        private readonly MessageBusOptions _options;
+        private readonly MessageBusConfiguration _options;
         private readonly CircuitBreakerPolicy _circuitBreaker;
      
         #endregion
@@ -44,13 +45,13 @@ namespace ProjectX.MessageBus.Implementations
             IMessageDispatcher dispatcher,
             IMessageSerializer serializer,
             ILogger<RabbitMqMessageBus> logger,
-            IOptions<MessageBusOptions> options)
+            IOptions<MessageBusConfiguration > options)
         {
             _connectionService = connectionService;
             _dispatcher = dispatcher;
             _serializer = serializer;
             _logger = logger;
-            _options = MessageBusOptions.Validate(options.Value);
+            _options = MessageBusConfiguration.Validate(options.Value);
             _circuitBreaker = Policy.Handle<Exception>().CircuitBreaker(_options.Resilience.ExceptionsAllowedBeforeBreaking, TimeSpan.FromSeconds(_options.Resilience.DurationOfBreak));
         }
 
@@ -58,18 +59,15 @@ namespace ProjectX.MessageBus.Implementations
 
         #region IRabbitMqEventBus members
 
-        public void AddPublisher(PublishOptions properties)
+        public void AddPublisher(IEventBusProperties eventBusProperties)
         {
-            Utill.ThrowIfNull(properties, nameof(properties));
-            Validate(properties.Exchange);
+            var properties = PublishProperties.Validate(eventBusProperties);
             InitPublisher(properties);
         }
 
-        public bool RemovePublisher(PublishOptions properties)
+        public bool RemovePublisher(IEventBusProperties eventBusProperties)
         {
-            Utill.ThrowIfNull(properties, nameof(properties));
-            Utill.ThrowIfNullOrEmpty(properties.RoutingKey, nameof(properties.RoutingKey));
-            Validate(properties.Exchange);
+            var properties = PublishProperties.Validate(eventBusProperties);
 
             var key = GetSubscriptionKey(properties.Exchange.Name, properties.RoutingKey);
 
@@ -94,11 +92,11 @@ namespace ProjectX.MessageBus.Implementations
             return result;
         }
 
-        public void Publish<T>(T integrationEvent, PublishOptions properties)
+        public void Publish<T>(T integrationEvent, IEventBusProperties eventBusProperties)
             where T : IIntegrationEvent
         {
-            Utill.ThrowIfNull(properties, nameof(properties));
-            Validate(properties.Exchange);
+            var properties = PublishProperties.Validate(eventBusProperties, allowEmptyRoutingKey: true);
+
             if (properties.Exchange.IsFanout && string.IsNullOrEmpty(properties.RoutingKey))
                 properties.RoutingKey = GetRoutingKey<T>();
 
@@ -116,11 +114,10 @@ namespace ProjectX.MessageBus.Implementations
             _circuitBreaker.Wrap(retryPolicy).Execute(() => publisher.Publish(properties: null, message: body));
         }
 
-        public void Subscribe<T>(SubscribeOptions properties)
+        public void Subscribe<T>(IEventBusProperties eventBusProperties)
             where T : IIntegrationEvent
         {
-            Utill.ThrowIfNull(properties, nameof(properties));
-            Validate(properties.Exchange);
+            var properties = SubscribeProperties.Validate(eventBusProperties);
 
             if (string.IsNullOrEmpty(properties.Queue.RoutingKey))
                 properties.Queue.RoutingKey = GetRoutingKey<T>();
@@ -158,11 +155,10 @@ namespace ProjectX.MessageBus.Implementations
             _logger.LogInformation($"New subscription: {subscriptionInfo}");
         }
 
-        public void Unsubscribe<T>(SubscribeOptions properties)
+        public void Unsubscribe<T>(IEventBusProperties eventBusProperties)
             where T : IIntegrationEvent
         {
-            Utill.ThrowIfNull(properties, nameof(properties));
-            Validate(properties.Exchange);
+            var properties = SubscribeProperties.Validate(eventBusProperties);
 
             var exchangeName = properties.Exchange.Name;
             var routingKey = properties.Queue?.RoutingKey ?? GetRoutingKey<T>();
@@ -231,7 +227,7 @@ namespace ProjectX.MessageBus.Implementations
             Utill.ThrowIfNull(exchange.Type, nameof(exchange.Type));
         }
 
-        private Subscriber CreateSubscriberChannel<T>(SubscriptionKey key, SubscribeOptions properties)
+        private Subscriber CreateSubscriberChannel<T>(SubscriptionKey key, SubscribeProperties properties)
             where T : IIntegrationEvent
         {
             if (!_connectionService.IsConnected && !_connectionService.TryConnect())
@@ -336,7 +332,7 @@ namespace ProjectX.MessageBus.Implementations
         private SubscriptionKey GetSubscriptionKey(string exchange, string routingKey)
             => new SubscriptionKey(exchange, routingKey);
         
-        private Publisher InitPublisher(PublishOptions properties)
+        private Publisher InitPublisher(PublishProperties properties)
         {
             if (!_connectionService.IsConnected)
                  _connectionService.TryConnect();

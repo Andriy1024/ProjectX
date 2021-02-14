@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectX.Core;
 using ProjectX.Identity.Domain;
+using ProjectX.Identity.Infrastructure.Behaviours;
 using ProjectX.Identity.Infrastructure.Managers;
 using ProjectX.Identity.Persistence.Startup;
 
@@ -34,5 +36,8 @@ namespace ProjectX.Identity.Infrastructure.Extensions
                          options.EnableTokenCleanup = true;
                      })
                      .Services;
+
+        public static IServiceCollection AddPipelineBehaviours(this IServiceCollection services) =>
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(IdentityTransactionBehaviour<,>));   
     }
 }

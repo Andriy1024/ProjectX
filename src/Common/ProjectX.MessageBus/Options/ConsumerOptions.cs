@@ -1,6 +1,6 @@
 ﻿namespace ProjectX.MessageBus
 {
-    public class ConsumerOptions
+    public class ConsumerOptions 
     {
         /// <summary>
         /// Limit the number of unacknowledged messages on a channel (or connection) when consuming (aka "prefetch count").
@@ -17,7 +17,7 @@
         ///  Channel.BasicConsume(queue: "queue.1", autoAck: false, consumer: consumer);
         ///  Please note that if your client auto-acks messages, the prefetch value will have no effect.
         /// </summary>
-        public bool Autoack { get; set; } = false;
+        public bool Autoack { get; set; } = true;
 
         public bool RequeueFailedMessages { get; set; } = false;
 

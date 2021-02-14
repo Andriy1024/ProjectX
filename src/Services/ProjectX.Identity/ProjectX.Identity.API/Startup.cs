@@ -18,6 +18,7 @@ using ProjectX.Identity.Persistence;
 using ProjectX.Redis.Configuration;
 using ProjectX.Infrastructure.BlackList;
 using ProjectX.Email;
+using ProjectX.MessageBus.Configuration;
 
 namespace ProjectX.Identity.API
 {
@@ -28,7 +29,7 @@ namespace ProjectX.Identity.API
         {
         }
 
-        public void ConfigureServices(IServiceCollection services) 
+        public void ConfigureServices(IServiceCollection services)
                  => BaseConfigure(services)
                    .AddDbContext<IdentityDbContext>(options => options.UseNpgsql(DBConnectionString))
                    .AddIdentity<UserEntity, RoleEntity>(options =>
@@ -43,6 +44,9 @@ namespace ProjectX.Identity.API
                    .AddIdentityServer4(DBConnectionString, typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)
                    .AddStartupTasks()
                    .AddScopedCache()
+                   .AddRabbitMqMessageBus(Configuration)
+                   .AddIntegrationEventService()
+                   .AddPipelineBehaviours()
                    .AddHostedService<SessionCleanupWorker>()
                    .AddEmailServices(Configuration)
                    .AddRedisServices(Configuration)

@@ -4,17 +4,17 @@ namespace ProjectX.MessageBus
 {
     public interface IMessageBus
     {
-        void Subscribe<T>(SubscribeOptions properties)
+        void Subscribe<T>(IEventBusProperties properties)
             where T : IIntegrationEvent;
 
-        void Unsubscribe<T>(SubscribeOptions properties)
+        void Unsubscribe<T>(IEventBusProperties properties)
             where T : IIntegrationEvent;
 
-        void Publish<T>(T integrationEvent, PublishOptions properties)
+        void Publish<T>(T integrationEvent, IEventBusProperties properties)
             where T : IIntegrationEvent;
 
-        void AddPublisher(PublishOptions properties);
+        void AddPublisher(IEventBusProperties properties);
 
-        bool RemovePublisher(PublishOptions properties);
+        bool RemovePublisher(IEventBusProperties properties);
     }
 }
