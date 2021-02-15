@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using ProjectX.Core;
 using ProjectX.Core.DataAccess;
 using ProjectX.Identity.Domain;
 using ProjectX.Identity.Persistence.EntityConfigurations;
 using System;
 using System.Data;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProjectX.Identity.Persistence
@@ -38,6 +41,28 @@ namespace ProjectX.Identity.Persistence
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new SessionConfiguration());
             builder.ApplyConfiguration(new UserRoleConfiguration());
+        }
+
+        public async override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var domainEntities = ChangeTracker
+                                .Entries<IEntity>()
+                                .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Count > 0)
+                                .ToArray();
+
+            var domainEvents = domainEntities
+                .SelectMany(x => x.Entity.DomainEvents)
+                .ToArray();
+
+            for (int i = 0; i < domainEntities.Length; i++)
+                domainEntities[i].Entity.ClearDomainEvents();
+
+            var result = await base.SaveChangesAsync(cancellationToken);
+
+            for (int i = 0; i < domainEvents.Length; i++)
+                await _mediator.Publish(domainEvents[i]);
+
+            return result;
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()

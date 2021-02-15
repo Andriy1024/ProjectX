@@ -22,9 +22,9 @@ namespace ProjectX.MessageBus.Implementations
             return System.Text.Json.JsonSerializer.Deserialize(obj, type, _serializerOptions);
         }
 
-        public byte[] SerializeToBytes<TIn>(TIn item)
+        public byte[] SerializeToBytes(object item, Type inputType)
         {
-            return System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(item, _serializerOptions);
+            return System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(item, inputType, _serializerOptions);
         }
     }
 }

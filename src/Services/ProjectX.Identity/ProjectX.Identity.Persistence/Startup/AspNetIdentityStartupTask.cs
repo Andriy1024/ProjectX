@@ -46,7 +46,7 @@ namespace ProjectX.Identity.Persistence.Startup
 
         private async Task SeedAdminAsync()
         {
-            if (await _userManager.Users.AllAsync(us => us.Email != "admin@platform.com"))
+            if (await _userManager.Users.AllAsync(us => us.Email != "admin@projectX.com"))
             {
                 var admin = UserEntity.Factory
                                       .Email("admin@projectX.com")
@@ -58,7 +58,10 @@ namespace ProjectX.Identity.Persistence.Startup
                 admin.PhoneNumberConfirmed = true;
                 admin.PhoneNumber = "+10000000000";
 
-                await _userManager.CreateAsync(admin, "AdminPass123$$");
+                var result = await _userManager.CreateAsync(admin, "AdminPass123$$");
+                if (!result.Succeeded)
+                    throw new Exception($"Can't seed admin. Error: {string.Join(", ", result.Errors)}");
+
                 await _userManager.AddToRoleAsync(admin, IdentityRoles.Admin);
             }
         }

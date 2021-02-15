@@ -6,6 +6,6 @@ namespace ProjectX.MessageBus
     {
         object Deserialize(ReadOnlySpan<byte> obj, Type type);
 
-        byte[] SerializeToBytes<TIn>(TIn item);
+        byte[] SerializeToBytes(object item, Type inputType);
     }
 }

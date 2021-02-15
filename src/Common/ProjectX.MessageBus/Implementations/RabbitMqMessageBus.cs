@@ -97,10 +97,10 @@ namespace ProjectX.MessageBus.Implementations
         {
             var properties = PublishProperties.Validate(eventBusProperties, allowEmptyRoutingKey: true);
 
-            if (properties.Exchange.IsFanout && string.IsNullOrEmpty(properties.RoutingKey))
-                properties.RoutingKey = GetRoutingKey<T>();
+            if (!properties.Exchange.IsFanout && string.IsNullOrEmpty(properties.RoutingKey))
+                 properties.RoutingKey = integrationEvent.GetType().Name;
 
-            var body = _serializer.SerializeToBytes(integrationEvent);
+            var body = _serializer.SerializeToBytes(integrationEvent, integrationEvent.GetType());
 
             var publisher = InitPublisher(properties);
 
@@ -219,13 +219,6 @@ namespace ProjectX.MessageBus.Implementations
 
         private string GetQueueName(string exchange, string routingKey)
             => $"{_options.ConnectionName}/{exchange}.{routingKey}";
-
-        private void Validate(ExchangeOptions exchange)
-        {
-            Utill.ThrowIfNull(exchange, nameof(exchange));
-            Utill.ThrowIfNull(exchange.Name, nameof(exchange.Name));
-            Utill.ThrowIfNull(exchange.Type, nameof(exchange.Type));
-        }
 
         private Subscriber CreateSubscriberChannel<T>(SubscriptionKey key, SubscribeProperties properties)
             where T : IIntegrationEvent

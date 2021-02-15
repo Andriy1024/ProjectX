@@ -81,7 +81,7 @@ namespace ProjectX.MessageBus.Implementations
                                             _logger.LogWarning(ex, "RabbitMQ Client could not connect after {TimeOut}s ({ExceptionMessage})", $"{time.TotalSeconds:n1}", ex.Message);
                                         });
 
-                _circuitBreaker.Wrap(retryPolicy).Execute(() => _connectionFactory.CreateConnection());
+                _circuitBreaker.Wrap(retryPolicy).Execute(() => _connection = _connectionFactory.CreateConnection());
 
                 if (_connection != null && _connection.IsOpen)
                 {

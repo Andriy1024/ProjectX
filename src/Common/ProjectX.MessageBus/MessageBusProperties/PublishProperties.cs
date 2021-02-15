@@ -10,6 +10,15 @@ namespace ProjectX.MessageBus
 
         public string RoutingKey { get; set; }
 
+        public PublishProperties()
+        {
+        }
+
+        public PublishProperties(MessageBusExchanges exchangeName)
+        {
+            Exchange.Name = exchangeName;
+        }
+
         public static PublishProperties Validate(IEventBusProperties properties, bool allowEmptyRoutingKey = false) 
         {
             Utill.ThrowIfNull(properties, nameof(properties));

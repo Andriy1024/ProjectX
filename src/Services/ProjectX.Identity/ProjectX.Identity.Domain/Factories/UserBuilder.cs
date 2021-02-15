@@ -14,6 +14,7 @@ namespace ProjectX.Identity.Domain
                 Utill.ThrowIfNullOrEmpty(email, nameof(email));
                 EnsureCreated();
                 Entity.Email = email;
+                Entity.UserName = email;
                 return this;
             }
 
@@ -45,10 +46,14 @@ namespace ProjectX.Identity.Domain
 
             protected override void EnsureCreated() => Entity ??= new UserEntity();
 
-            public override UserEntity Build() =>
-                (Entity == null || Entity.Address == null || Entity.FirstName == null || Entity.Email == null)
-                    ? throw new InvalidOperationException("User Entity not fully initialized.")
-                    : base.Build();
+            public override UserEntity Build() 
+            {
+                if (Entity == null || Entity.Address == null || Entity.FirstName == null || Entity.Email == null)
+                    throw new InvalidOperationException("User Entity not fully initialized.");
+
+                Entity.AddDomainEvent(new UserCreatedDomainEvent(Entity));
+                return base.Build(); ;
+            }
         }
     }
 }

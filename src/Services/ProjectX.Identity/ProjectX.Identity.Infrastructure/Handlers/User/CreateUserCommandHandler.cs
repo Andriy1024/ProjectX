@@ -26,11 +26,12 @@ namespace ProjectX.Identity.Infrastructure.Handlers
                 return ResponseFactory.InvalidData<UserDto>(ErrorCode.EmailNotAvailable, "User with this email already exists.");
             
             var defaultRole = await _userManager.DbContext.Roles.FirstAsync(r => r.Name == IdentityRoles.User);
-            var user = UserEntity.Factory.Email(command.Email)
-                                         .Address(new Address(command.Address.Country, command.Address.City, command.Address.Street))
-                                         .Name(command.FirstName, command.LastName)
-                                         .Role(defaultRole)
-                                         .Build();
+            var user = UserEntity.Factory
+                                 .Email(command.Email)
+                                 .Address(new Address(command.Address.Country, command.Address.City, command.Address.Street))
+                                 .Name(command.FirstName, command.LastName)
+                                 .Role(defaultRole)
+                                 .Build();
 
             var  result = await _userManager.CreateAsync(user, command.Password);
             if (!result.Succeeded)

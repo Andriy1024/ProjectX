@@ -49,8 +49,8 @@ namespace ProjectX.Identity.Infrastructure
                 return Error.NotFound(ErrorCode.UserNotFound);
 
             return user;
-        } 
-        
+        }
+
         #region Session actions
 
         public async Task<SessionEntity> UpdateSessionAsync(UserEntity user, string sessionId, DateTime dateTime)
