@@ -2,11 +2,13 @@
 
 namespace ProjectX.Core
 {
-    public interface ICommand : IRequest<IResponse>
+    public interface IHasTransaction { }
+
+    public interface ICommand : IRequest<IResponse>, IHasTransaction
     {
     }
 
-    public interface ICommand<TResult> : IRequest<IResponse<TResult>>
+    public interface ICommand<TResult> : IRequest<IResponse<TResult>>, IHasTransaction
     {
     }
 }
