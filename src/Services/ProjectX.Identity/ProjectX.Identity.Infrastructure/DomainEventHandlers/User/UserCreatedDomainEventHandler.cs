@@ -20,7 +20,7 @@ namespace ProjectX.Identity.Infrastructure.DomainEventHandlers
         public async Task Handle(UserCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
         {
             var user = domainEvent.User;
-            _integrationEvents.Add(new UserCreatedIntegrationEvent(id: user.Id, 
+            _integrationEvents.Add(new UserCreatedIntegrationEvent(userId: user.Id, 
                                                                    firstName: user.FirstName,
                                                                    lastName: user.LastName,
                                                                    email: user.Email), 

@@ -18,10 +18,10 @@ namespace ProjectX.Blog.Infrastructure.IntegrationEventHandler.Identity
 
         public async Task Handle(UserCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
         {
-            if (await _repository.ExistAsync(a => a.Id == integrationEvent.Id))
+            if (await _repository.ExistAsync(a => a.Id == integrationEvent.UserId))
                 return;
 
-            var author = new AuthorEntity(id: integrationEvent.Id, 
+            var author = new AuthorEntity(id: integrationEvent.UserId, 
                                           firstName: integrationEvent.FirstName,
                                           lastName: integrationEvent.LastName,
                                           email: integrationEvent.Email);

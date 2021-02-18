@@ -1,12 +1,11 @@
-﻿using System;
+﻿using ProjectX.Core.IntegrationEvents;
+using System;
 
 namespace ProjectX.MessageBus.OutBox
 {
     public class OutboxMessage
     {
-        public string Id { get; set; }
-
-        public string CorrelationId { get; set; }
+        public Guid Id { get; set; }    
 
         /// <summary>
         /// CLR type
@@ -18,6 +17,32 @@ namespace ProjectX.MessageBus.OutBox
         /// </summary>
         public string SerializedMessage { get; set; }
 
-        public DateTime SentAt { get; set; }
+        /// <summary>
+        /// Not mapped
+        /// </summary>
+        public IIntegrationEvent Message { get; set; }
+
+        /// <summary>
+        /// Not mapped
+        /// </summary>
+        public Type Type { get; set; }
+
+        public DateTime SavedAt { get; set; }
+
+        public DateTime? SentAt { get; set; }
+
+        public OutboxMessage()
+        {
+        }
+
+        public OutboxMessage(IIntegrationEvent message, string serializedMessage, DateTime savedAt)
+        {
+            Id = message.Id;
+            Message = message;
+            Type = message.GetType();
+            MessageType = Type.FullName;
+            SerializedMessage = serializedMessage;
+            SavedAt = savedAt;
+        }
     }
 }
