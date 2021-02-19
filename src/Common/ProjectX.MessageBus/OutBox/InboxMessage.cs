@@ -1,11 +1,13 @@
 ﻿using System;
 
-namespace ProjectX.MessageBus.OutBox
+namespace ProjectX.MessageBus.Outbox
 {
+    /// <summary>
+    /// Using to avoid handling the same message multiple times.
+    /// </summary>
     public class InboxMessage
     {
-        public string Id { get; set; }
-        public string CorrelationId { get; set; }
+        public Guid Id { get; set; }
         public string MessageType { get; set; }
         public DateTime ProcessedAt { get; set; }
     }

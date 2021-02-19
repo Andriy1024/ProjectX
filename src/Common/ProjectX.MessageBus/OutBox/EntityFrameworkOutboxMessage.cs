@@ -3,22 +3,27 @@ using ProjectX.Core.IntegrationEvents;
 using ProjectX.Core.JSON;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace ProjectX.MessageBus.OutBox
+namespace ProjectX.MessageBus.Outbox
 {
-    public class OutboxManager
+    /// <summary>
+    /// Outbox Entity Framework Manager
+    /// </summary>
+    public class EntityFrameworkOutboxMessage<T> : IOutboxManager
+        where T: DbContext
     {
-        readonly IJsonSerializer _serializer;
-        readonly DbContext _dbContext;
+        private readonly IJsonSerializer _serializer;
+        private readonly T _dbContext;
 
-        public OutboxManager(IJsonSerializer serializer, DbContext dbContext)
+        public EntityFrameworkOutboxMessage(IJsonSerializer serializer, T dbContext)
         {
             _serializer = serializer;
             _dbContext = dbContext;
         }
 
-        public async Task AddAsync(IIntegrationEvent integrationEvent) 
+        public async Task AddAsync(IIntegrationEvent integrationEvent, CancellationToken cancellationToken = default) 
         {
             var serializedMessage = _serializer.Serialize(integrationEvent);
 
@@ -29,15 +34,15 @@ namespace ProjectX.MessageBus.OutBox
 
             var dbSet = _dbContext.Set<OutboxMessage>();
 
-            await dbSet.AddAsync(message);
-            await _dbContext.SaveChangesAsync();
+            await dbSet.AddAsync(message, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<OutboxMessage[]> RetrieveMessagePendingToPublishAsync() 
+        public async Task<OutboxMessage[]> RetrievePendingMessageAsync(CancellationToken cancellationToken = default) 
         {
             var dbSet = _dbContext.Set<OutboxMessage>();
 
-            var messages = await dbSet.Where(m => !m.SentAt.HasValue).ToArrayAsync();
+            var messages = await dbSet.Where(m => !m.SentAt.HasValue).ToArrayAsync(cancellationToken);
 
             for (int i = 0; i < messages.Length; i++)
             {
@@ -55,21 +60,20 @@ namespace ProjectX.MessageBus.OutBox
             await _dbContext.SaveChangesAsync();
         }
 
-
-        public async Task<bool> HasInbox(Guid id) 
+        public Task<bool> HasInboxAsync(Guid id) 
         {
             var dbSet = _dbContext.Set<InboxMessage>();
-            return dbSet.Any(m => m.Id == id);
+            return dbSet.AnyAsync(m => m.Id == id);
         }
 
-        public async Task AddInbox(Guid id, string messageType) 
+        public async Task AddInboxAsync(IIntegrationEvent integrationEvent) 
         {
             var dbSet = _dbContext.Set<InboxMessage>();
 
             await dbSet.AddAsync(new InboxMessage() 
             {
-                Id = id,
-                MessageType = messageType,
+                Id = integrationEvent.Id,
+                MessageType = integrationEvent.GetType().FullName,
                 ProcessedAt = DateTime.UtcNow
             });
 

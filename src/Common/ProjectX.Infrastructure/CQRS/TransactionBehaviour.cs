@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using ProjectX.Core;
 using ProjectX.Core.DataAccess;
@@ -54,6 +55,50 @@ namespace ProjectX.Infrastructure.CQRS
             });
 
             return response;
+        }
+    }
+
+    public interface ITransactionManager 
+    {
+        Task<IDbContextTransaction> BeginTransactionAsync();
+        Task CommitTransactionAsync(IDbContextTransaction transaction);
+        Task RollbackTransactionAsync();
+        IDbContextTransaction GetCurrentTransaction();
+        bool HasActiveTransaction { get; }
+
+    }
+
+
+    public class EntityFrameworkTransactionManager<TDbContext> : ITransactionManager
+        where TDbContext : DbContext
+    {
+        public readonly TDbContext DbContext;
+
+        public EntityFrameworkTransactionManager(TDbContext dbContext)
+        {
+            DbContext = dbContext;
+        }
+
+        public bool HasActiveTransaction => throw new System.NotImplementedException();
+
+        public Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task CommitTransactionAsync(IDbContextTransaction transaction)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IDbContextTransaction GetCurrentTransaction()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task RollbackTransactionAsync()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

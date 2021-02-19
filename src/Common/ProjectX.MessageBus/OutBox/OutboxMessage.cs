@@ -1,7 +1,7 @@
 ﻿using ProjectX.Core.IntegrationEvents;
 using System;
 
-namespace ProjectX.MessageBus.OutBox
+namespace ProjectX.MessageBus.Outbox
 {
     public class OutboxMessage
     {

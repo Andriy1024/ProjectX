@@ -20,6 +20,8 @@
         //Blog
         ArticleNotFound,
         CommentNotFound,
-        AuthorNotFound
+        AuthorNotFound,
+
+        MessageAlreadyHandled
     }
 }
