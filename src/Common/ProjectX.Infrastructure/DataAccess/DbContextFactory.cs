@@ -18,6 +18,7 @@ namespace ProjectX.Infrastructure.DataAccess
                 .Build();
 
             var optionsBuilder = new DbContextOptionsBuilder<T>();
+
             optionsBuilder.UseNpgsql(configuration.GetConnectionString("LocalConnection"));
 
             return Activator.CreateInstance(typeof(T), optionsBuilder.Options) as T;
@@ -35,6 +36,7 @@ namespace ProjectX.Infrastructure.DataAccess
                 .Build();
 
             var optionsBuilder = new DbContextOptionsBuilder<T>();
+
             optionsBuilder.UseNpgsql(configuration.GetConnectionString("LocalConnection"));
 
             return Activator.CreateInstance(typeof(T), optionsBuilder.Options, new NoMediator()) as T;

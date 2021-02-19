@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 namespace ProjectX.MessageBus.Outbox
 {
     /// <summary>
-    /// This pattern ensures that each message is published at least once.
+    /// The manager using db connection and transaction of main app DB context, and used to save Out/In box messages.
     /// </summary>
     public interface IOutboxManager
     {
         /// <summary>
-        /// Persist the message to data stote in local transaction, to 
+        /// Save the integration event to Outbox.
         /// </summary>
         Task AddAsync(IIntegrationEvent integrationEvent, CancellationToken cancellationToken = default);
 
@@ -26,12 +26,12 @@ namespace ProjectX.MessageBus.Outbox
         Task MarkAsSent(OutboxMessage message);
 
         /// <summary>
-        /// Check if message already handled.
+        /// Check if the integration event already handled.
         /// </summary>
         Task<bool> HasInboxAsync(Guid id);
 
         /// <summary>
-        /// Save general information about handled message.
+        /// Save the integration event ot Inbox table.
         /// </summary>
         Task AddInboxAsync(IIntegrationEvent integrationEvent);
     }

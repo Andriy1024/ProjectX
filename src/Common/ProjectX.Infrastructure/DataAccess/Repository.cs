@@ -17,7 +17,9 @@ namespace ProjectX.Infrastructure.DataAccess
         where TEntity : class, IEntity
     {
         protected DbContext Context { get; }
+
         protected DbSet<TEntity> DbSet { get; }
+
         protected ErrorCode NotFound { get; }
 
         public abstract IUnitOfWork UnitOfWork { get; }
@@ -29,7 +31,7 @@ namespace ProjectX.Infrastructure.DataAccess
             NotFound = notFound;
         }
 
-        #region Get
+        #region Select
 
         public virtual Task<bool> ExistAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default) 
         {
@@ -49,6 +51,7 @@ namespace ProjectX.Infrastructure.DataAccess
         public virtual Task<TEntity[]> GetAsync(IOrderingOptions ordering = null, CancellationToken cancellationToken = default)
         {
             var query = DbSet.AsQueryable();
+            
             if (ordering != null)
                 query = query.WithOrdering(ordering);
 
@@ -58,6 +61,7 @@ namespace ProjectX.Infrastructure.DataAccess
         public virtual Task<TEntity[]> GetAsync(Expression<Func<TEntity, bool>> expression, IOrderingOptions ordering = null, CancellationToken cancellationToken = default)
         {
             var query = DbSet.Where(expression);
+            
             if (ordering != null)
                 query = query.WithOrdering(ordering);
 
@@ -93,6 +97,7 @@ namespace ProjectX.Infrastructure.DataAccess
         #endregion
 
         #region Insert
+
         public virtual async ValueTask InsertAsync(TEntity item, CancellationToken cancellationToken = default) 
         {
             await DbSet.AddAsync(item, cancellationToken);
@@ -106,6 +111,7 @@ namespace ProjectX.Infrastructure.DataAccess
         #endregion
 
         #region Update
+
         public virtual void AttachRange(IEnumerable<TEntity> items) 
         {
             DbSet.AttachRange(items);
@@ -125,9 +131,11 @@ namespace ProjectX.Infrastructure.DataAccess
         {
             DbSet.UpdateRange(items);
         }
+
         #endregion
 
         #region Remove
+
         public virtual bool Remove(TEntity item) => DbSet.Remove(item).State == EntityState.Deleted;
 
         public virtual async Task<bool> RemoveAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
@@ -149,6 +157,7 @@ namespace ProjectX.Infrastructure.DataAccess
 
             DbSet.RemoveRange(entities);
         }
+
         #endregion
 
         #region Methods with automapper
@@ -166,6 +175,7 @@ namespace ProjectX.Infrastructure.DataAccess
         public virtual Task<TOut[]> GetAsync<TOut>(IMapper mapper, IOrderingOptions ordering = null, CancellationToken cancellationToken = default)
         {
             var query = DbSet.AsNoTracking();
+            
             if (ordering != null)
                 query = query.WithOrdering(ordering);
 
@@ -175,6 +185,7 @@ namespace ProjectX.Infrastructure.DataAccess
         public virtual Task<TOut[]> GetAsync<TOut>(Expression<Func<TEntity, bool>> expression, IMapper mapper, IOrderingOptions ordering = null, CancellationToken cancellationToken = default)
         {
             var query = DbSet.AsNoTracking().Where(expression);
+            
             if (ordering != null)
                 query = query.WithOrdering(ordering);
 

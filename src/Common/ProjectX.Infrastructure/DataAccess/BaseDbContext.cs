@@ -12,17 +12,17 @@ using System.Threading.Tasks;
 
 namespace ProjectX.Infrastructure.DataAccess
 {
-    public abstract class BaseDbContext<TDbContext> : DbContext, IUnitOfWork, ITransactionActions
+    public abstract class BaseDbContext<TDbContext> : DbContext, IUnitOfWork
+        //, ITransactionActions
         where TDbContext : DbContext
     {
         protected readonly IMediator Mediator;
-        protected IDbContextTransaction CurrentTransaction;
 
-        public IDbContextTransaction GetCurrentTransaction() => CurrentTransaction;
-        public bool HasActiveTransaction => CurrentTransaction != null;
+        public BaseDbContext(DbContextOptions<TDbContext> options) 
+            : base(options) { }
 
-        public BaseDbContext(DbContextOptions<TDbContext> options) : base(options) { }
-        public BaseDbContext(DbContextOptions<TDbContext> options, IMediator mediator) : base(options)
+        public BaseDbContext(DbContextOptions<TDbContext> options, IMediator mediator) 
+            : base(options)
         {
             Mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
@@ -52,57 +52,67 @@ namespace ProjectX.Infrastructure.DataAccess
             return true;
         }
 
-        public virtual async Task<IDbContextTransaction> BeginTransactionAsync()
-        {
-            if (CurrentTransaction != null) return null;
+        #region Transaction region 
 
-            CurrentTransaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+        //protected IDbContextTransaction CurrentTransaction;
 
-            return CurrentTransaction;
-        }
+        //public IDbContextTransaction GetCurrentTransaction() => CurrentTransaction;
 
-        public virtual async Task CommitTransactionAsync(IDbContextTransaction transaction)
-        {
-            if (HasActiveTransaction)
-            {
-                if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-                if (transaction != CurrentTransaction) throw new InvalidOperationException($"Transaction {transaction.TransactionId} is not current");
+        //public bool HasActiveTransaction => CurrentTransaction != null;
 
-                try
-                {
-                    await SaveChangesAsync();
-                    await transaction.CommitAsync();
-                }
-                catch
-                {
-                    await RollbackTransactionAsync();
-                    throw;
-                }
-                finally
-                {
-                    if (CurrentTransaction != null)
-                    {
-                        CurrentTransaction.Dispose();
-                        CurrentTransaction = null;
-                    }
-                }
-            }
-        }
+        //public virtual async Task<IDbContextTransaction> BeginTransactionAsync()
+        //{
+        //    if (CurrentTransaction != null) return null;
 
-        public async virtual Task RollbackTransactionAsync()
-        {
-            try
-            {
-                await CurrentTransaction?.RollbackAsync();
-            }
-            finally
-            {
-                if (CurrentTransaction != null)
-                {
-                    CurrentTransaction.Dispose();
-                    CurrentTransaction = null;
-                }
-            }
-        }
+        //    CurrentTransaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+
+        //    return CurrentTransaction;
+        //}
+
+        //public virtual async Task CommitTransactionAsync(IDbContextTransaction transaction)
+        //{
+        //    if (HasActiveTransaction)
+        //    {
+        //        if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+        //        if (transaction != CurrentTransaction) throw new InvalidOperationException($"Transaction {transaction.TransactionId} is not current");
+
+        //        try
+        //        {
+        //            await SaveChangesAsync();
+        //            await transaction.CommitAsync();
+        //        }
+        //        catch
+        //        {
+        //            await RollbackTransactionAsync();
+        //            throw;
+        //        }
+        //        finally
+        //        {
+        //            if (CurrentTransaction != null)
+        //            {
+        //                CurrentTransaction.Dispose();
+        //                CurrentTransaction = null;
+        //            }
+        //        }
+        //    }
+        //}
+
+        //public async virtual Task RollbackTransactionAsync()
+        //{
+        //    try
+        //    {
+        //        await CurrentTransaction?.RollbackAsync();
+        //    }
+        //    finally
+        //    {
+        //        if (CurrentTransaction != null)
+        //        {
+        //            CurrentTransaction.Dispose();
+        //            CurrentTransaction = null;
+        //        }
+        //    }
+        //}
+
+        #endregion
     }
 }

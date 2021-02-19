@@ -3,35 +3,47 @@ using System;
 
 namespace ProjectX.MessageBus.Outbox
 {
-    public class OutboxMessage
+    /// <summary>
+    /// The message persists to a data store in a local transaction, to ensure the message will be published to a message bus at least once.
+    /// </summary>
+    public sealed class OutboxMessage
     {
-        public Guid Id { get; set; }    
+        /// <summary>
+        /// Integration event id.
+        /// </summary>
+        public Guid Id { get; set; }
 
         /// <summary>
-        /// CLR type
+        /// The property represents CLR type name of the integration event.
         /// </summary>
         public string MessageType { get; set; }
 
         /// <summary>
-        /// JSON
+        /// The property contains the integration event in JSON format.
         /// </summary>
         public string SerializedMessage { get; set; }
 
         /// <summary>
-        /// Not mapped
+        /// Not saved in DB. The property contains the integration event.
         /// </summary>
         public IIntegrationEvent Message { get; set; }
 
         /// <summary>
-        /// Not mapped
+        /// Not saved in DB. The property contains CLR type of the integration event.
         /// </summary>
         public Type Type { get; set; }
 
+        /// <summary>
+        /// The property represents the date-time of saving to DB.
+        /// </summary>
         public DateTime SavedAt { get; set; }
 
+        /// <summary>
+        /// The property is initialized when the message is sent.
+        /// </summary>
         public DateTime? SentAt { get; set; }
 
-        public OutboxMessage()
+        private OutboxMessage()
         {
         }
 

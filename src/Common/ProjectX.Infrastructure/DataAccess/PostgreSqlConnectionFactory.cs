@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectX.Infrastructure.DataAccess
 {
-    public class PostgreSqlConnectionFactory : ISqlConnectionFactory
+    public sealed class PostgreSqlConnectionFactory : ISqlConnectionFactory
     {
         readonly string _connectionString;
 
@@ -20,6 +20,7 @@ namespace ProjectX.Infrastructure.DataAccess
         public IDbConnection GetOpenedConnection()
         {
             var connection = GetConnection();
+            
             connection.Open();
 
             return connection;
@@ -28,6 +29,7 @@ namespace ProjectX.Infrastructure.DataAccess
         public async Task<IDbConnection> GetOpenedConnectionAsync(CancellationToken token = default)
         {
             var connection = GetNpgsqlConnection();
+            
             await connection.OpenAsync(token).ConfigureAwait(false);
 
             return connection;

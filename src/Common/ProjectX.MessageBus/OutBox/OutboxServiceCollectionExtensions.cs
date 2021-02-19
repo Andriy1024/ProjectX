@@ -16,7 +16,7 @@ namespace ProjectX.MessageBus.Outbox
 
             services.Configure<OutboxOptions>(configuration.GetSection(nameof(OutboxOptions)));
             services.AddScoped<IOutboxManager, EntityFrameworkOutboxMessage<T>>();
-            services.AddHostedService<OutboxMessageSendWorker>();
+            services.AddHostedService<OutboxMessagePublisher>();
             return services;
         }
     }

@@ -9,19 +9,19 @@ using System.Threading.Tasks;
 
 namespace ProjectX.MessageBus.Outbox
 {
-    public class OutboxMessageSendWorker : IHostedService
+    public class OutboxMessagePublisher : IHostedService
     {
         private readonly IMessageBus _messageBus;
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly ILogger<OutboxMessageSendWorker> _logger;
+        private readonly ILogger<OutboxMessagePublisher> _logger;
         private readonly OutboxOptions _options;
         private readonly MessageBusExchanges _exchange;
         private readonly TimeSpan _interval;
 
-        public OutboxMessageSendWorker(IMessageBus messageBus, 
+        public OutboxMessagePublisher(IMessageBus messageBus, 
             IServiceScopeFactory scopeFactory, 
             IOptions<OutboxOptions> options,
-            ILogger<OutboxMessageSendWorker> logger)
+            ILogger<OutboxMessagePublisher> logger)
         {
             _messageBus = messageBus;
             _scopeFactory = scopeFactory;
@@ -49,7 +49,10 @@ namespace ProjectX.MessageBus.Outbox
                 {
                     await SendOutboxMessagesAsync(cancellationToken);
                 }
-                catch (OperationCanceledException) { }
+                catch (OperationCanceledException) 
+                {
+                    break;
+                }
                 catch (Exception e)
                 {
                     _logger.LogError(e, e.Message);
