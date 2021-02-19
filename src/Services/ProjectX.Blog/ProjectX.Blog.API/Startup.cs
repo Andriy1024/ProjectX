@@ -22,9 +22,8 @@ namespace ProjectX.Blog.API
 
         public void ConfigureServices(IServiceCollection services)
               => BaseConfigure(services)
-                .AddDbContext<BlogDbContext>(options => options.UseNpgsql(DBConnectionString))
+                .AddDbServices<BlogDbContext>(o => o.UseNpgsql(DBConnectionString))
                 .AddRabbitMqMessageBus(Configuration)
-                .AddIntegrationEventService()
                 .AddPipelineBehaviours()
                 .AddRepositories()
                 .AddStartupTasks();

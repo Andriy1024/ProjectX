@@ -1,10 +1,8 @@
 ﻿using ProjectX.Core;
-using ProjectX.Core.IntegrationEvents;
-using System;
 
 namespace ProjectX.MessageBus
 {
-    public class PublishProperties : IEventBusProperties
+    public class PublishProperties 
     {
         public ExchangeOptions Exchange { get; set; } = new ExchangeOptions();
 
@@ -14,24 +12,21 @@ namespace ProjectX.MessageBus
         {
         }
 
-        public PublishProperties(MessageBusExchanges exchangeName)
+        public PublishProperties(Exchange.Name exchangeName)
         {
             Exchange.Name = exchangeName;
         }
 
-        public static PublishProperties Validate(IEventBusProperties properties, bool allowEmptyRoutingKey = false) 
+        public static PublishProperties Validate(PublishProperties properties, bool allowEmptyRoutingKey = false) 
         {
             Utill.ThrowIfNull(properties, nameof(properties));
 
-            if (!(properties is PublishProperties publishOptions))
-                  throw new ArgumentException($"{nameof(properties)} should be {nameof(PublishProperties)} type.");
-
-            ExchangeOptions.Validate(publishOptions.Exchange);
+            ExchangeOptions.Validate(properties.Exchange);
 
             if(!allowEmptyRoutingKey)
-                Utill.ThrowIfNullOrEmpty(publishOptions.RoutingKey, nameof(publishOptions.RoutingKey));
+                Utill.ThrowIfNullOrEmpty(properties.RoutingKey, nameof(properties.RoutingKey));
 
-            return publishOptions;
+            return properties;
         }
 
         /// <summary>

@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using Polly;
 using Polly.CircuitBreaker;
-using ProjectX.Core;
 using ProjectX.Core.Exceptions;
 using ProjectX.Core.IntegrationEvents;
 using ProjectX.Core.Threading;
@@ -59,13 +58,13 @@ namespace ProjectX.MessageBus.Implementations
 
         #region IRabbitMqEventBus members
 
-        public void AddPublisher(IEventBusProperties eventBusProperties)
+        public void AddPublisher(PublishProperties eventBusProperties)
         {
             var properties = PublishProperties.Validate(eventBusProperties);
             InitPublisher(properties);
         }
 
-        public bool RemovePublisher(IEventBusProperties eventBusProperties)
+        public bool RemovePublisher(PublishProperties eventBusProperties)
         {
             var properties = PublishProperties.Validate(eventBusProperties);
 
@@ -92,7 +91,15 @@ namespace ProjectX.MessageBus.Implementations
             return result;
         }
 
-        public void Publish<T>(T integrationEvent, IEventBusProperties eventBusProperties)
+        public void Publish<T>(T integrationEvent, Action<PublishProperties> action)
+            where T : IIntegrationEvent
+        {
+            var properties = new PublishProperties();
+            action(properties);
+            Publish<T>(integrationEvent, properties);
+        }
+
+        public void Publish<T>(T integrationEvent, PublishProperties eventBusProperties)
             where T : IIntegrationEvent
         {
             var properties = PublishProperties.Validate(eventBusProperties, allowEmptyRoutingKey: true);
@@ -114,7 +121,15 @@ namespace ProjectX.MessageBus.Implementations
             _circuitBreaker.Wrap(retryPolicy).Execute(() => publisher.Publish(properties: null, message: body));
         }
 
-        public void Subscribe<T>(IEventBusProperties eventBusProperties)
+        public void Subscribe<T>(Action<SubscribeProperties> action)
+            where T : IIntegrationEvent
+        {
+            var properties = new SubscribeProperties();
+            action(properties);
+            Subscribe<T>(properties);
+        }
+
+        public void Subscribe<T>(SubscribeProperties eventBusProperties)
             where T : IIntegrationEvent
         {
             var properties = SubscribeProperties.Validate(eventBusProperties);
@@ -155,7 +170,7 @@ namespace ProjectX.MessageBus.Implementations
             _logger.LogInformation($"New subscription: {subscriptionInfo}");
         }
 
-        public void Unsubscribe<T>(IEventBusProperties eventBusProperties)
+        public void Unsubscribe<T>(SubscribeProperties eventBusProperties)
             where T : IIntegrationEvent
         {
             var properties = SubscribeProperties.Validate(eventBusProperties);
@@ -238,7 +253,10 @@ namespace ProjectX.MessageBus.Implementations
 
             var consumer = new AsyncEventingBasicConsumer(channel);
 
-            consumer.Received += OnMessageReceived;
+            consumer.Received += async (sender, args) => 
+            {
+                await OnMessageReceived<T>(sender, args);
+            };
 
             channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
 
@@ -254,7 +272,8 @@ namespace ProjectX.MessageBus.Implementations
             return new Subscriber(key, eventType: typeof(T), channel, properties.Queue, properties.Exchange, properties.Consumer);
         }
 
-        private async Task OnMessageReceived(object sender, BasicDeliverEventArgs ea)
+        private async Task OnMessageReceived<T>(object sender, BasicDeliverEventArgs ea)
+            where T : IIntegrationEvent
         {
             var key = GetSubscriptionKey(ea.Exchange, ea.RoutingKey);
 
@@ -270,12 +289,13 @@ namespace ProjectX.MessageBus.Implementations
                 return;
             }
 
-            var message = (IIntegrationEvent)_serializer.Deserialize(ea.Body.Span, subscriptionInfo.EventType);
+            var message = _serializer.Deserialize<T>(ea.Body.Span);
 
             await ProcessMessage(message, subscriptionInfo, ea);
         }
 
-        private async Task ProcessMessage(IIntegrationEvent message, Subscriber subscriptionInfo, BasicDeliverEventArgs ea)
+        private async Task ProcessMessage<T>(T message, Subscriber subscriptionInfo, BasicDeliverEventArgs ea)
+            where T : IIntegrationEvent
         {
             var retryPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(2, i => TimeSpan.FromSeconds(2));
             bool success = true;

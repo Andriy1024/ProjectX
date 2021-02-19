@@ -30,8 +30,7 @@ namespace ProjectX.Infrastructure.Transaction
 
         public IDbContextTransaction GetCurrentTransaction() 
         {
-            if (_currentTransaction == null)
-                throw new InvalidOperationException("UnitOfWork has no active transaction.");
+            if (_currentTransaction == null) throw new InvalidOperationException("UnitOfWork has no active transaction.");
 
             return _currentTransaction;
         }

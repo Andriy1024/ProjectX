@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,6 +18,7 @@ using ProjectX.Redis.Configuration;
 using ProjectX.Infrastructure.BlackList;
 using ProjectX.Email;
 using ProjectX.MessageBus.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProjectX.Identity.API
 {
@@ -31,7 +31,7 @@ namespace ProjectX.Identity.API
 
         public void ConfigureServices(IServiceCollection services)
                  => BaseConfigure(services)
-                   .AddDbContext<IdentityDbContext>(options => options.UseNpgsql(DBConnectionString))
+                   .AddDbServices<IdentityDbContext>(o => o.UseNpgsql(DBConnectionString))
                    .AddIdentity<UserEntity, RoleEntity>(options =>
                    {
                        options.User.RequireUniqueEmail = true;
@@ -45,8 +45,6 @@ namespace ProjectX.Identity.API
                    .AddStartupTasks()
                    .AddScopedCache()
                    .AddRabbitMqMessageBus(Configuration)
-                   .AddIntegrationEventService()
-                   .AddPipelineBehaviours()
                    .AddHostedService<SessionCleanupWorker>()
                    .AddEmailServices(Configuration)
                    .AddRedisServices(Configuration)

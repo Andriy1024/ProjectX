@@ -4,19 +4,19 @@ namespace ProjectX.MessageBus
 {
     public class ExchangeOptions 
     {
-        public MessageBusExchanges Name { get; set; }
+        public Exchange.Name Name { get; set; }
 
-        public ExchangeType Type { get; set; } = ExchangeType.Direct;
+        public Exchange.Type Type { get; set; } = Exchange.Type.Direct;
 
         public bool AutoDelete { get; set; } = true;
 
         public bool Durable { get; set; } = false;
 
-        public bool IsFanout => Type?.Value == ExchangeType.Fanout;
+        public bool IsFanout => Type?.Value == Exchange.Type.Fanout;
 
         public ExchangeOptions() {}
 
-        public ExchangeOptions(MessageBusExchanges name)
+        public ExchangeOptions(Exchange.Name name)
         {
             Name = name;
         }

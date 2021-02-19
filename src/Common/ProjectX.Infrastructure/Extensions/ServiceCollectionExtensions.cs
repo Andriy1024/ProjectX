@@ -1,10 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using ProjectX.Core;
 using ProjectX.Core.BlackList;
 using ProjectX.Core.Cache;
-using ProjectX.Core.IntegrationEvents;
+using ProjectX.Core.DataAccess;
 using ProjectX.Infrastructure.BlackList;
-using ProjectX.Infrastructure.IntegrationEvents;
+using ProjectX.Infrastructure.Transaction;
 using ProjectX.Redis.Abstractions;
 using ProjectX.Redis.Implementations;
 using System;
@@ -103,11 +106,17 @@ namespace ProjectX.Infrastructure.Extensions
              => services.AddScoped(typeof(IScopedCache<,>), typeof(ScopedCache<,>));
 
         public static IServiceCollection AddSessionBlackListService(this IServiceCollection services)
-            => services
-                .AddSingleton<ISessionsRedisClient, SessionsRedisClient>()
-                .AddSingleton<ISessionBlackList, SessionBlackList>();
+            => services.AddSingleton<ISessionsRedisClient, SessionsRedisClient>()
+                       .AddSingleton<ISessionBlackList, SessionBlackList>();
 
-        public static IServiceCollection AddIntegrationEventService(this IServiceCollection services)
-            => services.AddScoped<IIntegrationEventService, IntegrationEventService>();
+        public static IServiceCollection AddDbServices<T>(this IServiceCollection services, Action<DbContextOptionsBuilder> optionsAction)
+            where T : DbContext
+        {
+            return services.AddDbContext<T>(optionsAction)
+                           .AddScoped<IUnitOfWork, UnitOfWork<T>>();
+        }
+
+        public static IServiceCollection AddTransactinBehaviour(this IServiceCollection services)
+             => services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehaviour<,>));
     }
 }

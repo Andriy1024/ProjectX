@@ -1,10 +1,8 @@
 ﻿using ProjectX.Core;
-using ProjectX.Core.IntegrationEvents;
-using System;
 
 namespace ProjectX.MessageBus
 {
-    public class SubscribeProperties : IEventBusProperties
+    public class SubscribeProperties
     {
         public ExchangeOptions Exchange { get; set; } = new ExchangeOptions();
 
@@ -17,17 +15,13 @@ namespace ProjectX.MessageBus
             return $"{nameof(Exchange)}: {Exchange?.ToString()}, {nameof(Queue)}: {Queue?.ToString()}, {nameof(Consumer)}: {Consumer?.ToString()}.";
         }
 
-        public static SubscribeProperties Validate(IEventBusProperties properties)
+        public static SubscribeProperties Validate(SubscribeProperties properties)
         {
             Utill.ThrowIfNull(properties, nameof(properties));
 
-            if (!(properties is SubscribeProperties subscribeOptions))
-                  throw new ArgumentException($"{nameof(properties)} should be {nameof(SubscribeProperties)} type.");
+            ExchangeOptions.Validate(properties.Exchange);
 
-            ExchangeOptions.Validate(subscribeOptions.Exchange);
-
-
-            return subscribeOptions;
+            return properties;
         }
     }
 }

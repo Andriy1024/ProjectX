@@ -7,7 +7,7 @@ namespace ProjectX.MessageBus
     public class Subscriber
     {
         public Subscriber(SubscriptionKey key,
-                          Type eventType, 
+                          System.Type eventType, 
                           IModel channel, 
                           QueueOptions queue, 
                           ExchangeOptions exchange, 
@@ -29,7 +29,7 @@ namespace ProjectX.MessageBus
 
         public SubscriptionKey Key { get; }
 
-        public Type EventType { get; }
+        public System.Type EventType { get; }
 
         public IModel Channel { get; }
 

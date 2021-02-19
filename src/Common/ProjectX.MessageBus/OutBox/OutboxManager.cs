@@ -11,69 +11,60 @@ using System.Threading.Tasks;
 
 namespace ProjectX.MessageBus.Outbox
 {
-    public class OutboxManager<T> : IOutboxManager
-        where T: DbContext
-    {
-        private readonly IJsonSerializer _serializer;
-        private readonly OutboxMessageDbContext _outboxDbContext;
-        private readonly IUnitOfWork _unitOfWork;
+    //public class OutboxManager<T> : IOutboxManager
+    //    where T: DbContext
+    //{
+    //    private readonly IJsonSerializer _serializer;
+    //    private readonly OutboxDbContext _outboxDbContext;
+    //    private readonly IUnitOfWork _unitOfWork;
 
-        public OutboxManager(IJsonSerializer serializer, IUnitOfWork unitOfWork)
-        {
-            _serializer = serializer;
-            _unitOfWork = unitOfWork;
+    //    public OutboxManager(IJsonSerializer serializer, IUnitOfWork unitOfWork)
+    //    {
+    //        _serializer = serializer;
+    //        _unitOfWork = unitOfWork;
 
-            var connection = _unitOfWork.GetCurrentConnection() as DbConnection;
+    //        var connection = _unitOfWork.GetCurrentConnection() as DbConnection;
 
-            if (connection == null) 
-            {
-                throw new InvalidCastException("Can't cast UnitOfWork connection to DbConnection.");
-            }
+    //        if (connection == null) 
+    //        {
+    //            throw new InvalidCastException("Can't cast UnitOfWork connection to DbConnection.");
+    //        }
 
-            _outboxDbContext = new OutboxMessageDbContext(new DbContextOptionsBuilder<OutboxMessageDbContext>()
-                                                                .UseNpgsql(connection)
-                                                                .Options);
-        }
+    //        _outboxDbContext = new OutboxDbContext(new DbContextOptionsBuilder<OutboxDbContext>()
+    //                                                            .UseNpgsql(connection)
+    //                                                            .Options);
+    //    }
 
-        public async Task AddAsync(IIntegrationEvent integrationEvent, CancellationToken cancellationToken = default) 
-        {
-            var serializedMessage = _serializer.Serialize(integrationEvent);
+    //    public async Task AddAsync(IIntegrationEvent integrationEvent, CancellationToken cancellationToken = default) 
+    //    {
+    //        var serializedMessage = _serializer.Serialize(integrationEvent);
 
-            var message = new OutboxMessage
-                (integrationEvent,  
-                serializedMessage: serializedMessage,
-                savedAt: DateTime.UtcNow);
+    //        var message = new OutboxMessage
+    //            (integrationEvent,  
+    //            serializedMessage: serializedMessage,
+    //            savedAt: DateTime.UtcNow);
 
-            _outboxDbContext.Database.UseTransaction(_unitOfWork.GetCurrentTransaction().GetDbTransaction());
+    //        await _outboxDbContext.OutboxMessages.AddAsync(message, cancellationToken);
+    //        await _outboxDbContext.SaveChangesAsync(cancellationToken);
+    //    }
 
-            await _outboxDbContext.OutboxMessages.AddAsync(message, cancellationToken);
-            await _outboxDbContext.SaveChangesAsync(cancellationToken);
-        }
+    //    public Task<bool> HasInboxAsync(Guid id) 
+    //    {
+    //        return _outboxDbContext.InboxMessages.AnyAsync(m => m.Id == id);
+    //    }
 
-        public async Task MarkAsSent(OutboxMessage message) 
-        {
-            message.SentAt = DateTime.UtcNow;
-            await _outboxDbContext.SaveChangesAsync();
-        }
+    //    public async Task AddInboxAsync(IIntegrationEvent integrationEvent) 
+    //    {
+    //        _outboxDbContext.Database.UseTransaction(_unitOfWork.GetCurrentTransaction().GetDbTransaction());
 
-        public Task<bool> HasInboxAsync(Guid id) 
-        {
-            var dbSet = _outboxDbContext.Set<InboxMessage>();
-            return dbSet.AnyAsync(m => m.Id == id);
-        }
+    //        await _outboxDbContext.InboxMessages.AddAsync(new InboxMessage() 
+    //        {
+    //            Id = integrationEvent.Id,
+    //            MessageType = integrationEvent.GetType().FullName,
+    //            ProcessedAt = DateTime.UtcNow
+    //        });
 
-        public async Task AddInboxAsync(IIntegrationEvent integrationEvent) 
-        {
-            var dbSet = _outboxDbContext.Set<InboxMessage>();
-
-            await dbSet.AddAsync(new InboxMessage() 
-            {
-                Id = integrationEvent.Id,
-                MessageType = integrationEvent.GetType().FullName,
-                ProcessedAt = DateTime.UtcNow
-            });
-
-            await _outboxDbContext.SaveChangesAsync();
-        }
-    }
+    //        await _outboxDbContext.SaveChangesAsync();
+    //    }
+    //}
 }

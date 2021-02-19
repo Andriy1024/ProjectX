@@ -35,9 +35,6 @@ namespace ProjectX.Identity.Infrastructure.Extensions
                          // this enables automatic token cleanup. this is optional.
                          options.EnableTokenCleanup = true;
                      })
-                     .Services;
-
-        public static IServiceCollection AddPipelineBehaviours(this IServiceCollection services) =>
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(IdentityTransactionBehaviour<,>));   
+                     .Services;  
     }
 }

@@ -2,10 +2,10 @@
 
 namespace ProjectX.Core.IntegrationEvents
 {
-    public interface IIntegrationEventService
-    {
-        Task PublishEventsThroughEventBusAsync();
+    //public interface IIntegrationEventService
+    //{
+    //    Task PublishEventsThroughEventBusAsync();
 
-        void Add(IIntegrationEvent integrationEvent, IEventBusProperties eventBusProperties);
-    }
+    //    void Add(IIntegrationEvent integrationEvent, IEventBusProperties eventBusProperties);
+    //}
 }

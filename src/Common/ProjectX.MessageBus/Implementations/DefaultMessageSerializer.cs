@@ -17,12 +17,18 @@ namespace ProjectX.MessageBus.Implementations
                                     .AddConverter(new RealtimeMessageConverter());
         }
 
-        public object Deserialize(ReadOnlySpan<byte> obj, Type type)
+        public object Deserialize(ReadOnlySpan<byte> obj, System.Type type)
         {
             return System.Text.Json.JsonSerializer.Deserialize(obj, type, _serializerOptions);
         }
 
-        public byte[] SerializeToBytes(object item, Type inputType)
+        public T Deserialize<T>(ReadOnlySpan<byte> obj)
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<T>(obj, _serializerOptions);
+
+        }
+
+        public byte[] SerializeToBytes(object item, System.Type inputType)
         {
             return System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(item, inputType, _serializerOptions);
         }

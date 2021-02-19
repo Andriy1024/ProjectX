@@ -1,16 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ProjectX.MessageBus.Outbox;
 
-namespace ProjectX.MessageBus.OutBox
+namespace ProjectX.Outbox
 {
-    public sealed class OutboxMessageDbContext : DbContext
+    public sealed class OutboxDbContext : DbContext
     {
         public DbSet<InboxMessage> InboxMessages { get; set; }
 
         public DbSet<OutboxMessage> OutboxMessages { get; set; }
 
-        public OutboxMessageDbContext(DbContextOptions<OutboxMessageDbContext> options) 
+        public OutboxDbContext(DbContextOptions<OutboxDbContext> options) 
             : base(options)
         {
         }

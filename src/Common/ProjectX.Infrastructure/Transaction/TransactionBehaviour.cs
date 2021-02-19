@@ -12,28 +12,28 @@ namespace ProjectX.Infrastructure.Transaction
         where TRequest : IHasTransaction
     {
         protected readonly ILogger<TransactionBehaviour<TRequest, TResponse>> Logger;
-        protected readonly IUnitOfWork TransactionManager;
+        protected readonly IUnitOfWork UnitOfWork;
 
         protected bool Success { get; private set; }
 
-        protected TransactionBehaviour(ILogger<TransactionBehaviour<TRequest, TResponse>> logger, IUnitOfWork transaction)
+        protected TransactionBehaviour(ILogger<TransactionBehaviour<TRequest, TResponse>> logger, IUnitOfWork unitOfWork)
         {
             Logger = logger;
-            TransactionManager = transaction;
+            UnitOfWork = unitOfWork;
         }
 
         public virtual async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
-            if (TransactionManager.HasActiveTransaction) 
+            if (UnitOfWork.HasActiveTransaction) 
             {
                 return await next();
             }
                 
             var response = default(TResponse);
            
-            await TransactionManager.CreateExecutionStrategy().ExecuteAsync(async () =>
+            await UnitOfWork.CreateExecutionStrategy().ExecuteAsync(async () =>
             {
-                using (var transaction = await TransactionManager.BeginTransactionAsync())
+                using (var transaction = await UnitOfWork.BeginTransactionAsync())
                 {
                     Logger.LogInformation("----- Begin transaction {TransactionId} for ({@Command})", transaction.TransactionId, request);
 
@@ -43,7 +43,7 @@ namespace ProjectX.Infrastructure.Transaction
 
                     if (Success) 
                     {
-                        await TransactionManager.CommitTransactionAsync(transaction);
+                        await UnitOfWork.CommitTransactionAsync(transaction);
 
                         Logger.LogInformation($"----- Transaction {transaction.TransactionId} was commited.");
                     }

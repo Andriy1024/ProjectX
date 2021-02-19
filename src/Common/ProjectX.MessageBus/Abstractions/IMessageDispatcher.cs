@@ -8,6 +8,7 @@ namespace ProjectX.MessageBus
     /// </summary>
     public interface IMessageDispatcher
     {
-        Task HandleAsync(IIntegrationEvent integrationEvent);
+        Task HandleAsync<T>(T integrationEvent)
+            where T : IIntegrationEvent;
     }
 }
