@@ -38,7 +38,7 @@ namespace ProjectX.Infrastructure.Setup
             LoggerFactory = loggerFactory;
             Configuration = configuration;
             AppOptions = Configuration.Get<TOptions>() ?? throw new ArgumentNullException(nameof(AppOptions));
-            DBConnectionString = Configuration.GetConnectionString("LocalConnection");
+            DBConnectionString = Configuration.GetConnectionString(nameof(ConnectionStrings.DbConnection)) ?? throw new ArgumentNullException(nameof(ConnectionStrings.DbConnection));
             var paths = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*Application.dll").ToList();
             paths.AddRange(Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*Infrastructure.dll"));
             Assemblies = paths.Select(path => Assembly.Load(AssemblyName.GetAssemblyName(path))).ToArray();
@@ -48,6 +48,7 @@ namespace ProjectX.Infrastructure.Setup
              => services.AddOptions()
                         .AddHttpContextAccessor()
                         .Configure<BaseOptions>(Configuration)
+                        .Configure<ConnectionStrings>(Configuration)
                         .Configure<TOptions>(Configuration)
                         .AddSwagger(AppOptions.ApiName, AppOptions.IdentityUrl)
                         .AddIdentityServerAuthorization()

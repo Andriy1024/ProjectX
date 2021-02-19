@@ -2,33 +2,33 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ProjectX.Core;
-using ProjectX.Core.IntegrationEvents;
+using ProjectX.Core.DataAccess;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProjectX.Infrastructure.Transaction
 {
-    public abstract class TransactionBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    public class TransactionBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IHasTransaction
     {
         protected readonly ILogger<TransactionBehaviour<TRequest, TResponse>> Logger;
-        protected readonly ITransactionManager TransactionManager;
-        protected readonly IIntegrationEventService IntegrationEventService;
+        protected readonly IUnitOfWork TransactionManager;
 
-        protected TransactionBehaviour(ILogger<TransactionBehaviour<TRequest, TResponse>> logger, 
-            ITransactionManager transaction,
-            IIntegrationEventService integrationEventService)
+        protected bool Success { get; private set; }
+
+        protected TransactionBehaviour(ILogger<TransactionBehaviour<TRequest, TResponse>> logger, IUnitOfWork transaction)
         {
             Logger = logger;
             TransactionManager = transaction;
-            IntegrationEventService = integrationEventService;
         }
 
         public virtual async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
-            if (TransactionManager.HasActiveTransaction)
+            if (TransactionManager.HasActiveTransaction) 
+            {
                 return await next();
-
+            }
+                
             var response = default(TResponse);
            
             await TransactionManager.CreateExecutionStrategy().ExecuteAsync(async () =>
@@ -39,12 +39,18 @@ namespace ProjectX.Infrastructure.Transaction
 
                     response = await next();
 
-                    bool success = response is IResponse r ? r.IsSuccess : true; 
+                    Success = response is IResponse r ? r.IsSuccess : true; 
 
-                    Logger.LogInformation("----- Commit transaction {TransactionId}", transaction.TransactionId);
-
-                    if (success)
+                    if (Success) 
+                    {
                         await TransactionManager.CommitTransactionAsync(transaction);
+
+                        Logger.LogInformation($"----- Transaction {transaction.TransactionId} was commited.");
+                    }
+                    else 
+                    {
+                        Logger.LogInformation($"----- Transaction {transaction.TransactionId} was failed.");
+                    }
                 }
             });
 

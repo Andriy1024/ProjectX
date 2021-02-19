@@ -14,11 +14,6 @@ namespace ProjectX.MessageBus.Outbox
         /// Save the integration event to Outbox.
         /// </summary>
         Task AddAsync(IIntegrationEvent integrationEvent, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Using in background worker to publish pending messages to message bus.
-        /// </summary>
-        Task<OutboxMessage[]> RetrievePendingMessageAsync(CancellationToken cancellationToken = default);
         
         /// <summary>
         /// Mark message as sent.

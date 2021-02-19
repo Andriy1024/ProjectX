@@ -1,5 +1,8 @@
-﻿using Npgsql;
+﻿using Microsoft.Extensions.Options;
+using Npgsql;
 using ProjectX.Core.DataAccess;
+using ProjectX.Core.SeedWork;
+using ProjectX.Core.Setup;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,9 +13,9 @@ namespace ProjectX.Infrastructure.DataAccess
     {
         readonly string _connectionString;
 
-        public PostgreSqlConnectionFactory(string connectionString)
+        public PostgreSqlConnectionFactory(IOptions<ConnectionStrings> options)
         {
-            _connectionString = connectionString;
+            _connectionString = options.Value.DbConnection;
         }
 
         public IDbConnection GetConnection() => GetNpgsqlConnection();

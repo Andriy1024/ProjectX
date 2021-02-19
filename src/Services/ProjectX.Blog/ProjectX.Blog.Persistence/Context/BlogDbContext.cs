@@ -1,13 +1,10 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ProjectX.Blog.Domain;
 using ProjectX.Blog.Persistence.Configurations;
-using ProjectX.Core.DataAccess;
-using ProjectX.Infrastructure.DataAccess;
 
 namespace ProjectX.Blog.Persistence
 {
-    public sealed class BlogDbContext : BaseDbContext<BlogDbContext>, IUnitOfWork
+    public sealed class BlogDbContext : DbContext
     {
         public const string SchemaName = "ProjectX.Blog";
 
@@ -16,10 +13,6 @@ namespace ProjectX.Blog.Persistence
         public DbSet<CommentEntity> Comments { get; set; }
 
         public BlogDbContext(DbContextOptions<BlogDbContext> options) : base(options)
-        {
-        }
-
-        public BlogDbContext(DbContextOptions<BlogDbContext> options, IMediator mediator) : base(options, mediator)
         {
         }
 

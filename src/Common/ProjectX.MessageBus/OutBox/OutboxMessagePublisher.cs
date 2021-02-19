@@ -1,9 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ProjectX.Core.IntegrationEvents;
+using ProjectX.Core.JSON;
+using ProjectX.Core.Setup;
+using ProjectX.MessageBus.OutBox;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,23 +17,26 @@ namespace ProjectX.MessageBus.Outbox
     public class OutboxMessagePublisher : IHostedService
     {
         private readonly IMessageBus _messageBus;
-        private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<OutboxMessagePublisher> _logger;
         private readonly OutboxOptions _options;
         private readonly MessageBusExchanges _exchange;
         private readonly TimeSpan _interval;
+        private readonly string _connectionString;
+        private readonly IJsonSerializer _serializer;
 
-        public OutboxMessagePublisher(IMessageBus messageBus, 
-            IServiceScopeFactory scopeFactory, 
+        public OutboxMessagePublisher(IMessageBus messageBus,
             IOptions<OutboxOptions> options,
-            ILogger<OutboxMessagePublisher> logger)
+            IOptions<ConnectionStrings> connectionString,
+            ILogger<OutboxMessagePublisher> logger,
+            IJsonSerializer serializer)
         {
             _messageBus = messageBus;
-            _scopeFactory = scopeFactory;
             _options = options.Value;
+            _connectionString = connectionString.Value.DbConnection;
             _exchange = _options.Exchange;
             _interval = TimeSpan.FromMilliseconds(_options.IntervalMilliseconds);
             _logger = logger;
+            _serializer = serializer;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -68,17 +76,26 @@ namespace ProjectX.MessageBus.Outbox
 
         private async Task SendOutboxMessagesAsync(CancellationToken cancellationToken) 
         {
-            using var scope = _scopeFactory.CreateScope();
-            
-            var outboxManager = scope.ServiceProvider.GetRequiredService<IOutboxManager>();
+            using var dbContext = new OutboxMessageDbContext(new DbContextOptionsBuilder<OutboxMessageDbContext>()
+                                                                .UseNpgsql(_connectionString)
+                                                                .Options);
 
-            var messages = await outboxManager.RetrievePendingMessageAsync(cancellationToken);
+            var messages = await dbContext.OutboxMessages.Where(m => !m.SentAt.HasValue).ToArrayAsync(cancellationToken);
+
+            for (int i = 0; i < messages.Length; i++)
+            {
+                var message = messages[i];
+                message.Type = Type.GetType(message.MessageType);
+                message.Message = _serializer.Deserialize(message.SerializedMessage, message.Type) as IIntegrationEvent;
+            }
 
             foreach (var message in messages)
             {
                 _messageBus.Publish(message.Message, new PublishProperties(_exchange));
-                
-                await outboxManager.MarkAsSent(message);
+
+                message.SentAt = DateTime.UtcNow;
+
+                await dbContext.SaveChangesAsync();
             }
         }
 

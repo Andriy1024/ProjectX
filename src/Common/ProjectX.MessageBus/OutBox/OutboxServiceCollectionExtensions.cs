@@ -15,7 +15,7 @@ namespace ProjectX.MessageBus.Outbox
                 throw new ArgumentNullException(nameof(OutboxOptions));
 
             services.Configure<OutboxOptions>(configuration.GetSection(nameof(OutboxOptions)));
-            services.AddScoped<IOutboxManager, EntityFrameworkOutboxMessage<T>>();
+            services.AddScoped<IOutboxManager, OutboxManager<T>>();
             services.AddHostedService<OutboxMessagePublisher>();
             return services;
         }

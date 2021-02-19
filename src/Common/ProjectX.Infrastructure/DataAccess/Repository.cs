@@ -16,18 +16,16 @@ namespace ProjectX.Infrastructure.DataAccess
     public abstract class Repository<TEntity> : IRepository<TEntity> 
         where TEntity : class, IEntity
     {
-        protected DbContext Context { get; }
-
         protected DbSet<TEntity> DbSet { get; }
 
         protected ErrorCode NotFound { get; }
 
-        public abstract IUnitOfWork UnitOfWork { get; }
+        public IUnitOfWork UnitOfWork { get; }
         
-        public Repository(DbContext context, ErrorCode notFound)
+        public Repository(IUnitOfWork unitOfWork, ErrorCode notFound)
         {
-            Context = context;
-            DbSet = context.Set<TEntity>();
+            UnitOfWork = unitOfWork;
+            DbSet = UnitOfWork.DbContext.Set<TEntity>();
             NotFound = notFound;
         }
 
@@ -51,20 +49,24 @@ namespace ProjectX.Infrastructure.DataAccess
         public virtual Task<TEntity[]> GetAsync(IOrderingOptions ordering = null, CancellationToken cancellationToken = default)
         {
             var query = DbSet.AsQueryable();
-            
-            if (ordering != null)
-                query = query.WithOrdering(ordering);
 
+            if (ordering != null) 
+            {
+                query = query.WithOrdering(ordering);
+            }
+                
             return query.ToArrayAsync(cancellationToken);
         }
 
         public virtual Task<TEntity[]> GetAsync(Expression<Func<TEntity, bool>> expression, IOrderingOptions ordering = null, CancellationToken cancellationToken = default)
         {
             var query = DbSet.Where(expression);
-            
-            if (ordering != null)
-                query = query.WithOrdering(ordering);
 
+            if (ordering != null) 
+            {
+                query = query.WithOrdering(ordering);
+            }
+               
             return query.ToArrayAsync(cancellationToken);
         }
 
@@ -86,9 +88,11 @@ namespace ProjectX.Infrastructure.DataAccess
         {
             var query = DbSet.Where(expression);
 
-            if (ordering != null)
+            if (ordering != null) 
+            {
                 query = query.WithOrdering(ordering);
-
+            }
+               
             var entities = await query.WithPagination(pagination).ToArrayAsync(cancellationToken);
 
             return ResponseFactory.Success(entities, await CountAsync(expression, entities, pagination, cancellationToken));
@@ -141,6 +145,7 @@ namespace ProjectX.Infrastructure.DataAccess
         public virtual async Task<bool> RemoveAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
         {
             var entity = await DbSet.FirstOrDefaultAsync(expression, cancellationToken);
+            
             return entity != null && DbSet.Remove(entity).State == EntityState.Deleted;
         }
 
@@ -152,6 +157,7 @@ namespace ProjectX.Infrastructure.DataAccess
         public virtual async Task RemoveRangeAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
         {
             var entities = await DbSet.Where(expression).ToArrayAsync(cancellationToken);
+            
             if (entities.Length == 0)
                 return;
 
@@ -165,30 +171,35 @@ namespace ProjectX.Infrastructure.DataAccess
         public virtual async Task<ResultOf<TOut>> FirstOrDefaultAsync<TOut>(Expression<Func<TEntity, bool>> expression, IMapper mapper, CancellationToken cancellationToken = default) 
             where TOut : class
         {
-            return GetResultOf(await DbSet
-                                    .AsNoTracking()
+            var result = await DbSet.AsNoTracking()
                                     .Where(expression)
                                     .ProjectTo<TOut>(mapper.ConfigurationProvider)
-                                    .FirstOrDefaultAsync(cancellationToken));
+                                    .FirstOrDefaultAsync(cancellationToken);
+            
+            return GetResultOf(result);
         }
 
         public virtual Task<TOut[]> GetAsync<TOut>(IMapper mapper, IOrderingOptions ordering = null, CancellationToken cancellationToken = default)
         {
             var query = DbSet.AsNoTracking();
-            
-            if (ordering != null)
-                query = query.WithOrdering(ordering);
 
+            if (ordering != null) 
+            {
+                query = query.WithOrdering(ordering);
+            }
+                
             return query.ProjectTo<TOut>(mapper.ConfigurationProvider).ToArrayAsync(cancellationToken);
         }
 
         public virtual Task<TOut[]> GetAsync<TOut>(Expression<Func<TEntity, bool>> expression, IMapper mapper, IOrderingOptions ordering = null, CancellationToken cancellationToken = default)
         {
             var query = DbSet.AsNoTracking().Where(expression);
-            
-            if (ordering != null)
-                query = query.WithOrdering(ordering);
 
+            if (ordering != null) 
+            {
+                query = query.WithOrdering(ordering);
+            }
+                
             return query.ProjectTo<TOut>(mapper.ConfigurationProvider).ToArrayAsync(cancellationToken);
         }
 
@@ -196,9 +207,11 @@ namespace ProjectX.Infrastructure.DataAccess
         {
             var query = DbSet.AsNoTracking();
 
-            if (ordering != null)
+            if (ordering != null) 
+            {
                 query = query.WithOrdering(ordering);
-
+            }
+                
             var entities = await query.WithPagination(pagination)
                                       .ProjectTo<TOut>(mapper.ConfigurationProvider)
                                       .ToArrayAsync(cancellationToken);
@@ -210,8 +223,10 @@ namespace ProjectX.Infrastructure.DataAccess
         {
             var query = DbSet.AsNoTracking().Where(expression);
 
-            if (ordering != null)
+            if (ordering != null) 
+            {
                 query = query.WithOrdering(ordering);
+            }
 
             var entities = await query.WithPagination(pagination)
                                       .ProjectTo<TOut>(mapper.ConfigurationProvider)

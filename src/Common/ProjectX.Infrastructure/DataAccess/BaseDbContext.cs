@@ -12,107 +12,106 @@ using System.Threading.Tasks;
 
 namespace ProjectX.Infrastructure.DataAccess
 {
-    public abstract class BaseDbContext<TDbContext> : DbContext, IUnitOfWork
-        //, ITransactionActions
-        where TDbContext : DbContext
-    {
-        protected readonly IMediator Mediator;
+    //public abstract class BaseDbContext<TDbContext> : DbContext, IUnitOfWork, ITransactionActions
+    //    where TDbContext : DbContext
+    //{
+    //    protected readonly IMediator Mediator;
 
-        public BaseDbContext(DbContextOptions<TDbContext> options) 
-            : base(options) { }
+    //    public BaseDbContext(DbContextOptions<TDbContext> options) 
+    //        : base(options) { }
 
-        public BaseDbContext(DbContextOptions<TDbContext> options, IMediator mediator) 
-            : base(options)
-        {
-            Mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
+    //    public BaseDbContext(DbContextOptions<TDbContext> options, IMediator mediator) 
+    //        : base(options)
+    //    {
+    //        Mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    //    }
 
-        private EntityEntry<IEntity>[] GetChangedEntities() =>
-                ChangeTracker
-                .Entries<IEntity>()
-                .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Count > 0)
-                .ToArray();
+    //    private EntityEntry<IEntity>[] GetChangedEntities() =>
+    //            ChangeTracker
+    //            .Entries<IEntity>()
+    //            .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Count > 0)
+    //            .ToArray();
 
-        public virtual async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
-        {
-            var domainEntities = GetChangedEntities();
+    //    public virtual async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
+    //    {
+    //        var domainEntities = GetChangedEntities();
 
-            var domainEvents = domainEntities
-                .SelectMany(x => x.Entity.DomainEvents)
-                .ToArray();
+    //        var domainEvents = domainEntities
+    //            .SelectMany(x => x.Entity.DomainEvents)
+    //            .ToArray();
 
-            for (int i = 0; i < domainEntities.Length; i++)
-                domainEntities[i].Entity.ClearDomainEvents();
- 
-            await base.SaveChangesAsync(cancellationToken);
+    //        for (int i = 0; i < domainEntities.Length; i++)
+    //            domainEntities[i].Entity.ClearDomainEvents();
 
-            for (int i = 0; i < domainEvents.Length; i++)
-                await Mediator.Publish(domainEvents[i]);
+    //        await base.SaveChangesAsync(cancellationToken);
 
-            return true;
-        }
+    //        for (int i = 0; i < domainEvents.Length; i++)
+    //            await Mediator.Publish(domainEvents[i]);
 
-        #region Transaction region 
+    //        return true;
+    //    }
 
-        //protected IDbContextTransaction CurrentTransaction;
+    //    #region Transaction region 
 
-        //public IDbContextTransaction GetCurrentTransaction() => CurrentTransaction;
+    //    protected IDbContextTransaction CurrentTransaction;
 
-        //public bool HasActiveTransaction => CurrentTransaction != null;
+    //    public IDbContextTransaction GetCurrentTransaction() => CurrentTransaction;
 
-        //public virtual async Task<IDbContextTransaction> BeginTransactionAsync()
-        //{
-        //    if (CurrentTransaction != null) return null;
+    //    public bool HasActiveTransaction => CurrentTransaction != null;
 
-        //    CurrentTransaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+    //    public virtual async Task<IDbContextTransaction> BeginTransactionAsync()
+    //    {
+    //        if (CurrentTransaction != null) return null;
 
-        //    return CurrentTransaction;
-        //}
+    //        CurrentTransaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
 
-        //public virtual async Task CommitTransactionAsync(IDbContextTransaction transaction)
-        //{
-        //    if (HasActiveTransaction)
-        //    {
-        //        if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-        //        if (transaction != CurrentTransaction) throw new InvalidOperationException($"Transaction {transaction.TransactionId} is not current");
+    //        return CurrentTransaction;
+    //    }
 
-        //        try
-        //        {
-        //            await SaveChangesAsync();
-        //            await transaction.CommitAsync();
-        //        }
-        //        catch
-        //        {
-        //            await RollbackTransactionAsync();
-        //            throw;
-        //        }
-        //        finally
-        //        {
-        //            if (CurrentTransaction != null)
-        //            {
-        //                CurrentTransaction.Dispose();
-        //                CurrentTransaction = null;
-        //            }
-        //        }
-        //    }
-        //}
+    //    public virtual async Task CommitTransactionAsync(IDbContextTransaction transaction)
+    //    {
+    //        if (HasActiveTransaction)
+    //        {
+    //            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+    //            if (transaction != CurrentTransaction) throw new InvalidOperationException($"Transaction {transaction.TransactionId} is not current");
 
-        //public async virtual Task RollbackTransactionAsync()
-        //{
-        //    try
-        //    {
-        //        await CurrentTransaction?.RollbackAsync();
-        //    }
-        //    finally
-        //    {
-        //        if (CurrentTransaction != null)
-        //        {
-        //            CurrentTransaction.Dispose();
-        //            CurrentTransaction = null;
-        //        }
-        //    }
-        //}
+    //            try
+    //            {
+    //                await SaveChangesAsync();
+    //                await transaction.CommitAsync();
+    //            }
+    //            catch
+    //            {
+    //                await RollbackTransactionAsync();
+    //                throw;
+    //            }
+    //            finally
+    //            {
+    //                if (CurrentTransaction != null)
+    //                {
+    //                    CurrentTransaction.Dispose();
+    //                    CurrentTransaction = null;
+    //                }
+    //            }
+    //        }
+    //    }
 
-        #endregion
-    }
+    //    public async virtual Task RollbackTransactionAsync()
+    //    {
+    //        try
+    //        {
+    //            await CurrentTransaction?.RollbackAsync();
+    //        }
+    //        finally
+    //        {
+    //            if (CurrentTransaction != null)
+    //            {
+    //                CurrentTransaction.Dispose();
+    //                CurrentTransaction = null;
+    //            }
+    //        }
+    //    }
+
+    //    #endregion
+    //}
 }
