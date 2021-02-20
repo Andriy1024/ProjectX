@@ -1,14 +1,13 @@
 ﻿using ProjectX.Core.IntegrationEvents;
 using System.Threading.Tasks;
 
-namespace ProjectX.MessageBus
+namespace ProjectX.RabbitMq
 {
     /// <summary>
-    /// Responsible for dispatch events received from messages broker.
+    /// Implementation of the interface is responsible for dispatching events received from messages broker.
     /// </summary>
     public interface IMessageDispatcher
     {
-        Task HandleAsync<T>(T integrationEvent)
-            where T : IIntegrationEvent;
+        Task HandleAsync<T>(T integrationEvent) where T : IIntegrationEvent;
     }
 }

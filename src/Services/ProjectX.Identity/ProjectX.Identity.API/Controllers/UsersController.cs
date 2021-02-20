@@ -10,7 +10,7 @@ namespace ProjectX.Identity.API.Controllers
     public class UsersController : ApiController
     {
         [HttpGet]
-        public async Task<IActionResult> GetUsersAsync([FromQuery] UsersQuery query, CancellationToken cancellationToken) 
+        public async Task<IActionResult> GetUsersAsync([FromQuery] UsersQuery query, CancellationToken cancellationToken)
             => MapResponse(await Mediator.Send(query, cancellationToken));
 
         [HttpGet("{id:long:min(1)}")]
@@ -24,5 +24,9 @@ namespace ProjectX.Identity.API.Controllers
         [HttpPut("addresses")]
         public async Task<IActionResult> UpdateAddressAsync([FromBody] UpdateAddressCommand command)
             => MapResponse(await Mediator.Send(command));
+
+        [HttpDelete("{id:long:min(1)}")]
+        public async Task<IActionResult> DeleteUserAsync([FromRoute] long id, CancellationToken cancellationToken)
+            => MapResponse(await Mediator.Send(new DeleteUserCommand(id), cancellationToken));
     }
 }

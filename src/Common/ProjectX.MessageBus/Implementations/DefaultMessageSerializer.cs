@@ -3,7 +3,7 @@ using ProjectX.Core.Realtime;
 using System;
 using System.Text.Json;
 
-namespace ProjectX.MessageBus.Implementations
+namespace ProjectX.RabbitMq.Implementations
 {
     public class DefaultMessageSerializer : IMessageSerializer
     {
@@ -15,11 +15,6 @@ namespace ProjectX.MessageBus.Implementations
                                     .DefaultOptions()
                                     .AddJsonNonStringKeyDictionaryConverterFactory()
                                     .AddConverter(new RealtimeMessageConverter());
-        }
-
-        public object Deserialize(ReadOnlySpan<byte> obj, System.Type type)
-        {
-            return System.Text.Json.JsonSerializer.Deserialize(obj, type, _serializerOptions);
         }
 
         public T Deserialize<T>(ReadOnlySpan<byte> obj)

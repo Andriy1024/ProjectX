@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\ProjectX.Contracts\ProjectX.Contracts.csproj" />
-    <ProjectReference Include="..\ProjectX.Blog.Application\ProjectX.Blog.Application.csproj" />
     <ProjectReference Include="..\ProjectX.Blog.Persistence\ProjectX.Blog.Persistence.csproj" />
   </ItemGroup>
 

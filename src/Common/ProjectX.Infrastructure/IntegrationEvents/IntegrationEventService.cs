@@ -1,5 +1,4 @@
 ﻿using ProjectX.Core.IntegrationEvents;
-using ProjectX.MessageBus;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

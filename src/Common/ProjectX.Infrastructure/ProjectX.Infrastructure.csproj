@@ -34,7 +34,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProjectX.Core\ProjectX.Core.csproj" />
-    <ProjectReference Include="..\ProjectX.MessageBus\ProjectX.MessageBus.csproj" />
     <ProjectReference Include="..\ProjectX.Redis\ProjectX.Redis.csproj" />
   </ItemGroup>
 

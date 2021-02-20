@@ -31,6 +31,7 @@ namespace ProjectX.Redis.Implementations
             AssertNotNull(redisClient, nameof(redisOptions));
             AssertNotNull(loggerFactory, nameof(loggerFactory));
 
+            _loggerFactory = loggerFactory;
             _redisOptions = redisOptions.Value;
             _database = redisClient.GetDb(new TDataBase().Value);
 

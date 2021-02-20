@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\ProjectX.Email\ProjectX.Email.csproj" />
     <ProjectReference Include="..\ProjectX.Identity.Infrastructure\ProjectX.Identity.Infrastructure.csproj" />
   </ItemGroup>
 

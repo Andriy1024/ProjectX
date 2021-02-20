@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ProjectX.Core.IntegrationEvents;
 using System.Threading.Tasks;
 
-namespace ProjectX.MessageBus.Implementations
+namespace ProjectX.RabbitMq.Implementations
 {
     public class MessageDispatcher : IMessageDispatcher
     {

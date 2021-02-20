@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Npgsql;
 using ProjectX.Core.DataAccess;
-using ProjectX.Core.SeedWork;
 using ProjectX.Core.Setup;
 using System.Data;
 using System.Threading;

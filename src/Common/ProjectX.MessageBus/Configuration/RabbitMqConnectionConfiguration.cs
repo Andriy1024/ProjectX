@@ -1,6 +1,6 @@
 ﻿using ProjectX.Core.SeedWork;
 
-namespace ProjectX.MessageBus.Configuration
+namespace ProjectX.RabbitMq.Configuration
 {
     public class RabbitMqConnectionConfiguration : IOptions
     {

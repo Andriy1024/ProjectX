@@ -1,4 +1,5 @@
-﻿using ProjectX.Blog.Application;
+﻿using MediatR;
+using ProjectX.Blog.Application;
 using ProjectX.Blog.Domain;
 using ProjectX.Contracts.IntegrationEvents;
 using ProjectX.Core.IntegrationEvents;
@@ -16,10 +17,10 @@ namespace ProjectX.Blog.Infrastructure.IntegrationEventHandler.Identity
             _repository = repository;
         }
 
-        public async Task Handle(UserCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UserCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
         {
             if (await _repository.ExistAsync(a => a.Id == integrationEvent.UserId))
-                return;
+                return Unit.Value;
 
             var author = new AuthorEntity(id: integrationEvent.UserId, 
                                           firstName: integrationEvent.FirstName,
@@ -28,6 +29,8 @@ namespace ProjectX.Blog.Infrastructure.IntegrationEventHandler.Identity
 
             await _repository.InsertAsync(author);
             await _repository.UnitOfWork.SaveEntitiesAsync();
+
+            return Unit.Value;
         }
     }
 }

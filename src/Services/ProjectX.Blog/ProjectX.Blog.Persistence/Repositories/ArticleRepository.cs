@@ -13,14 +13,11 @@ namespace ProjectX.Blog.Persistence
 {
     public sealed class ArticleRepository : Repository<ArticleEntity>, IArticleRepository
     {
-        public override IUnitOfWork UnitOfWork { get; }
-
-        public ArticleRepository(BlogDbContext dbContext) 
-            : base(dbContext, notFound: ErrorCode.ArticleNotFound)
+        public ArticleRepository(IUnitOfWork unitOfWork) 
+            : base(unitOfWork, notFound: ErrorCode.ArticleNotFound)
         {
-            UnitOfWork = dbContext;
         }
-
+         
         public async Task<ResultOf<ArticleEntity>> GetFullArticleAsync(Expression<Func<ArticleEntity, bool>> expression, CancellationToken cancellationToken = default)
         {
             return GetResultOf(await DbSet.Include(a => a.Author)

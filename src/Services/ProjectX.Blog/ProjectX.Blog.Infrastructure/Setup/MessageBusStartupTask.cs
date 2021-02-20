@@ -1,6 +1,6 @@
 ﻿using ProjectX.Contracts.IntegrationEvents;
 using ProjectX.Core;
-using ProjectX.MessageBus;
+using ProjectX.RabbitMq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,9 +8,9 @@ namespace ProjectX.Blog.Infrastructure.Setup
 {
     public sealed class MessageBusStartupTask : IStartupTask
     {
-        private readonly IMessageBus _messageBus;
+        private readonly IRabbitMqSubscriber _messageBus;
 
-        public MessageBusStartupTask(IMessageBus messageBus)
+        public MessageBusStartupTask(IRabbitMqSubscriber messageBus)
         {
             _messageBus = messageBus;
         }
@@ -19,7 +19,7 @@ namespace ProjectX.Blog.Infrastructure.Setup
         {
             _messageBus.Subscribe<UserCreatedIntegrationEvent>(new SubscribeProperties() 
             { 
-                Exchange = new ExchangeOptions(MessageBusExchanges.Identity)
+                Exchange = new ExchangeProperties(Exchange.Name.Identity)
             });
         }
     }

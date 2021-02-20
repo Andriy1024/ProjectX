@@ -1,4 +1,5 @@
 ﻿using ProjectX.Core.JSON;
+using System;
 using System.Text.Json;
 
 namespace ProjectX.Infrastructure.JSON
@@ -33,6 +34,17 @@ namespace ProjectX.Infrastructure.JSON
         public byte[] SerializeToBytes<TIn>(TIn item)
         {
             return System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(item, item.GetType(), _serializationOptions);
+        }
+
+        public string Serialize(object item, Type type)
+        {
+            return System.Text.Json.JsonSerializer.Serialize(item, type, _serializationOptions);
+
+        }
+
+        public object Deserialize(string item, Type type)
+        {
+            return System.Text.Json.JsonSerializer.Deserialize(item, type, _serializationOptions);
         }
     }
 }

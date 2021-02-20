@@ -8,12 +8,9 @@ namespace ProjectX.Blog.Persistence
 {
     public sealed class CommentRepository : Repository<CommentEntity>, ICommentRepository
     {
-        public override IUnitOfWork UnitOfWork { get; }
-
-        public CommentRepository(BlogDbContext dbContext) 
-            : base(dbContext, notFound: ErrorCode.CommentNotFound)
+        public CommentRepository(IUnitOfWork unitOfWork) 
+            : base(unitOfWork, notFound: ErrorCode.CommentNotFound)
         {
-            UnitOfWork = dbContext;
         }
     }
 }

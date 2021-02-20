@@ -15,7 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\ProjectX.Core\ProjectX.Core.csproj" />
+    <ProjectReference Include="..\..\..\Common\ProjectX.Infrastructure\ProjectX.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Common\ProjectX.Outbox\ProjectX.Outbox.csproj" />
   </ItemGroup>
 
 </Project>

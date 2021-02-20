@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using Polly;
 using Polly.CircuitBreaker;
 using ProjectX.Core.Threading;
-using ProjectX.MessageBus.Configuration;
+using ProjectX.RabbitMq.Configuration;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
@@ -12,7 +12,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace ProjectX.MessageBus.Implementations
+namespace ProjectX.RabbitMq.Implementations
 {
     public sealed class RabbitMqConnectionService : IRabbitMqConnectionService
     {
@@ -24,14 +24,14 @@ namespace ProjectX.MessageBus.Implementations
         private bool _isDisposed;
         private readonly ReaderWriterLockSlim _syncRoot = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         private readonly CircuitBreakerPolicy _circuitBreaker;
-        private readonly MessageBusConfiguration _options;
+        private readonly RabbitMqConfiguration _options;
         
         #endregion
 
-        public RabbitMqConnectionService(IOptions<MessageBusConfiguration > messageBusOptions, ILogger<RabbitMqConnectionService> logger)
+        public RabbitMqConnectionService(IOptions<RabbitMqConfiguration > messageBusOptions, ILogger<RabbitMqConnectionService> logger)
         {
             _logger = logger;
-            _options = MessageBusConfiguration .Validate(messageBusOptions.Value);
+            _options = RabbitMqConfiguration .Validate(messageBusOptions.Value);
             _connectionFactory = new ConnectionFactory
             {
                 UserName = _options.Connection.UserName,

@@ -8,12 +8,9 @@ namespace ProjectX.Blog.Persistence
 {
     public sealed class AuthorRepository : Repository<AuthorEntity>, IAuthorRepository
     {
-        public override IUnitOfWork UnitOfWork { get; }
-
-        public AuthorRepository(BlogDbContext dbContext)
-            : base(dbContext, notFound: ErrorCode.AuthorNotFound)
+        public AuthorRepository(IUnitOfWork unitOfWork)
+            : base(unitOfWork, notFound: ErrorCode.AuthorNotFound)
         {
-            UnitOfWork = dbContext;
         }
     }
 }

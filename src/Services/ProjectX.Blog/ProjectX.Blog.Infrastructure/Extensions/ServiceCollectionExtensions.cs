@@ -1,7 +1,5 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using ProjectX.Blog.Application;
-using ProjectX.Blog.Infrastructure.Behaviours;
 using ProjectX.Blog.Infrastructure.Setup;
 using ProjectX.Blog.Persistence;
 using ProjectX.Blog.Persistence.Setup;
@@ -19,8 +17,5 @@ namespace ProjectX.Blog.Infrastructure.Extensions
             => services.AddScoped<IArticleRepository, ArticleRepository>()
                        .AddScoped<IAuthorRepository, AuthorRepository>()
                        .AddScoped<ICommentRepository, CommentRepository>();
-
-        public static IServiceCollection AddPipelineBehaviours(this IServiceCollection services)
-           => services.AddTransient(typeof(IPipelineBehavior<,>), typeof(BlogTransactionBehaviour<,>));
     }
 }

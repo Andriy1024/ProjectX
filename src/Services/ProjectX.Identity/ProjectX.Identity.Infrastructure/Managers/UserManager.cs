@@ -51,6 +51,17 @@ namespace ProjectX.Identity.Infrastructure
             return user;
         }
 
+        public Task RemoveAsync(UserEntity user, CancellationToken cancellationToken = default) 
+        {
+            Utill.ThrowIfNull(user, nameof(user));
+
+            DbContext.Users.Remove(user);
+
+            user.AddDomainEvent(new UserDeletedDomainEvent(user));
+
+            return DbContext.SaveChangesAsync(cancellationToken);
+        }
+
         #region Session actions
 
         public async Task<SessionEntity> UpdateSessionAsync(UserEntity user, string sessionId, DateTime dateTime)
