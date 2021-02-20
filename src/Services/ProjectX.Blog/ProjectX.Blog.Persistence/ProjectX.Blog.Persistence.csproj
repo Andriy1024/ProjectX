@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\ProjectX.Outbox\ProjectX.Outbox.csproj" />
     <ProjectReference Include="..\ProjectX.Blog.Application\ProjectX.Blog.Application.csproj" />
   </ItemGroup>
 
