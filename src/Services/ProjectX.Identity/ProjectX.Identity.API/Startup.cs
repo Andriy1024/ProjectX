@@ -46,7 +46,7 @@ namespace ProjectX.Identity.API
                    .AddStartupTasks()
                    .AddScopedCache()
                    .AddRabbitMqMessageBus(Configuration)
-                   .AddOutboxMessageServices(Configuration, o => o.UseNpgsql(DBConnectionString))
+                   .AddOutboxMessageServices(Configuration, o => o.UseNpgsql(DBConnectionString, sql => sql.MigrationsAssembly(typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)))
                    .AddHostedService<SessionCleanupWorker>()
                    .AddTransactinBehaviour()
                    //.AddEmailServices(Configuration)
