@@ -41,38 +41,41 @@ namespace ProjectX.Outbox
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await Task.Delay((int)TimeSpan.FromSeconds(10).TotalMilliseconds, cancellationToken);
+            await Task.Delay((int)TimeSpan.FromSeconds(5).TotalMilliseconds, cancellationToken);
 
-            while (!cancellationToken.IsCancellationRequested)
+            _ = Task.Run(async () => 
             {
-                var jobId = Guid.NewGuid().ToString("N");
-                
-                _logger.LogTrace($"Started sending outbox messages... [job id: '{jobId}']");
-                
-                var stopwatch = new Stopwatch();
-                
-                stopwatch.Start();
-
-                try
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    await SendOutboxMessagesAsync(cancellationToken);
-                }
-                catch (OperationCanceledException) 
-                {
-                    if(cancellationToken.IsCancellationRequested)
-                        return;
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, e.Message);
-                }
+                    var jobId = Guid.NewGuid().ToString("N");
 
-                stopwatch.Stop();
+                    _logger.LogTrace($"Started sending outbox messages... [job id: '{jobId}']");
 
-                _logger.LogTrace($"Finished sending outbox messages in {stopwatch.ElapsedMilliseconds} ms [job id: '{jobId}'].");
+                    var stopwatch = new Stopwatch();
 
-                await Task.Delay((int)_interval.TotalMilliseconds, cancellationToken);
-            }
+                    stopwatch.Start();
+
+                    try
+                    {
+                        await SendOutboxMessagesAsync(cancellationToken);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                            return;
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, e.Message);
+                    }
+
+                    stopwatch.Stop();
+
+                    _logger.LogTrace($"Finished sending outbox messages in {stopwatch.ElapsedMilliseconds} ms [job id: '{jobId}'].");
+
+                    await Task.Delay((int)_interval.TotalMilliseconds, cancellationToken);
+                }
+            });
         }
 
         private async Task SendOutboxMessagesAsync(CancellationToken cancellationToken) 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using ProjectX.Core.Setup;
 using ProjectX.Infrastructure.CQRS;
 using System;
 using System.IO;
@@ -19,7 +20,7 @@ namespace ProjectX.Infrastructure.DataAccess
 
             var optionsBuilder = new DbContextOptionsBuilder<T>();
 
-            optionsBuilder.UseNpgsql(configuration.GetConnectionString("LocalConnection"));
+            optionsBuilder.UseNpgsql(configuration.GetConnectionString(nameof(ConnectionStrings.DbConnection)));
 
             return Activator.CreateInstance(typeof(T), optionsBuilder.Options) as T;
         }
