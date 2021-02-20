@@ -9,6 +9,7 @@ using ProjectX.Blog.Infrastructure.Extensions;
 using ProjectX.Blog.Persistence;
 using ProjectX.Infrastructure.Extensions;
 using ProjectX.Infrastructure.Setup;
+using ProjectX.Outbox;
 using ProjectX.RabbitMq.Configuration;
 
 namespace ProjectX.Blog.API
@@ -24,6 +25,7 @@ namespace ProjectX.Blog.API
               => BaseConfigure(services)
                 .AddDbServices<BlogDbContext>(o => o.UseNpgsql(DBConnectionString))
                 .AddRabbitMqMessageBus(Configuration)
+                .AddOutboxMessageServices(Configuration, o => o.UseNpgsql(DBConnectionString))
                 .AddTransactinBehaviour()
                 .AddRepositories()
                 .AddStartupTasks();
