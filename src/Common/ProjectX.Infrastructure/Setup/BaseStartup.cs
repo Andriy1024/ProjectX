@@ -61,6 +61,7 @@ namespace ProjectX.Infrastructure.Setup
                                  b => b.AllowAnyOrigin()
                                        .AllowAnyHeader()
                                        .AllowAnyMethod()))
+            
                         .AddMvc()
                         .AddJsonOptions(options =>
                         {

@@ -42,6 +42,8 @@ namespace ProjectX.Outbox
                 serializedMessage: serializedMessage,
                 savedAt: DateTime.UtcNow);
 
+            _outboxDbContext.Database.UseTransaction(_unitOfWork.GetCurrentTransaction().GetDbTransaction());
+
             await _outboxDbContext.OutboxMessages.AddAsync(message, cancellationToken);
             await _outboxDbContext.SaveChangesAsync(cancellationToken);
         }

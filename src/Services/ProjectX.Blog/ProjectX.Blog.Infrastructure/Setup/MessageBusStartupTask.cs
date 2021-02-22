@@ -17,10 +17,9 @@ namespace ProjectX.Blog.Infrastructure.Setup
 
         public async Task ExecuteAsync(CancellationToken cancellationToken = default)
         {
-            _messageBus.Subscribe<UserCreatedIntegrationEvent>(new SubscribeProperties() 
-            { 
-                Exchange = new ExchangeProperties(Exchange.Name.Identity)
-            });
+            _messageBus.Subscribe<UserCreatedIntegrationEvent>(o => o.Exchange.Name = Exchange.Name.Identity);
+           
+            _messageBus.Subscribe<UserDeletedIntegrationEvent>(o => o.Exchange.Name = Exchange.Name.Identity);
         }
     }
 }

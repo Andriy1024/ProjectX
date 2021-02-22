@@ -52,7 +52,7 @@ namespace ProjectX.Outbox
             Id = message.Id;
             Message = message;
             Type = message.GetType();
-            MessageType = Type.FullName;
+            MessageType = Type.AssemblyQualifiedName;
             SerializedMessage = serializedMessage;
             SavedAt = savedAt;
         }

@@ -4,8 +4,8 @@ namespace ProjectX.Identity.Domain
 {
     public sealed class UserRoleEntity : IdentityUserRole<long>
     {
-        public UserEntity User { get; set; }
-        public RoleEntity Role { get; set; }
+        public UserEntity User { get; private set; }
+        public RoleEntity Role { get; private set; }
 
         public UserRoleEntity()
         {

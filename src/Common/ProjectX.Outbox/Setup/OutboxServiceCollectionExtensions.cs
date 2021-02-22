@@ -16,7 +16,7 @@ namespace ProjectX.Outbox
             return services.Configure<OutboxOptions>(configuration.GetSection(nameof(OutboxOptions)))
                            .AddScoped<IOutboxManager, OutboxManager>()
                            .AddHostedService<OutboxMessagePublisher>()
-                           .AddScoped(typeof(IPipelineBehavior<,>), typeof(InboxMessageBehaviour<,>))
+                           .AddTransient(typeof(IPipelineBehavior<,>), typeof(InboxMessageBehaviour<,>))
                            .AddDbContext<OutboxDbContext>(optionsAction)
                            .AddScoped<IStartupTask, OutboxStartupTask>();
         }

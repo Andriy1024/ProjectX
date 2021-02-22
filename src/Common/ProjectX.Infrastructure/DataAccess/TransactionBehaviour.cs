@@ -16,7 +16,7 @@ namespace ProjectX.Infrastructure.Transaction
 
         protected bool Success { get; private set; }
 
-        protected TransactionBehaviour(ILogger<TransactionBehaviour<TRequest, TResponse>> logger, IUnitOfWork unitOfWork)
+        public TransactionBehaviour(ILogger<TransactionBehaviour<TRequest, TResponse>> logger, IUnitOfWork unitOfWork)
         {
             Logger = logger;
             UnitOfWork = unitOfWork;

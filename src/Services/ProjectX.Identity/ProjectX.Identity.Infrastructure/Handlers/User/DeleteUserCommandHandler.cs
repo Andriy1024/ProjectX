@@ -7,7 +7,7 @@ namespace ProjectX.Identity.Infrastructure.Handlers
 {
     public class DeleteUserCommandHandler : ICommandHandler<DeleteUserCommand>
     {
-        readonly UserManager _userManager;
+        private readonly UserManager _userManager;
 
         public DeleteUserCommandHandler(UserManager userManager)
         {

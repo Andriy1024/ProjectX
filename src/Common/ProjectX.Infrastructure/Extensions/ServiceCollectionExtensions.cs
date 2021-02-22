@@ -117,6 +117,6 @@ namespace ProjectX.Infrastructure.Extensions
         }
 
         public static IServiceCollection AddTransactinBehaviour(this IServiceCollection services)
-             => services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehaviour<,>));
+             => services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehaviour<,>));
     }
 }

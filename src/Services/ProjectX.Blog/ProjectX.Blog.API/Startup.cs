@@ -23,13 +23,17 @@ namespace ProjectX.Blog.API
         }
 
         public void ConfigureServices(IServiceCollection services)
-              => BaseConfigure(services)
-                .AddDbServices<BlogDbContext>(o => o.UseNpgsql(DBConnectionString))
-                .AddRabbitMqMessageBus(Configuration)
-                .AddOutboxMessageServices(Configuration, o => o.UseNpgsql(DBConnectionString, sql => sql.MigrationsAssembly(typeof(BlogDbContext).GetTypeInfo().Assembly.GetName().Name)))
-                .AddTransactinBehaviour()
-                .AddRepositories()
-                .AddStartupTasks();
+                 => BaseConfigure(services)
+                   .AddDbServices<BlogDbContext>(o => o.UseNpgsql(DBConnectionString))
+                   .AddTransactinBehaviour()
+                   .AddRabbitMqMessageBus(Configuration)
+                   .AddOutboxMessageServices(Configuration, o => o.UseNpgsql(DBConnectionString, sql => 
+                   {
+                       sql.MigrationsAssembly(typeof(BlogDbContext).GetTypeInfo().Assembly.GetName().Name);
+                       //sql.MigrationsHistoryTable("_MigrationHistory", BlogDbContext.SchemaName)
+                   }))
+                   .AddRepositories()
+                   .AddStartupTasks();
 
         public void Configure(IApplicationBuilder app)
         {

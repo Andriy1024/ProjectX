@@ -49,8 +49,8 @@ namespace ProjectX.Identity.Persistence
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
                     var sessions = await dbContext.Sessions
-                            .Where(s => s.Lifetime.RefreshTokenExpiresAt <= DateTime.UtcNow)
-                            .ToArrayAsync();
+                                                  .Where(s => s.Lifetime.RefreshTokenExpiresAt <= DateTime.UtcNow)
+                                                  .ToArrayAsync();
 
                     foreach (var session in sessions)
                     {
