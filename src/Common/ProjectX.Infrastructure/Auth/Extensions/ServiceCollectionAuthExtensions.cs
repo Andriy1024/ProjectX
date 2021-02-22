@@ -31,7 +31,7 @@ namespace ProjectX.Infrastructure.Auth
                     options.ApiName = apiName;
                     options.Authority = usersUrl;
                     options.RequireHttpsMetadata = false;
-                    options.RoleClaimType = JwtClaimTypes.Role;
+                    options.RoleClaimType = ClaimType.IdentityRole;
                 })
                 .Services;
 

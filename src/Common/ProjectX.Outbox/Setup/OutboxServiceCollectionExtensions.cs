@@ -9,16 +9,17 @@ namespace ProjectX.Outbox
 {
     public static class OutboxServiceCollectionExtensions
     {
-        public static IServiceCollection AddOutboxMessageServices(this IServiceCollection services, IConfiguration configuration, Action<DbContextOptionsBuilder> optionsAction)
+        public static IServiceCollection AddOutboxMessageServices(this IServiceCollection services, IMvcBuilder mvc, IConfiguration configuration, Action<DbContextOptionsBuilder> optionsAction)
         {
             OutboxOptions.Validate(configuration.GetSection(nameof(OutboxOptions)).Get<OutboxOptions>());
 
-            return services.Configure<OutboxOptions>(configuration.GetSection(nameof(OutboxOptions)))
-                           .AddScoped<IOutboxManager, OutboxManager>()
-                           .AddHostedService<OutboxMessagePublisher>()
-                           .AddTransient(typeof(IPipelineBehavior<,>), typeof(InboxMessageBehaviour<,>))
-                           .AddDbContext<OutboxDbContext>(optionsAction)
-                           .AddScoped<IStartupTask, OutboxStartupTask>();
+            return mvc.AddApplicationPart(typeof(OutboxController).Assembly).Services
+                      .Configure<OutboxOptions>(configuration.GetSection(nameof(OutboxOptions)))
+                      .AddScoped<IOutboxManager, OutboxManager>()
+                      .AddHostedService<OutboxMessagePublisher>()
+                      .AddTransient(typeof(IPipelineBehavior<,>), typeof(InboxMessageBehaviour<,>))
+                      .AddDbContext<OutboxDbContext>(optionsAction)
+                      .AddScoped<IStartupTask, OutboxStartupTask>();
         }
     }
 }

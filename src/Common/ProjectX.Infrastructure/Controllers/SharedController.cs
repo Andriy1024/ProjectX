@@ -12,7 +12,7 @@ namespace ProjectX.Infrastructure.Controllers
     /// </summary>
     [ApiControllerAttribute]
     [Produces("application/json")]
-    public abstract class ApiController : ControllerBase
+    public abstract class SharedController : ControllerBase
     {
         protected IMediator Mediator => HttpContext.RequestServices.GetRequiredService<IMediator>();
 

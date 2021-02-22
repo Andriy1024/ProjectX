@@ -27,7 +27,7 @@ namespace ProjectX.Blog.API
                    .AddDbServices<BlogDbContext>(o => o.UseNpgsql(DBConnectionString))
                    .AddTransactinBehaviour()
                    .AddRabbitMqMessageBus(Configuration)
-                   .AddOutboxMessageServices(Configuration, o => o.UseNpgsql(DBConnectionString, sql => 
+                   .AddOutboxMessageServices(MvcBuilder, Configuration, o => o.UseNpgsql(DBConnectionString, sql => 
                    {
                        sql.MigrationsAssembly(typeof(BlogDbContext).GetTypeInfo().Assembly.GetName().Name);
                        //sql.MigrationsHistoryTable("_MigrationHistory", BlogDbContext.SchemaName)

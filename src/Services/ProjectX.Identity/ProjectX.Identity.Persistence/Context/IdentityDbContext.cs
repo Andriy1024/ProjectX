@@ -22,7 +22,9 @@ namespace ProjectX.Identity.Persistence
         public DbSet<SessionEntity> Sessions { get; set; }
 
         private readonly IMediator _mediator;
-        
+
+        public const string SchemaName = "ProjectX.Identity";
+
         public IdentityDbContext(DbContextOptions<IdentityDbContext> options, IMediator mediator) : base(options)
         {
             _mediator = mediator;
@@ -31,7 +33,7 @@ namespace ProjectX.Identity.Persistence
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
+            builder.HasDefaultSchema(SchemaName);
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new SessionConfiguration());
             builder.ApplyConfiguration(new UserRoleConfiguration());

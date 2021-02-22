@@ -10,7 +10,7 @@ using ProjectX.Outbox;
 namespace ProjectX.Identity.Persistence.Migrations.Outbox
 {
     [DbContext(typeof(OutboxDbContext))]
-    [Migration("20210220152004_initial")]
+    [Migration("20210222160842_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

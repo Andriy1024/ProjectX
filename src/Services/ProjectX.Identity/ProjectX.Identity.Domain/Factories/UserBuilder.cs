@@ -54,6 +54,18 @@ namespace ProjectX.Identity.Domain
                 Entity.AddDomainEvent(new UserCreatedDomainEvent(Entity));
                 return base.Build(); ;
             }
+
+            public UserEntity SeedAdmin() => new UserEntity()
+            {
+                Email = "admin@projectX.com",
+                UserName = "admin@projectX.com",
+                FirstName = "Admin",
+                LastName = "Admin",
+                Address = new Address("USA", "Redmond", "Building 92"),
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true,
+                PhoneNumber = "+10000000000",
+            };
         }
     }
 }

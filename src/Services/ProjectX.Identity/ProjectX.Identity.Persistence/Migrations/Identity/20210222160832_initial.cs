@@ -8,8 +8,12 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "ProjectX.Identity");
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
+                schema: "ProjectX.Identity",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -25,6 +29,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
 
             migrationBuilder.CreateTable(
                 name: "AspNetUsers",
+                schema: "ProjectX.Identity",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -56,6 +61,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
+                schema: "ProjectX.Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -70,6 +76,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
                     table.ForeignKey(
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
+                        principalSchema: "ProjectX.Identity",
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -77,6 +84,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
+                schema: "ProjectX.Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -91,6 +99,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
                     table.ForeignKey(
                         name: "FK_AspNetUserClaims_AspNetUsers_UserId",
                         column: x => x.UserId,
+                        principalSchema: "ProjectX.Identity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -98,6 +107,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserLogins",
+                schema: "ProjectX.Identity",
                 columns: table => new
                 {
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
@@ -111,6 +121,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
                     table.ForeignKey(
                         name: "FK_AspNetUserLogins_AspNetUsers_UserId",
                         column: x => x.UserId,
+                        principalSchema: "ProjectX.Identity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -118,6 +129,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserRoles",
+                schema: "ProjectX.Identity",
                 columns: table => new
                 {
                     UserId = table.Column<long>(type: "bigint", nullable: false),
@@ -129,12 +141,14 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
                         column: x => x.RoleId,
+                        principalSchema: "ProjectX.Identity",
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
+                        principalSchema: "ProjectX.Identity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -142,6 +156,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserTokens",
+                schema: "ProjectX.Identity",
                 columns: table => new
                 {
                     UserId = table.Column<long>(type: "bigint", nullable: false),
@@ -155,6 +170,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
                     table.ForeignKey(
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
+                        principalSchema: "ProjectX.Identity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -162,6 +178,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
 
             migrationBuilder.CreateTable(
                 name: "Sessions",
+                schema: "ProjectX.Identity",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -178,6 +195,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
                     table.ForeignKey(
                         name: "FK_Sessions_AspNetUsers_UserId",
                         column: x => x.UserId,
+                        principalSchema: "ProjectX.Identity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -185,49 +203,58 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
+                schema: "ProjectX.Identity",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
+                schema: "ProjectX.Identity",
                 table: "AspNetRoles",
                 column: "NormalizedName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
+                schema: "ProjectX.Identity",
                 table: "AspNetUserClaims",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserLogins_UserId",
+                schema: "ProjectX.Identity",
                 table: "AspNetUserLogins",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserRoles_RoleId",
+                schema: "ProjectX.Identity",
                 table: "AspNetUserRoles",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
+                schema: "ProjectX.Identity",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_Email",
+                schema: "ProjectX.Identity",
                 table: "AspNetUsers",
                 column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
+                schema: "ProjectX.Identity",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sessions_UserId",
+                schema: "ProjectX.Identity",
                 table: "Sessions",
                 column: "UserId");
         }
@@ -235,28 +262,36 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AspNetRoleClaims");
+                name: "AspNetRoleClaims",
+                schema: "ProjectX.Identity");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserClaims");
+                name: "AspNetUserClaims",
+                schema: "ProjectX.Identity");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserLogins");
+                name: "AspNetUserLogins",
+                schema: "ProjectX.Identity");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserRoles");
+                name: "AspNetUserRoles",
+                schema: "ProjectX.Identity");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserTokens");
+                name: "AspNetUserTokens",
+                schema: "ProjectX.Identity");
 
             migrationBuilder.DropTable(
-                name: "Sessions");
+                name: "Sessions",
+                schema: "ProjectX.Identity");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "AspNetRoles",
+                schema: "ProjectX.Identity");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "AspNetUsers",
+                schema: "ProjectX.Identity");
         }
     }
 }

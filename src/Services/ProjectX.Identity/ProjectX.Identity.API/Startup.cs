@@ -31,8 +31,8 @@ namespace ProjectX.Identity.API
         }
 
         public void ConfigureServices(IServiceCollection services)
-                 => BaseConfigure(services)
-                   .AddDbServices<IdentityDbContext>(o => o.UseNpgsql(DBConnectionString))
+        {
+           services.AddDbServices<IdentityDbContext>(o => o.UseNpgsql(DBConnectionString))
                    .AddIdentity<UserEntity, RoleEntity>(options =>
                    {
                        options.User.RequireUniqueEmail = true;
@@ -44,20 +44,25 @@ namespace ProjectX.Identity.API
                    .Services
                    .AddIdentityServer4(DBConnectionString, typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)
                    .AddStartupTasks()
+                   .AddTransactinBehaviour()
                    .AddScopedCache()
                    .AddRabbitMqMessageBus(Configuration)
-                   .AddOutboxMessageServices(Configuration, o => o.UseNpgsql(DBConnectionString, sql => sql.MigrationsAssembly(typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)))
+                   //.AddOutboxMessageServices(Configuration, o => o.UseNpgsql(DBConnectionString, sql => sql.MigrationsAssembly(typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)))
                    .AddHostedService<SessionCleanupWorker>()
-                   .AddTransactinBehaviour()
                    //.AddEmailServices(Configuration)
                    .AddRedisServices(Configuration)
                    .AddSessionBlackListService();
-
+                    BaseConfigure(services)
+                   .AddOutboxMessageServices(MvcBuilder, Configuration, o => o.UseNpgsql(DBConnectionString, sql => sql.MigrationsAssembly(typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)));
+        }
+                   
         public void Configure(IApplicationBuilder app)
         {
-            app.UseMiddleware<BlackListMiddleware>(); 
-                BaseConfigure(app)
-               .UseIdentityServer();
+            app.UseMiddleware<BlackListMiddleware>();
+          
+            BaseConfigure(app);
+
+            app.UseIdentityServer();
         }
     }
 }

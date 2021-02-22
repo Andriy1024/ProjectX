@@ -15,6 +15,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Identity
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("ProjectX.Identity")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);

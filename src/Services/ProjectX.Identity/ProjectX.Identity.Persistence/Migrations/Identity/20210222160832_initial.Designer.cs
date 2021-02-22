@@ -10,13 +10,14 @@ using ProjectX.Identity.Persistence;
 namespace ProjectX.Identity.Persistence.Migrations.Identity
 {
     [DbContext(typeof(IdentityDbContext))]
-    [Migration("20210211104744_initial")]
+    [Migration("20210222160832_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("ProjectX.Identity")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);

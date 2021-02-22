@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace ProjectX.Outbox
 {
-    public sealed class OutboxMessagePublisher : IHostedService
+    public sealed class OutboxMessagePublisher : IHostedService, IDisposable
     {
         private readonly IRabbitMqPublisher _messageBus;
         private readonly ILogger<OutboxMessagePublisher> _logger;
@@ -23,6 +23,8 @@ namespace ProjectX.Outbox
         private readonly TimeSpan _interval;
         private readonly IJsonSerializer _serializer;
         private readonly IServiceScopeFactory _scopeFactory;
+
+        private Timer _timer;
 
         public OutboxMessagePublisher(IRabbitMqPublisher messageBus,
             IOptions<OutboxOptions> options,
@@ -39,52 +41,30 @@ namespace ProjectX.Outbox
             _scopeFactory = scopeFactory;
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
-            await Task.Delay((int)TimeSpan.FromSeconds(5).TotalMilliseconds, cancellationToken);
+            _logger.LogInformation($"{nameof(OutboxMessagePublisher)} is running.");
 
-            _ = Task.Run(async () => 
-            {
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    var jobId = Guid.NewGuid().ToString("N");
+            _timer = new Timer(SendOutboxMessagesAsync, null, TimeSpan.FromSeconds(5), _interval);
 
-                    _logger.LogTrace($"Started sending outbox messages... [job id: '{jobId}']");
-
-                    var stopwatch = new Stopwatch();
-
-                    stopwatch.Start();
-
-                    try
-                    {
-                        await SendOutboxMessagesAsync(cancellationToken);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        if (cancellationToken.IsCancellationRequested)
-                            return;
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(e, e.Message);
-                    }
-
-                    stopwatch.Stop();
-
-                    _logger.LogTrace($"Finished sending outbox messages in {stopwatch.ElapsedMilliseconds} ms [job id: '{jobId}'].");
-
-                    await Task.Delay((int)_interval.TotalMilliseconds, cancellationToken);
-                }
-            });
+            return Task.CompletedTask;
         }
 
-        private async Task SendOutboxMessagesAsync(CancellationToken cancellationToken) 
+        private async void SendOutboxMessagesAsync(object state) 
         {
+            var jobId = Guid.NewGuid().ToString("N");
+
+            _logger.LogTrace($"Started sending outbox messages... [job id: '{jobId}']");
+            
+            var stopwatch = new Stopwatch();
+
+            stopwatch.Start();
+            
             using var scope = _scopeFactory.CreateScope();
 
             var dbContext = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
 
-            var messages = await dbContext.OutboxMessages.Where(m => !m.SentAt.HasValue).ToArrayAsync(cancellationToken);
+            var messages = await dbContext.OutboxMessages.Where(m => !m.SentAt.HasValue).ToArrayAsync();
 
             for (int i = 0; i < messages.Length; i++)
             {
@@ -101,11 +81,21 @@ namespace ProjectX.Outbox
 
                 await dbContext.SaveChangesAsync();
             }
+
+            stopwatch.Stop();
+
+            _logger.LogTrace($"Finished sending outbox messages in {stopwatch.ElapsedMilliseconds} ms [job id: '{jobId}'].");
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            _logger.LogInformation($"{nameof(OutboxMessagePublisher)} is stopping.");
+
+            _timer?.Change(Timeout.Infinite, 0);
+
             return Task.CompletedTask;
         }
+
+        public void Dispose() => _timer?.Dispose();
     }
 }

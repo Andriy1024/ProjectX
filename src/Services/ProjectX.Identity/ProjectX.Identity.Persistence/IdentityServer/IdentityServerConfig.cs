@@ -10,11 +10,9 @@ namespace ProjectX.Identity.Persistence.IdentityServer
         public static class Scopes
         {
             public const string Identity = "identity";
-            public const string KYC = "kyc";
             public const string Internal = "internal";
             public const string Realtime = "realtime";
-            public const string Broker = "broker";
-            public const string Datafeed = "datafeed";
+            public const string Blog = "blog";
         }
 
         public static class Clients
@@ -40,11 +38,9 @@ namespace ProjectX.Identity.Persistence.IdentityServer
                 {
                     ApiSecrets = new List<Secret> { new Secret("identity-api".Sha256(), "identity-api") }
                 },
-                new ApiResource(Scopes.KYC, "Api kyc"),
+                new ApiResource(Scopes.Blog, "Api blog"),
                 new ApiResource(Scopes.Internal, "Internal"),
                 new ApiResource(Scopes.Realtime, "Api realtime"),
-                new ApiResource(Scopes.Broker, "Api broker"),
-                new ApiResource(Scopes.Datafeed, "Api datafeed")
             };
 
         public static IEnumerable<Client> GetClients() =>
@@ -74,10 +70,8 @@ namespace ProjectX.Identity.Persistence.IdentityServer
                         IdentityServerConstants.StandardScopes.Email,
                         IdentityServerConstants.StandardScopes.OfflineAccess,
                         Scopes.Identity,
-                        Scopes.KYC,
+                        Scopes.Blog,
                         Scopes.Realtime,
-                        Scopes.Broker,
-                        Scopes.Datafeed
                     }
                 },
 
@@ -105,11 +99,9 @@ namespace ProjectX.Identity.Persistence.IdentityServer
                         IdentityServerConstants.StandardScopes.Email,
                         IdentityServerConstants.StandardScopes.OfflineAccess,
                         Scopes.Identity,
-                        Scopes.KYC,
                         Scopes.Realtime,
                         Scopes.Internal,
-                        Scopes.Broker,
-                        Scopes.Datafeed
+                        Scopes.Blog
                     }
                 },
 
@@ -139,11 +131,9 @@ namespace ProjectX.Identity.Persistence.IdentityServer
                         IdentityServerConstants.StandardScopes.Address,
                         IdentityServerConstants.StandardScopes.Phone,
                         Scopes.Identity,
-                        Scopes.KYC,
+                        Scopes.Blog,
                         Scopes.Internal,
                         Scopes.Realtime,
-                        Scopes.Broker,
-                        Scopes.Datafeed
                     }
                 }
             };

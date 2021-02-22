@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using ProjectX.Core;
 using ProjectX.Core.BlackList;
 using ProjectX.Core.Cache;
 using ProjectX.Core.DataAccess;
@@ -12,8 +11,6 @@ using ProjectX.Redis.Abstractions;
 using ProjectX.Redis.Implementations;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 
 namespace ProjectX.Infrastructure.Extensions
@@ -96,8 +93,8 @@ namespace ProjectX.Infrastructure.Extensions
                         }
                     });
 
-                    List<string> xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.xml", SearchOption.TopDirectoryOnly).ToList();
-                    xmlFiles.ForEach(xmlFile => options.IncludeXmlComments(xmlFile));
+                    //List<string> xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.xml", SearchOption.TopDirectoryOnly).ToList();
+                    //xmlFiles.ForEach(xmlFile => options.IncludeXmlComments(xmlFile));
                 });
 
         #endregion

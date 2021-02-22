@@ -32,6 +32,8 @@ namespace ProjectX.Infrastructure.Setup
         protected ILoggerFactory LoggerFactory { get; }
         protected IConfiguration Configuration { get; }
 
+        protected IMvcBuilder MvcBuilder { get; private set; }
+
         protected internal BaseStartup(IWebHostEnvironment environment, ILoggerFactory loggerFactory, IConfiguration configuration)
         {
             Environment = environment;
@@ -45,38 +47,44 @@ namespace ProjectX.Infrastructure.Setup
         }
 
         public virtual IServiceCollection BaseConfigure(IServiceCollection services)
-             => services.AddOptions()
-                        .AddHttpContextAccessor()
-                        .Configure<BaseOptions>(Configuration)
-                        .Configure<ConnectionStrings>(Configuration)
-                        .Configure<TOptions>(Configuration)
-                        .AddSwagger(AppOptions.ApiName, AppOptions.IdentityUrl)
-                        .AddIdentityServerAuthorization()
-                        .AddIdentityServerAuthentication(AppOptions.ApiName, AppOptions.IdentityUrl)
-                        .AddMediatR(Assemblies)
-                        .AddAutoMapper(Assemblies)
-                        .AddSingleton<IJsonSerializer, DefaultJsonSerializer>()
-                        .AddSingleton<ISystemTextJsonSerializer, SystemTextJsonSerializer>()
-                        .AddCors(o => o.AddPolicy("CustomPolicy", 
-                                 b => b.AllowAnyOrigin()
-                                       .AllowAnyHeader()
-                                       .AllowAnyMethod()))
-            
-                        .AddMvc()
-                        .AddJsonOptions(options =>
-                        {
-                             options.JsonSerializerOptions.Converters.Add(new JsonNonStringKeyDictionaryConverterFactory());
-                        })
-                        .ConfigureApiBehaviorOptions(o => o.InvalidModelStateResponseFactory = c =>
-                        {
-                            var errors = string.Join(' ', c.ModelState.Values.Where(v => v.Errors.Count > 0)
-                                .SelectMany(v => v.Errors)
-                                .Select(v => v.ErrorMessage));
+                  => AddMvc(services)
+                    .AddOptions()
+                    .AddHttpContextAccessor()
+                    .Configure<BaseOptions>(Configuration)
+                    .Configure<ConnectionStrings>(Configuration)
+                    .Configure<TOptions>(Configuration)
+                    .AddSwagger(AppOptions.ApiName, AppOptions.IdentityUrl)
+                    .AddIdentityServerAuthorization()
+                    .AddIdentityServerAuthentication(AppOptions.ApiName, AppOptions.IdentityUrl)
+                    .AddMediatR(Assemblies)
+                    .AddAutoMapper(Assemblies)
+                    .AddSingleton<IJsonSerializer, DefaultJsonSerializer>()
+                    .AddSingleton<ISystemTextJsonSerializer, SystemTextJsonSerializer>()
+                    .AddCors(o => o.AddPolicy("CustomPolicy",
+                                b => b.AllowAnyOrigin()
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod()));
 
-                            return new BadRequestObjectResult(ResponseFactory.InvalidData(ErrorCode.InvalidData, errors));
-                        })
-                        .AddFluentValidation(t => t.RegisterValidatorsFromAssemblies(Assemblies))
-                        .Services;
+        protected virtual IServiceCollection AddMvc(IServiceCollection services) 
+        {
+            MvcBuilder = services.AddMvc();
+
+            return  MvcBuilder
+                   .AddJsonOptions(options =>
+                   {
+                       options.JsonSerializerOptions.Converters.Add(new JsonNonStringKeyDictionaryConverterFactory());
+                   })
+                   .ConfigureApiBehaviorOptions(o => o.InvalidModelStateResponseFactory = c =>
+                   {
+                       var errors = string.Join(' ', c.ModelState.Values.Where(v => v.Errors.Count > 0)
+                           .SelectMany(v => v.Errors)
+                           .Select(v => v.ErrorMessage));
+
+                       return new BadRequestObjectResult(ResponseFactory.InvalidData(ErrorCode.InvalidData, errors));
+                   })
+                   .AddFluentValidation(t => t.RegisterValidatorsFromAssemblies(Assemblies))
+                   .Services;
+        }
 
         public virtual IApplicationBuilder BaseConfigure(IApplicationBuilder app)
               => app.UseRouting()

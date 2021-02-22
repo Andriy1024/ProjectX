@@ -11,9 +11,9 @@ namespace ProjectX.Identity.Persistence
 {
     public sealed class SessionCleanupWorker : IHostedService, IDisposable
     {
-        Timer _timer;
-        readonly IServiceProvider _serviceProvider;
-        readonly ILogger<SessionCleanupWorker> _logger;
+        private Timer _timer;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<SessionCleanupWorker> _logger;
 
         public SessionCleanupWorker(IServiceProvider serviceProvider, ILogger<SessionCleanupWorker> logger)
         {

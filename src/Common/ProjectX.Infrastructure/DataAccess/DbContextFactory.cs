@@ -18,9 +18,14 @@ namespace ProjectX.Infrastructure.DataAccess
                 .AddEnvironmentVariables()
                 .Build();
 
+            var connectionString = configuration.GetConnectionString(nameof(ConnectionStrings.DbConnection));
+
+            if (string.IsNullOrEmpty(connectionString))
+                throw new ArgumentNullException("ConnectionString is empty.");
+
             var optionsBuilder = new DbContextOptionsBuilder<T>();
 
-            optionsBuilder.UseNpgsql(configuration.GetConnectionString(nameof(ConnectionStrings.DbConnection)));
+            optionsBuilder.UseNpgsql(connectionString);
 
             return Activator.CreateInstance(typeof(T), optionsBuilder.Options) as T;
         }
@@ -36,9 +41,14 @@ namespace ProjectX.Infrastructure.DataAccess
                 .AddEnvironmentVariables()
                 .Build();
 
+            var connectionString = configuration.GetConnectionString(nameof(ConnectionStrings.DbConnection));
+
+            if (string.IsNullOrEmpty(connectionString))
+                throw new ArgumentNullException("ConnectionString is empty.");
+
             var optionsBuilder = new DbContextOptionsBuilder<T>();
 
-            optionsBuilder.UseNpgsql(configuration.GetConnectionString("LocalConnection"));
+            optionsBuilder.UseNpgsql(connectionString);
 
             return Activator.CreateInstance(typeof(T), optionsBuilder.Options, new NoMediator()) as T;
         }

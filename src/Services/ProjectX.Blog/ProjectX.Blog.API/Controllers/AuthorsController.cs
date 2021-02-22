@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectX.Blog.Application;
 using ProjectX.Infrastructure.Controllers;
@@ -12,7 +13,8 @@ namespace ProjectX.Blog.API.Controllers
     /// Author entity it is users from identity server, and  updates via rabbitmq.
     /// </summary>
     [Route("api/authors")]
-    public class AuthorsController : ApiController
+    [Authorize]
+    public class AuthorsController : SharedController
     {
         readonly IMapper _mapper;
         readonly IAuthorRepository _repository;

@@ -48,15 +48,7 @@ namespace ProjectX.Identity.Persistence.Startup
         {
             if (await _userManager.Users.AllAsync(us => us.Email != "admin@projectX.com"))
             {
-                var admin = UserEntity.Factory
-                                      .Email("admin@projectX.com")
-                                      .Name("Admin", "Admin")
-                                      .Address(new Address("USA", "Redmond", "Building 92"))
-                                      .Build();
-
-                admin.EmailConfirmed = true;
-                admin.PhoneNumberConfirmed = true;
-                admin.PhoneNumber = "+10000000000";
+                var admin = UserEntity.Factory.SeedAdmin();
 
                 var result = await _userManager.CreateAsync(admin, "AdminPass123$$");
                 if (!result.Succeeded)
