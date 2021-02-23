@@ -56,7 +56,7 @@ namespace ProjectX.Outbox
                    .IsRequired();
 
             builder.Property(e => e.SerializedMessage)
-                   .HasColumnType("jsonb")
+                   .HasColumnType("json")
                    .IsRequired();
 
             builder.Property(e => e.SavedAt)
