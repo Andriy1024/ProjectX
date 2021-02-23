@@ -10,9 +10,9 @@ namespace ProjectX.Identity.Infrastructure.DomainEventHandlers
 {
     public class UserDeletedDomainEventHandler : IDomainEventHandler<UserDeletedDomainEvent>
     {
-        private readonly IOutboxManager _outBox;
+        private readonly IOutboxTransaction _outBox;
 
-        public UserDeletedDomainEventHandler(IOutboxManager outBox)
+        public UserDeletedDomainEventHandler(IOutboxTransaction outBox)
         {
             _outBox = outBox;
         }

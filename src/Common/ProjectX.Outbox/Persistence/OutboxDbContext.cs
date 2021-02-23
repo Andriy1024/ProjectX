@@ -5,6 +5,8 @@ namespace ProjectX.Outbox
 {
     public sealed class OutboxDbContext : DbContext
     {
+        public const string SchemaName = "ProjectX.Outbox";
+
         public DbSet<InboxMessage> InboxMessages { get; set; }
 
         public DbSet<OutboxMessage> OutboxMessages { get; set; }
@@ -16,6 +18,8 @@ namespace ProjectX.Outbox
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.HasDefaultSchema(SchemaName);
+
             builder.Entity<InboxMessage>(ConfigureInboxMessage);
 
             builder.Entity<OutboxMessage>(ConfigureOutboxMessage);
@@ -52,6 +56,7 @@ namespace ProjectX.Outbox
                    .IsRequired();
 
             builder.Property(e => e.SerializedMessage)
+                   .HasColumnType("jsonb")
                    .IsRequired();
 
             builder.Property(e => e.SavedAt)

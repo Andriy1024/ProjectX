@@ -33,9 +33,13 @@ namespace ProjectX.Identity.Persistence
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
             builder.HasDefaultSchema(SchemaName);
+
             builder.ApplyConfiguration(new UserConfiguration());
+            
             builder.ApplyConfiguration(new SessionConfiguration());
+            
             builder.ApplyConfiguration(new UserRoleConfiguration());
         }
 

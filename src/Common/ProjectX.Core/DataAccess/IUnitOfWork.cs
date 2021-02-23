@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ProjectX.Core.DataAccess
 {
+    /// <summary>
+    /// UnitOfWork is used to manage DB transaction.
+    /// </summary>
     public interface IUnitOfWork
     {
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 namespace ProjectX.Outbox
 {
     /// <summary>
-    /// The manager using db connection and transaction of main app DB context, and used to save Out/In box messages.
+    /// The service using db connection and transaction of main app DB context, and used to save Out/Inbox messages in the scope of the request's transaction.
     /// </summary>
-    public interface IOutboxManager
+    public interface IOutboxTransaction
     {
         /// <summary>
         /// Save the integration event to Outbox.
@@ -21,8 +21,10 @@ namespace ProjectX.Outbox
         Task<bool> HasInboxAsync(Guid id);
 
         /// <summary>
-        /// Save the integration event ot Inbox table.
+        /// Save the integration event to Inbox table.
         /// </summary>
         Task AddInboxAsync(IIntegrationEvent integrationEvent);
+
+        Task OnTransactionCompletedAsync();
     }
 }

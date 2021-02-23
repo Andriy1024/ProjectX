@@ -23,6 +23,7 @@ namespace ProjectX.Blog.Persistence
             //builder.ApplyConfiguration(new ArticleConfiguration());
             //builder.ApplyConfiguration(new CommentConfiguration());
 
+            builder.HasDefaultSchema(SchemaName);
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             
             base.OnModelCreating(builder);

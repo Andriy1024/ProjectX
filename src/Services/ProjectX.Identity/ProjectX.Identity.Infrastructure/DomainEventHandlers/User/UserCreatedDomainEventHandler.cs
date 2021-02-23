@@ -10,9 +10,9 @@ namespace ProjectX.Identity.Infrastructure.DomainEventHandlers
 {
     public sealed class UserCreatedDomainEventHandler : IDomainEventHandler<UserCreatedDomainEvent>
     {
-        private readonly IOutboxManager _outbox;
+        private readonly IOutboxTransaction _outbox;
 
-        public UserCreatedDomainEventHandler(IOutboxManager integrationEvents)
+        public UserCreatedDomainEventHandler(IOutboxTransaction integrationEvents)
         {
             _outbox = integrationEvents;
         }

@@ -46,6 +46,7 @@ namespace ProjectX.Infrastructure.Transaction
                 {
                     await DbContext.SaveChangesAsync();
                     await transaction.CommitAsync();
+                    await Mediator.Publish(new TransactionCommitedEvent(this));
                 }
                 catch
                 {

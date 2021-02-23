@@ -4,22 +4,28 @@ using ProjectX.Core.DataAccess;
 using ProjectX.Core.IntegrationEvents;
 using ProjectX.Core.JSON;
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProjectX.Outbox
 {
-    public sealed class OutboxManager : IOutboxManager
+    public sealed class OutboxTransaction : IOutboxTransaction
     {
+        private readonly Queue<Guid> _messageIds;
         private readonly IJsonSerializer _serializer;
         private readonly OutboxDbContext _outboxDbContext;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly OutboxChannel _outboxChannel;
 
-        public OutboxManager(IJsonSerializer serializer, IUnitOfWork unitOfWork)
+        public OutboxTransaction(IJsonSerializer serializer,
+            IUnitOfWork unitOfWork,
+            OutboxChannel outboxChannel)
         {
             _serializer = serializer;
             _unitOfWork = unitOfWork;
+            _outboxChannel = outboxChannel;
 
             var connection = _unitOfWork.GetCurrentConnection() as DbConnection;
 
@@ -27,6 +33,8 @@ namespace ProjectX.Outbox
             {
                 throw new InvalidCastException("Can't cast UnitOfWork connection to DbConnection.");
             }
+
+            _messageIds = new Queue<Guid>();
 
             _outboxDbContext = new OutboxDbContext(new DbContextOptionsBuilder<OutboxDbContext>()
                                                                 .UseNpgsql(connection)
@@ -37,15 +45,17 @@ namespace ProjectX.Outbox
         {
             var serializedMessage = _serializer.Serialize(integrationEvent);
 
-            var message = new OutboxMessage
-                (integrationEvent,  
-                serializedMessage: serializedMessage,
-                savedAt: DateTime.UtcNow);
+            var message = new OutboxMessage(integrationEvent,  
+                                            serializedMessage: serializedMessage,
+                                            savedAt: DateTime.UtcNow);
 
             _outboxDbContext.Database.UseTransaction(_unitOfWork.GetCurrentTransaction().GetDbTransaction());
 
             await _outboxDbContext.OutboxMessages.AddAsync(message, cancellationToken);
+            
             await _outboxDbContext.SaveChangesAsync(cancellationToken);
+            
+            _messageIds.Enqueue(integrationEvent.Id);
         }
 
         public Task<bool> HasInboxAsync(Guid id) 
@@ -65,6 +75,19 @@ namespace ProjectX.Outbox
             });
 
             await _outboxDbContext.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// The actrion triggered in TransactionCompletedEventHandler
+        /// </summary>
+        public Task OnTransactionCompletedAsync()
+        {
+            while (_messageIds.TryDequeue(out var messageId)) 
+            {
+                _outboxChannel.WriteNewMessages(messageId);
+            }
+                 
+            return Task.CompletedTask;
         }
     }
 }

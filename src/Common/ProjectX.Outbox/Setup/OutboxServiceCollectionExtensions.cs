@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectX.Core;
+using ProjectX.Core.DataAccess;
 using System;
 
 namespace ProjectX.Outbox
@@ -15,11 +16,13 @@ namespace ProjectX.Outbox
 
             return mvc.AddApplicationPart(typeof(OutboxController).Assembly).Services
                       .Configure<OutboxOptions>(configuration.GetSection(nameof(OutboxOptions)))
-                      .AddScoped<IOutboxManager, OutboxManager>()
+                      .AddScoped<IStartupTask, OutboxStartupTask>()
+                      .AddScoped<IOutboxTransaction, OutboxTransaction>()
                       .AddHostedService<OutboxMessagePublisher>()
                       .AddTransient(typeof(IPipelineBehavior<,>), typeof(InboxMessageBehaviour<,>))
                       .AddDbContext<OutboxDbContext>(optionsAction)
-                      .AddScoped<IStartupTask, OutboxStartupTask>();
+                      .AddTransient<INotificationHandler<TransactionCommitedEvent>, TransactionCommitedOutboxHandler>()
+                      .AddSingleton<OutboxChannel>();
         }
     }
 }

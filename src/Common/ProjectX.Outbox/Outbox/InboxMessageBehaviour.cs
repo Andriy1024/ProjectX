@@ -10,21 +10,21 @@ namespace ProjectX.Outbox
     public class InboxMessageBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IIntegrationEvent
     {
-        private readonly IOutboxManager _outboxManager;
+        private readonly IOutboxTransaction _outboxManager;
 
-        public InboxMessageBehaviour(IOutboxManager outboxManager)
+        public InboxMessageBehaviour(IOutboxTransaction outboxManager)
         {
             _outboxManager = outboxManager;
         }
 
-        public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
+        public async Task<TResponse> Handle(TRequest integrationEvent, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
-            if (await _outboxManager.HasInboxAsync(request.Id)) 
+            if (await _outboxManager.HasInboxAsync(integrationEvent.Id)) 
             {
                 throw new InvalidDataException(ErrorCode.MessageAlreadyHandled);
             }
 
-            await _outboxManager.AddInboxAsync(request);
+            await _outboxManager.AddInboxAsync(integrationEvent);
 
             return await next();
         }

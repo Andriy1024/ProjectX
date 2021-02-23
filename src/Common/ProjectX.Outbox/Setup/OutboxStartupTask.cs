@@ -16,7 +16,7 @@ namespace ProjectX.Outbox
 
         public async Task ExecuteAsync(CancellationToken cancellationToken = default)
         {
-            _dbContext.Database.Migrate();
+            await _dbContext.Database.MigrateAsync();
         }
     }
 }
