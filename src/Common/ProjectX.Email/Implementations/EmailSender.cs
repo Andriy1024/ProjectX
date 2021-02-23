@@ -1,15 +1,16 @@
 ﻿using FluentEmail.Core;
 using Microsoft.Extensions.Options;
-using System;
+using ProjectX.Core;
 using System.Threading.Tasks;
 
 namespace ProjectX.Email
 {
     public sealed class EmailSender : IEmailSender
     {
-        readonly IFluentEmailFactory _emailFactory;
-        readonly IRazorViewToStringRenderer _razorRenderer;
-        readonly EmailOptions _options;
+        private readonly IFluentEmailFactory _emailFactory;
+        private readonly IRazorViewToStringRenderer _razorRenderer;
+        private readonly EmailOptions _options;
+        public bool IsEmailSenderEnabled => _options.EnableEmailSender;
 
         public EmailSender(IFluentEmailFactory emailFactory,
             IRazorViewToStringRenderer razorRenderer,
@@ -20,11 +21,13 @@ namespace ProjectX.Email
             _options = options.Value;
         }
 
-        public async Task SendAsync(string to, string subject, string body, string senderName = null, bool isHtml = true)
+        public async Task<Result> SendAsync(string to, string subject, string body, string senderName = null, bool isHtml = true)
         {
-            if (!_options.EnableEmailSender)
-                return;
-
+            if (!IsEmailSenderEnabled) 
+            {
+                return Error.InvalidData(ErrorCode.InvalidData, "The email sender is disabled.");
+            }
+                
             senderName ??= _options.FromName ?? _options.FromEmail; 
 
             var result = await _emailFactory
@@ -35,17 +38,23 @@ namespace ProjectX.Email
                                 .Body(body, isHtml)
                                 .SendAsync();
 
-            if (!result.Successful)
-                 throw new Exception($"EmailSender: {string.Join(", ", result.ErrorMessages)}");
+            if (!result.Successful) 
+            {
+                return Error.ServerError($"EmailSender: {string.Join(", ", result.ErrorMessages)}");
+            }
+
+            return Result.Success;
         }
 
-        public async Task SendAsync<TModel>(string to, string subject, string path, TModel model, string senderName)
+        public async Task<Result> SendAsync<TModel>(string to, string subject, string path, TModel model, string senderName)
         {
-            if (!_options.EnableEmailSender)
-                return;
-
+            if (!IsEmailSenderEnabled) 
+            {
+                return Error.InvalidData(ErrorCode.InvalidData, "The email sender is disabled.");
+            }
+                
             var body = await _razorRenderer.RenderViewToStringAsync(path, model);
-            await SendAsync(to, subject, body, senderName: senderName, isHtml: true);
+            return await SendAsync(to, subject, body, senderName: senderName, isHtml: true);
         }
     }
 }

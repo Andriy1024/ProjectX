@@ -1,17 +1,20 @@
-﻿using System.Threading.Tasks;
+﻿using ProjectX.Core;
+using System.Threading.Tasks;
 
 namespace ProjectX.Email
 {
     public sealed class NoEmailSender : IEmailSender
     {
-        public Task SendAsync(string to, string subject, string body, string senderName = null, bool isHtml = true)
+        public bool IsEmailSenderEnabled => false;
+
+        public Task<Result> SendAsync(string to, string subject, string body, string senderName = null, bool isHtml = true)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(Result.Success);
         }
 
-        public Task SendAsync<TModel>(string to, string subject, string path, TModel model, string senderName = null)
+        public Task<Result> SendAsync<TModel>(string to, string subject, string path, TModel model, string senderName = null)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(Result.Success);
         }
     }
 }

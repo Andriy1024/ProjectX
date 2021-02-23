@@ -16,7 +16,7 @@ using System.Reflection;
 using ProjectX.Identity.Persistence;
 using ProjectX.Redis.Configuration;
 using ProjectX.Infrastructure.BlackList;
-//using ProjectX.Email;
+using ProjectX.Email;
 using ProjectX.RabbitMq.Configuration;
 using Microsoft.EntityFrameworkCore;
 using ProjectX.Outbox;
@@ -47,9 +47,8 @@ namespace ProjectX.Identity.API
                    .AddTransactinBehaviour()
                    .AddScopedCache()
                    .AddRabbitMqMessageBus(Configuration)
-                   //.AddOutboxMessageServices(Configuration, o => o.UseNpgsql(DBConnectionString, sql => sql.MigrationsAssembly(typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)))
                    .AddHostedService<SessionCleanupWorker>()
-                   //.AddEmailServices(Configuration)
+                   .AddEmailServices(Configuration)
                    .AddRedisServices(Configuration)
                    .AddSessionBlackListService();
                     BaseConfigure(services)

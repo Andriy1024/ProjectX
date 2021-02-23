@@ -51,6 +51,16 @@ namespace ProjectX.Identity.Infrastructure
             return user;
         }
 
+        public async Task<ResultOf<UserEntity>> GetUserAsync(Expression<Func<UserEntity, bool>> expression, CancellationToken cancellationToken = default)
+        {
+            var user = await DbContext.Users.FirstOrDefaultAsync(expression, cancellationToken);
+
+            if (user == null)
+                return Error.NotFound(ErrorCode.UserNotFound);
+
+            return user;
+        }
+
         public Task RemoveAsync(UserEntity user, CancellationToken cancellationToken = default) 
         {
             Utill.ThrowIfNull(user, nameof(user));

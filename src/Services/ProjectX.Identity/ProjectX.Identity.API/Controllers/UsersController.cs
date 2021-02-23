@@ -3,9 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ProjectX.Infrastructure.Controllers;
 using ProjectX.Identity.Application;
-using ProjectX.Core.DataAccess;
-using System;
-using ProjectX.Contracts.IntegrationEvents;
 using Microsoft.AspNetCore.Authorization;
 using ProjectX.Core.Auth;
 
@@ -24,8 +21,8 @@ namespace ProjectX.Identity.API.Controllers
         public async Task<IActionResult> FindUserAsync([FromRoute] long id, CancellationToken cancellationToken)
             => MapResponse(await Mediator.Send(new FindUserQuery(id), cancellationToken));
 
-        [HttpPost]
-        [Authorize (Roles = IdentityRoles.Admin)]
+        [HttpPost, Consumes("application/x-www-form-urlencoded")]
+        [Authorize]
         public async Task<IActionResult> CreateUserAsync([FromForm] CreateUserCommand command)
             => MapResponse(await Mediator.Send(command));
 
@@ -36,17 +33,15 @@ namespace ProjectX.Identity.API.Controllers
 
         [Authorize(Roles = IdentityRoles.Admin)]
         [HttpDelete("{id:long:min(1)}")]
-        public async Task<IActionResult> DeleteUserAsync([FromRoute] long id, CancellationToken cancellationToken)
-            => MapResponse(await Mediator.Send(new DeleteUserCommand(id), cancellationToken));
+        public async Task<IActionResult> DeleteUserAsync([FromRoute] long id)
+            => MapResponse(await Mediator.Send(new DeleteUserCommand(id)));
 
-        [HttpGet("test")]
-        public async Task<IActionResult> Test([FromServices] IUnitOfWork unit, CancellationToken cancellationToken)
-        {
-            var aa = typeof(UserDeletedIntegrationEvent).AssemblyQualifiedName;
+        [HttpPost("send-verification-email")]
+        public async Task<IActionResult> SendEmailVerificationAsync([FromBody] SendEmailVerificationCommand command)
+            => MapResponse(await Mediator.Send(command));
 
-            Type  a = Type.GetType(aa);
-            
-            return Ok(a?.Name);
-        }
+        [HttpPut("verify-email")]
+        public async Task<IActionResult> VerifyEmailAsync([FromBody] VerifyEmailCommand command)
+            => MapResponse(await Mediator.Send(command));
     }
 }

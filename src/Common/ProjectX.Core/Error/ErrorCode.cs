@@ -13,6 +13,7 @@
         NoIdentityRoleInAccessToken,
         SessionNotFound,
         SessionInBlackList,
+        EmailAlreadyConfirmed,
 
         EmailNotAvailable,
         UserNotFound,
