@@ -56,6 +56,7 @@ namespace ProjectX.Infrastructure.Setup
                     .AddSwagger(AppOptions.ApiName, AppOptions.IdentityUrl)
                     .AddIdentityServerAuthorization()
                     .AddIdentityServerAuthentication(AppOptions.ApiName, AppOptions.IdentityUrl)
+                    .AddCurrentUser()
                     .AddMediatR(Assemblies)
                     .AddAutoMapper(Assemblies)
                     .AddSingleton<IJsonSerializer, DefaultJsonSerializer>()

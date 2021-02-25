@@ -1,5 +1,4 @@
-﻿using IdentityModel;
-using IdentityServer4.AccessTokenValidation;
+﻿using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -11,7 +10,7 @@ using System;
 
 namespace ProjectX.Infrastructure.Auth
 {
-    public static class ServiceCollectionAuthExtensions
+    public static class AuthServiceCollectionExtensions
     {
         public static IServiceCollection AddIdentityServerAuthorization(this IServiceCollection services)
              => services.AddAuthorization(options =>
@@ -20,7 +19,7 @@ namespace ProjectX.Infrastructure.Auth
                 });
         
         public static IServiceCollection AddIdentityServerAuthentication(this IServiceCollection services, string apiName, string usersUrl)
-            => services.AddAuthentication(options =>
+             => services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
                     options.DefaultAuthenticateScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
@@ -35,7 +34,7 @@ namespace ProjectX.Infrastructure.Auth
                 })
                 .Services;
 
-        public static void AddTokenProvider(this IServiceCollection services, IConfiguration configuration, string identityUrl, int retryCount = 2)
+        public static IServiceCollection AddTokenProvider(this IServiceCollection services, IConfiguration configuration, string identityUrl, int retryCount = 2)
         {
             services.Configure<TokenProviderOptions>(configuration.GetSection("TokenProviderOptions"));
 
@@ -47,6 +46,11 @@ namespace ProjectX.Infrastructure.Auth
             .AddPolicyHandler(RetryPolicies.GetHttpRetryPolicy<TokenProvider>(services, retryCount));
 
             services.AddSingleton<ITokenProvider, TokenProvider>();
+
+            return services;
         }
+
+        public static IServiceCollection AddCurrentUser(this IServiceCollection services)
+            => services.AddScoped<ICurrentUser, CurrentUser>();
     }
 }
