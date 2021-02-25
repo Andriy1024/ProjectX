@@ -46,7 +46,6 @@ namespace ProjectX.Infrastructure.Transaction
                 {
                     await DbContext.SaveChangesAsync();
                     await transaction.CommitAsync();
-                    await Mediator.Publish(new TransactionCommitedEvent(this));
                 }
                 catch
                 {
@@ -61,6 +60,8 @@ namespace ProjectX.Infrastructure.Transaction
                         _currentTransaction = null;
                     }
                 }
+
+                await Mediator.Publish(new TransactionCommitedEvent(this));
             }
         }
 

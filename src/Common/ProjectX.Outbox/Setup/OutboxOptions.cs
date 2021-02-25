@@ -4,7 +4,7 @@ using ProjectX.RabbitMq;
 
 namespace ProjectX.Outbox
 {
-    public class OutboxOptions : IOptions
+    public sealed class OutboxOptions : IOptions
     {
         /// <summary>
         /// The default publish' exchange 

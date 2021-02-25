@@ -10,19 +10,21 @@ namespace ProjectX.Outbox
 {
     public static class OutboxServiceCollectionExtensions
     {
-        public static IServiceCollection AddOutboxMessageServices(this IServiceCollection services, IMvcBuilder mvc, IConfiguration configuration, Action<DbContextOptionsBuilder> optionsAction)
+        public static IServiceCollection AddOutboxMessageServices(this IServiceCollection services, IMvcBuilder mvc, IConfiguration configuration, Action<DbContextOptionsBuilder> dbContextOptions)
         {
             OutboxOptions.Validate(configuration.GetSection(nameof(OutboxOptions)).Get<OutboxOptions>());
 
             return mvc.AddApplicationPart(typeof(OutboxController).Assembly).Services
                       .Configure<OutboxOptions>(configuration.GetSection(nameof(OutboxOptions)))
                       .AddScoped<IStartupTask, OutboxStartupTask>()
+                      .AddDbContext<OutboxDbContext>(dbContextOptions)
                       .AddScoped<IOutboxTransaction, OutboxTransaction>()
-                      .AddHostedService<OutboxMessagePublisher>()
                       .AddTransient(typeof(IPipelineBehavior<,>), typeof(InboxMessageBehaviour<,>))
-                      .AddDbContext<OutboxDbContext>(optionsAction)
                       .AddTransient<INotificationHandler<TransactionCommitedEvent>, TransactionCommitedOutboxHandler>()
-                      .AddSingleton<OutboxChannel>();
+                      .AddSingleton<OutboxChannel>()
+                      .AddSingleton<OutboxPublisher>()
+                      .AddHostedService<OutboxChannelPublisher>()
+                      .AddHostedService<OutboxFallbackPublisher>();
         }
     }
 }

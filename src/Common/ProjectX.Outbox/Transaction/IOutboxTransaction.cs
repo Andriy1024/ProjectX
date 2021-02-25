@@ -25,6 +25,9 @@ namespace ProjectX.Outbox
         /// </summary>
         Task AddInboxAsync(IIntegrationEvent integrationEvent);
 
-        Task OnTransactionCompletedAsync();
+        /// <summary>
+        /// The action is triggered in TransactionCommitedOutboxHandler, to immediate notify publisher about new messages.
+        /// </summary>
+        Task OnTransactionCommitedAsync();
     }
 }

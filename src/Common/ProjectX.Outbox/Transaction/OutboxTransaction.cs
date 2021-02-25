@@ -13,10 +13,14 @@ namespace ProjectX.Outbox
 {
     public sealed class OutboxTransaction : IOutboxTransaction
     {
-        private readonly Queue<Guid> _messageIds;
         private readonly IJsonSerializer _serializer;
         private readonly OutboxDbContext _outboxDbContext;
         private readonly IUnitOfWork _unitOfWork;
+
+        /// <summary>
+        /// The ids are wrote in the outbox channel when the transaction is committed.
+        /// </summary>
+        private readonly Queue<Guid> _messageIds;
         private readonly OutboxChannel _outboxChannel;
 
         public OutboxTransaction(IJsonSerializer serializer,
@@ -77,10 +81,7 @@ namespace ProjectX.Outbox
             await _outboxDbContext.SaveChangesAsync();
         }
 
-        /// <summary>
-        /// The actrion triggered in TransactionCompletedEventHandler
-        /// </summary>
-        public Task OnTransactionCompletedAsync()
+        public Task OnTransactionCommitedAsync()
         {
             while (_messageIds.TryDequeue(out var messageId)) 
             {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjectX.Outbox
 {
-    public class InboxMessageBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    public sealed class InboxMessageBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IIntegrationEvent
     {
         private readonly IOutboxTransaction _outboxManager;

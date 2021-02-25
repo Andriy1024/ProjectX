@@ -14,9 +14,9 @@ namespace ProjectX.Outbox
             _outboxTransaction = outboxTransaction;
         }
 
-        public async Task Handle(TransactionCommitedEvent @event, CancellationToken cancellationToken)
+        public Task Handle(TransactionCommitedEvent @event, CancellationToken cancellationToken)
         {
-            await _outboxTransaction.OnTransactionCompletedAsync();
+            return _outboxTransaction.OnTransactionCommitedAsync();
         }
     }
 }

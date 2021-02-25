@@ -5,6 +5,9 @@ using System.Threading.Channels;
 
 namespace ProjectX.Outbox
 {
+    /// <summary>
+    /// The channel serves as bridge between outbox transaction and channel publisher to reduce publish delay.
+    /// </summary>
     public sealed class OutboxChannel
     {
         private readonly Channel<Guid> _messageIdChannel;
@@ -17,16 +20,16 @@ namespace ProjectX.Outbox
                 SingleWriter = false
             });
         }
-        
+
         /// <summary>
-        /// We don't care too much if it succeeds because we have a fallback to handle "forgotten" messages.
+        /// We don't care too much if it succeeds because we have the OutboxFallbackPublisher to handle "forgotten" messages.
         /// </summary>
         public void WriteNewMessages(Guid messageId) 
         {
             _messageIdChannel.Writer.TryWrite(messageId);            
         }
 
-        public IAsyncEnumerable<Guid> ReadMessageIdsAsync(CancellationToken cancellationToken) 
+        public IAsyncEnumerable<Guid> ReadMessagesIdsAsync(CancellationToken cancellationToken) 
         {
             return _messageIdChannel.Reader.ReadAllAsync(cancellationToken);
         }
