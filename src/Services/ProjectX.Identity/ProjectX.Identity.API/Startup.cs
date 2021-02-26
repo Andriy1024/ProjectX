@@ -20,6 +20,7 @@ using ProjectX.Email;
 using ProjectX.RabbitMq.Configuration;
 using Microsoft.EntityFrameworkCore;
 using ProjectX.Outbox;
+using ProjextX.DataAccess.Extensions;
 
 namespace ProjectX.Identity.API
 {

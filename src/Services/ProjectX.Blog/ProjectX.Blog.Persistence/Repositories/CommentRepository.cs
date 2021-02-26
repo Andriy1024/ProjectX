@@ -1,8 +1,7 @@
 ﻿using ProjectX.Blog.Application;
 using ProjectX.Blog.Domain;
 using ProjectX.Core;
-using ProjectX.Core.DataAccess;
-using ProjectX.Infrastructure.DataAccess;
+using ProjectX.DataAccess;
 
 namespace ProjectX.Blog.Persistence
 {

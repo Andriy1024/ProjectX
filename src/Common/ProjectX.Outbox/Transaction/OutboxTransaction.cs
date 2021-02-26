@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using ProjectX.Core.DataAccess;
+using ProjectX.DataAccess;
 using ProjectX.Core.IntegrationEvents;
 using ProjectX.Core.JSON;
 using System;

@@ -1,34 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using System.Data;
-using System.Threading;
-using System.Threading.Tasks;
+﻿//using Microsoft.EntityFrameworkCore;
+//using Microsoft.EntityFrameworkCore.Storage;
+//using System.Data;
+//using System.Threading;
+//using System.Threading.Tasks;
 
-namespace ProjectX.Core.DataAccess
-{
-    /// <summary>
-    /// UnitOfWork is used to manage DB transaction.
-    /// </summary>
-    public interface IUnitOfWork
-    {
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+//namespace ProjectX.Core.DataAccess
+//{
+//    /// <summary>
+//    /// UnitOfWork is used to manage DB transaction.
+//    /// </summary>
+//    public interface IUnitOfWork
+//    {
+//        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         
-        Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default);
+//        Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default);
 
-        IExecutionStrategy CreateExecutionStrategy();
+//        IExecutionStrategy CreateExecutionStrategy();
 
-        Task<IDbContextTransaction> BeginTransactionAsync();
+//        Task<IDbContextTransaction> BeginTransactionAsync();
 
-        Task CommitTransactionAsync(IDbContextTransaction transaction);
+//        Task CommitTransactionAsync(IDbContextTransaction transaction);
 
-        Task RollbackTransactionAsync();
+//        Task RollbackTransactionAsync();
 
-        IDbContextTransaction GetCurrentTransaction();
+//        IDbContextTransaction GetCurrentTransaction();
 
-        IDbConnection GetCurrentConnection();
+//        IDbConnection GetCurrentConnection();
 
-        bool HasActiveTransaction { get; }
+//        bool HasActiveTransaction { get; }
 
-        DbContext DbContext { get; }
-    }
-}
+//        DbContext DbContext { get; }
+//    }
+//}

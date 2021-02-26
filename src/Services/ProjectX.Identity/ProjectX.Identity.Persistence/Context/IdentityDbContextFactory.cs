@@ -1,4 +1,4 @@
-﻿using ProjectX.Infrastructure.DataAccess;
+﻿using ProjectX.DataAccess;
 
 namespace ProjectX.Identity.Persistence.Context
 {

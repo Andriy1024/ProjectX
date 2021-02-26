@@ -1,6 +1,6 @@
 ﻿using ProjectX.Blog.Domain;
 using ProjectX.Core;
-using ProjectX.Core.DataAccess;
+using ProjectX.DataAccess;
 using System;
 using System.Linq.Expressions;
 using System.Threading;

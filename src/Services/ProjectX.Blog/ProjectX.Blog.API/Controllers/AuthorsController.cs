@@ -14,7 +14,7 @@ namespace ProjectX.Blog.API.Controllers
     /// </summary>
     [Route("api/authors")]
     [Authorize]
-    public class AuthorsController : SharedController
+    public class AuthorsController : BaseApiController
     {
         readonly IMapper _mapper;
         readonly IAuthorRepository _repository;

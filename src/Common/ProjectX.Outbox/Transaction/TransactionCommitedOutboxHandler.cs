@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using ProjectX.Core.DataAccess;
+using ProjectX.DataAccess;
 using System.Threading;
 using System.Threading.Tasks;
 

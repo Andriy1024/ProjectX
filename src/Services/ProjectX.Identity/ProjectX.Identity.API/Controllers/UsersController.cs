@@ -9,7 +9,7 @@ using ProjectX.Core.Auth;
 namespace ProjectX.Identity.API.Controllers
 {
     [Route("api/users")]
-    public class UsersController : SharedController
+    public class UsersController : BaseApiController
     {
         [HttpGet]
         [Authorize]

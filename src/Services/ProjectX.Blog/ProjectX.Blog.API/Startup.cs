@@ -7,10 +7,10 @@ using Microsoft.Extensions.Logging;
 using ProjectX.Blog.Application;
 using ProjectX.Blog.Infrastructure.Extensions;
 using ProjectX.Blog.Persistence;
-using ProjectX.Infrastructure.Extensions;
 using ProjectX.Infrastructure.Setup;
 using ProjectX.Outbox;
 using ProjectX.RabbitMq.Configuration;
+using ProjextX.DataAccess.Extensions;
 using System.Reflection;
 
 namespace ProjectX.Blog.API

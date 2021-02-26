@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectX.Core;
-using ProjectX.Core.DataAccess;
+using ProjectX.DataAccess;
 using System;
 
 namespace ProjectX.Outbox

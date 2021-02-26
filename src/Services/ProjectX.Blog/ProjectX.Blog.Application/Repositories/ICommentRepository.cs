@@ -1,5 +1,5 @@
 ﻿using ProjectX.Blog.Domain;
-using ProjectX.Core.DataAccess;
+using ProjectX.DataAccess;
 
 namespace ProjectX.Blog.Application
 {

@@ -47,6 +47,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectX.Contracts", "Commo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectX.Outbox", "Common\ProjectX.Outbox\ProjectX.Outbox.csproj", "{A59A3C99-4AF5-4B6C-8822-6CD56B4E7C0A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjextX.DataAccess", "Common\ProjextX.DataAccess\ProjextX.DataAccess.csproj", "{A2AA0A6A-A4EC-427A-8D4D-C45C8318F5EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,10 @@ Global
 		{A59A3C99-4AF5-4B6C-8822-6CD56B4E7C0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A59A3C99-4AF5-4B6C-8822-6CD56B4E7C0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A59A3C99-4AF5-4B6C-8822-6CD56B4E7C0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2AA0A6A-A4EC-427A-8D4D-C45C8318F5EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2AA0A6A-A4EC-427A-8D4D-C45C8318F5EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2AA0A6A-A4EC-427A-8D4D-C45C8318F5EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2AA0A6A-A4EC-427A-8D4D-C45C8318F5EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -150,6 +156,7 @@ Global
 		{CEB21205-A842-4768-A372-6FB3AC1457DF} = {C21E3B5B-260D-4EB5-8D3D-F3EC97ADC34C}
 		{CD8C4D93-19E1-4D90-B832-07CC0F321F4E} = {C21E3B5B-260D-4EB5-8D3D-F3EC97ADC34C}
 		{A59A3C99-4AF5-4B6C-8822-6CD56B4E7C0A} = {C21E3B5B-260D-4EB5-8D3D-F3EC97ADC34C}
+		{A2AA0A6A-A4EC-427A-8D4D-C45C8318F5EA} = {C21E3B5B-260D-4EB5-8D3D-F3EC97ADC34C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AAD73823-E426-4F23-B791-C0572279EE50}
