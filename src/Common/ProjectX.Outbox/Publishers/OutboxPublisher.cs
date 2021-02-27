@@ -35,7 +35,7 @@ namespace ProjectX.Outbox
             _exchange = _options.Exchange;
         }
 
-        public async Task PublishAsync(Expression<Func<OutboxMessage, bool>> predicate) 
+        public async Task PublishAsync(Expression<Func<OutboxMessage, bool>> predicate, bool enableRetry = false) 
         {
             using var scope = _scopeFactory.CreateScope();
 
@@ -49,7 +49,11 @@ namespace ProjectX.Outbox
 
                 if(integrationEvent != null) 
                 {
-                    _rabbitMqPublisher.Publish(integrationEvent,  p => p.Exchange.Name = _exchange);
+                    _rabbitMqPublisher.Publish(integrationEvent,  p => 
+                    {
+                        p.Exchange.Name = _exchange;
+                        p.EnableRetryPolicy = enableRetry;
+                    });
 
                     messages[i].SentAt = DateTime.UtcNow;
 

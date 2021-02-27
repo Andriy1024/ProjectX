@@ -9,6 +9,8 @@ namespace ProjectX.RabbitMq
 
         public string RoutingKey { get; set; }
 
+        public bool EnableRetryPolicy { get; set; }
+
         public PublishProperties()
         {
         }

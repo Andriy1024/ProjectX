@@ -103,17 +103,24 @@ namespace ProjectX.RabbitMq
 
             var publisher = InitPublisher(properties);
 
-            var retryPolicy = Policy.Handle<SocketException>()
-                                    .Or<BrokerUnreachableException>()
-                                    .WaitAndRetry(_options.Resilience.RetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
-                                    {
-                                        _logger.LogWarning(ex, "RabbitMQ Client could not connect after {TimeOut}s ({ExceptionMessage})", $"{time.TotalSeconds:n1}", ex.Message);
-                                    });
+            if (eventBusProperties.EnableRetryPolicy) 
+            {
+                var retryPolicy = Policy.Handle<SocketException>()
+                                        .Or<BrokerUnreachableException>()
+                                        .WaitAndRetry(_options.Resilience.RetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+                                        {
+                                            _logger.LogWarning(ex, "RabbitMQ Client could not connect after {TimeOut}s ({ExceptionMessage})", $"{time.TotalSeconds:n1}", ex.Message);
+                                        });
 
-            _circuitBreaker.Wrap(retryPolicy).Execute(() => 
+                _circuitBreaker.Wrap(retryPolicy).Execute(() =>
+                {
+                    publisher.Publish(properties: null, message: body);
+                });
+            }
+            else 
             {
                 publisher.Publish(properties: null, message: body);
-            });
+            }
         }
 
         private Publisher InitPublisher(PublishProperties properties)

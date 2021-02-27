@@ -26,7 +26,7 @@ namespace ProjectX.Outbox
                 
                 try
                 {
-                    await _outboxPublisher.PublishAsync(m => !m.SentAt.HasValue && m.SavedAt > minimumMessageAgeToBatch);
+                    await _outboxPublisher.PublishAsync(m => !m.SentAt.HasValue && m.SavedAt > minimumMessageAgeToBatch, enableRetry: true);
                 }
                 catch (Exception e)
                 {

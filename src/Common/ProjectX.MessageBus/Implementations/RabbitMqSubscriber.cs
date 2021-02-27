@@ -48,7 +48,7 @@ namespace ProjectX.RabbitMq.Implementations
 
         #endregion
 
-        #region IRabbitMqEventBus members
+        #region IRabbitMqSubscriber members
 
 
         public void Subscribe<T>(Action<SubscribeProperties> action)
@@ -179,9 +179,11 @@ namespace ProjectX.RabbitMq.Implementations
         private Subscriber CreateSubscriberChannel<T>(SubscriptionKey key, SubscribeProperties properties)
             where T : IIntegrationEvent
         {
-            if (!_connectionService.IsConnected && !_connectionService.TryConnect())
-                 throw new Exception("Can't connect to RabbitMq.");
-
+            if (!_connectionService.IsConnected && !_connectionService.TryConnect()) 
+            {
+                throw new Exception("Can't connect to RabbitMq.");
+            }
+                 
             var channel = _connectionService.CreateChannel();
 
             channel.ExchangeDeclare(exchange: properties.Exchange.Name, type: properties.Exchange.Type, durable: properties.Exchange.Durable, autoDelete: properties.Exchange.AutoDelete);
@@ -199,7 +201,7 @@ namespace ProjectX.RabbitMq.Implementations
                 await OnMessageReceived<T>(sender, args);
             };
 
-            channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
+            channel.BasicConsume(queue: queueName, autoAck: properties.Consumer.Autoack, consumer: consumer);
 
             channel.CallbackException += (sender, ea) =>
             {
