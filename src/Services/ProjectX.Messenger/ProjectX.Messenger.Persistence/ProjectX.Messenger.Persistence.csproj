@@ -4,4 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ProjectX.Messenger.Application\ProjectX.Messenger.Application.csproj" />
+  </ItemGroup>
+
 </Project>

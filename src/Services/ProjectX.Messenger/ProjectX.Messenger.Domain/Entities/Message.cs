@@ -9,7 +9,7 @@ namespace ProjectX.Messenger.Domain
     {
         public Guid Id { get; private set; }
 
-        public Guid ConversationId { get; private set; }
+        public ConversationId ConversationId { get; private set; }
 
         public long AuthorId { get; private set; }
 
@@ -21,7 +21,7 @@ namespace ProjectX.Messenger.Domain
 
         private Message() { }
 
-        public Message(Guid conversationId, Guid id, long authorId, string content, DateTimeOffset createdAt)
+        public Message(ConversationId conversationId, Guid id, long authorId, string content, DateTimeOffset createdAt)
         {
             ConversationId = conversationId;
             Id = id;

@@ -9,28 +9,26 @@ namespace ProjectX.Messenger.Domain
     /// <summary>
     /// Conversation aggregate.
     /// </summary>
-    public sealed class Conversation : EventSourcedAggregate
+    public sealed class Conversation : EventSourcedAggregate<ConversationId>
     {
+        public ConversationId Id { get; private set; }
+
+        public long FirstParticipant { get; private set; }
+
+        public long SecondParticipant { get; private set; }
+
         public DateTimeOffset CreatedAt { get; private set; }
 
         public IReadOnlyCollection<Message> Messages => _messages;
 
         private readonly List<Message> _messages = new List<Message>();
 
-        public IReadOnlyCollection<long> Members => _members;
+        public Conversation() { }
 
-        private readonly HashSet<long> _members = new HashSet<long>();
-
-        private Conversation() { }
-
-        public Conversation(Guid id, DateTimeOffset createdAt, IEnumerable<long> members, Message message) 
+        private Conversation(ConversationId id, long firstParticipant, long secondParticipant) 
         {
-            if(members.Count() <= 1) 
-            {
-                throw new InvalidDataException(ErrorCode.InvalidData); // to do specific code
-            }
-
-            var @event = new ConversationCreated(id, createdAt, members, message);
+            var @event = new ConversationStarted(id, DateTimeOffset.UtcNow, firstParticipant, secondParticipant);
+            
             Apply(@event);
         }
 
@@ -40,14 +38,21 @@ namespace ProjectX.Messenger.Domain
             conversation.Load(events);
         }
 
-        public static Conversation Create(Guid id, DateTimeOffset createdAt, IEnumerable<long> members, Message message) 
+        public static Conversation Start(long firstParticipant, long secondParticipant) 
         {
-            return new Conversation(id, createdAt, members, message);
+            return new Conversation(new ConversationId(firstParticipant, secondParticipant), firstParticipant, secondParticipant);
         }
 
-        public void AddMessage(Guid id, long author, string content) 
+        public override string GetId() => Id;
+
+        public void AddMessage(Guid messageId, long author, string content) 
         {
-            var @event = new MessageCreated(id: id, 
+            if(!IsBelongToConversation(author)) 
+            {
+                throw new InvalidPermissionException(ErrorCode.InvalidPermission, "The author doesn't belong to the conversation.");
+            }
+
+            var @event = new MessageCreated(messageId: messageId, 
                                             conversationId: Id, 
                                             authorId: author, 
                                             content: content, 
@@ -77,6 +82,19 @@ namespace ProjectX.Messenger.Domain
             Apply(@event);
         }
 
+        public void ClearMessageHistoryFor(long participant) 
+        {
+            if (!IsBelongToConversation(participant))
+            {
+                throw new InvalidPermissionException(ErrorCode.InvalidPermission, "The author doesn't belong to the conversation.");
+            }
+
+            var @event = new ParticipantHistoryCleared(Id, participant);
+            Apply(@event);
+        }
+
+        private bool IsBelongToConversation(long userId) => FirstParticipant == userId || SecondParticipant == userId;
+        
         private Message GetMessageRequired(Guid id) 
         {
             var message = _messages.FirstOrDefault(m => m.Id == id);
@@ -89,17 +107,18 @@ namespace ProjectX.Messenger.Domain
             return message;
         }
 
-        private void When(ConversationCreated @event) 
+        private void When(ConversationStarted @event) 
         {
-            Id = @event.Id;
+            Id = new ConversationId(@event.FirstParticipant, @event.SecondParticipant);
+            FirstParticipant = @event.FirstParticipant;
+            SecondParticipant = @event.SecondParticipant;
             CreatedAt = @event.CreatedAt;
-            _messages.Add(@event.Message);
         }
 
         private void When(MessageCreated @event) 
         {
-            var message = new Message(conversationId: @event.ConversationId, 
-                                      id: @event.Id,
+            var message = new Message(conversationId: Id, 
+                                      id: @event.MessageId,
                                       authorId: @event.AuthorId,
                                       content: @event.Content,
                                       createdAt: @event.CreatedAt);
@@ -118,6 +137,10 @@ namespace ProjectX.Messenger.Domain
             var message = GetMessageRequired(@event.MessageId);
 
             _messages.Remove(message);
+        }
+
+        private void When(ParticipantHistoryCleared @event) 
+        {
         }
     }
 }

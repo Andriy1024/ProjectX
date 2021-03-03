@@ -5,9 +5,9 @@ namespace ProjectX.Messenger.Domain
 {
     public sealed class MessageCreated : IDomainEvent
     {
-        public Guid Id { get; private set; }
+        public Guid MessageId { get; private set; }
 
-        public Guid ConversationId { get; private set; }
+        public string ConversationId { get; private set; }
 
         public long AuthorId { get; private set; }
 
@@ -17,9 +17,9 @@ namespace ProjectX.Messenger.Domain
 
         private MessageCreated() { }
 
-        public MessageCreated(Guid id, Guid conversationId, long authorId, string content, DateTimeOffset createdAt)
+        public MessageCreated(Guid messageId, ConversationId conversationId, long authorId, string content, DateTimeOffset createdAt)
         {
-            Id = id;
+            MessageId = messageId;
             ConversationId = conversationId;
             AuthorId = authorId;
             Content = content;

@@ -1,51 +1,54 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Marten;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ProjectX.Infrastructure.Setup;
+using ProjectX.Messenger.Application;
+using ProjectX.Messenger.Domain;
 
 namespace ProjectX.Messenger.API
 {
-    public class Startup
+    public class Startup : BaseStartup<MessangerAppOptions>
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment environment, 
+                       ILoggerFactory loggerFactory, 
+                       IConfiguration configuration) 
+            : base(environment, loggerFactory, configuration)
         {
-            Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            BaseConfigure(services);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
+            BaseConfigure(app);
+        }
+
+        private void ConfigureMarten(IServiceCollection services) 
+        {
+            services.AddMarten(o => 
             {
-                app.UseDeveloperExceptionPage();
-            }
+                o.AutoCreateSchemaObjects = AutoCreate.All;
 
-            app.UseHttpsRedirection();
+                o.DatabaseSchemaName = "DocumentStore";
+                o.Events.DatabaseSchemaName = "EventStore";
 
-            app.UseRouting();
 
-            app.UseAuthorization();
+                // This is enough to tell Marten that the User
+                // document is persisted and needs schema objects
+                //o.Schema.For<User>();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+                // Lets Marten know that the event store is active
+                o.Events.AddEventType(typeof(ConversationStarted));
+
+                //store.Schema.ApplyAllConfiguredChangesToDatabase();
+            })
+            .InitializeStore();
         }
     }
 }
