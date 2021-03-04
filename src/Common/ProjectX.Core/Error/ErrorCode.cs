@@ -7,6 +7,7 @@
         InvalidData,
         InvalidPermission,
         NotFound,
+        InboxMessageAlreadyHandled,
 
         //Identity
         NoIdentityIdInAccessToken,
@@ -23,6 +24,8 @@
         CommentNotFound,
         AuthorNotFound,
 
-        MessageAlreadyHandled
+        //Messenger
+        ConversationMessageNotFound,
+        ConversationNotFound,
     }
 }

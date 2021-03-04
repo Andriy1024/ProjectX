@@ -22,7 +22,7 @@ namespace ProjectX.Messenger.Persistence
 
             var events = await _documentSession.Events.FetchStreamAsync(id);
 
-            if (events.Count > 0) return default;
+            if (events.Count == 0) return default;
 
             var aggregate = new T();
 

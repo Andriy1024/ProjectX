@@ -15,7 +15,7 @@ namespace ProjectX.Messenger.Domain
 
         private MessageUpdated() {}
 
-        public MessageUpdated(ConversationId conversationId, Guid messageId, string content, DateTimeOffset updatedAt)
+        public MessageUpdated(string conversationId, Guid messageId, string content, DateTimeOffset updatedAt)
         {
             ConversationId = conversationId;
             MessageId = messageId;

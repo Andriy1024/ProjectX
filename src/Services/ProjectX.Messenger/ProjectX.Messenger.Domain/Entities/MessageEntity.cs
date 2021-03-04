@@ -5,7 +5,7 @@ namespace ProjectX.Messenger.Domain
     /// <summary>
     /// Conversation message entity.
     /// </summary>
-    public sealed class Message
+    public sealed class MessageEntity
     {
         public Guid Id { get; private set; }
 
@@ -19,9 +19,9 @@ namespace ProjectX.Messenger.Domain
 
         public DateTimeOffset? UpdatedAt { get; private set; }
 
-        private Message() { }
+        private MessageEntity() { }
 
-        public Message(ConversationId conversationId, Guid id, long authorId, string content, DateTimeOffset createdAt)
+        public MessageEntity(ConversationId conversationId, Guid id, long authorId, string content, DateTimeOffset createdAt)
         {
             ConversationId = conversationId;
             Id = id;

@@ -23,5 +23,10 @@ namespace ProjectX.Messenger.API.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteMessageAsync([FromBody] DeleteMessage command)
             => MapResponse(await Mediator.Send(command));
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetConversationViewAsync([FromQuery] GetConversationViewQuery query)
+           => MapResponse(await Mediator.Send(query));
     }
 }

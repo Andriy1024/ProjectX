@@ -21,7 +21,7 @@ namespace ProjectX.Outbox
         {
             if (await _outboxManager.HasInboxAsync(integrationEvent.Id)) 
             {
-                throw new InvalidDataException(ErrorCode.MessageAlreadyHandled);
+                throw new InvalidDataException(ErrorCode.InboxMessageAlreadyHandled);
             }
 
             await _outboxManager.AddInboxAsync(integrationEvent);

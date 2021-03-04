@@ -15,6 +15,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Outbox
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("ProjectX.Outbox")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
@@ -55,7 +56,7 @@ namespace ProjectX.Identity.Persistence.Migrations.Outbox
 
                     b.Property<string>("SerializedMessage")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("json");
 
                     b.HasKey("Id");
 

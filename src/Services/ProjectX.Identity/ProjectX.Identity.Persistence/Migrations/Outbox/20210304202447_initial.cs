@@ -7,8 +7,12 @@ namespace ProjectX.Identity.Persistence.Migrations.Outbox
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "ProjectX.Outbox");
+
             migrationBuilder.CreateTable(
                 name: "InboxMessages",
+                schema: "ProjectX.Outbox",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -22,11 +26,12 @@ namespace ProjectX.Identity.Persistence.Migrations.Outbox
 
             migrationBuilder.CreateTable(
                 name: "OutboxMessages",
+                schema: "ProjectX.Outbox",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     MessageType = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
-                    SerializedMessage = table.Column<string>(type: "text", nullable: false),
+                    SerializedMessage = table.Column<string>(type: "json", nullable: false),
                     SavedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     SentAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
@@ -39,10 +44,12 @@ namespace ProjectX.Identity.Persistence.Migrations.Outbox
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "InboxMessages");
+                name: "InboxMessages",
+                schema: "ProjectX.Outbox");
 
             migrationBuilder.DropTable(
-                name: "OutboxMessages");
+                name: "OutboxMessages",
+                schema: "ProjectX.Outbox");
         }
     }
 }

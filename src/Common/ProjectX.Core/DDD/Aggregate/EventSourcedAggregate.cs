@@ -1,19 +1,8 @@
-﻿using ProjectX.Core;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace ProjectX.Messenger.Domain
+namespace ProjectX.Core
 {
-    public interface IEventSourcedAggregate 
-    {
-        string GetId();
-        int Version { get; }
-        IReadOnlyCollection<IDomainEvent> Changes { get; }
-        void ClearChanges();
-        void Load(IEnumerable<IDomainEvent> events);
-    }
-
-    public abstract class EventSourcedAggregate<TKey> : IEventSourcedAggregate
+    public abstract class EventSourcedAggregate : IEventSourcedAggregate
     {
         /// <summary>
         /// Changes that should be committed to an event store.
@@ -34,16 +23,13 @@ namespace ProjectX.Messenger.Domain
         /// </summary>
         public int Version { get; private set; }
 
-        protected void When(IDomainEvent @event)
-        {
-            When((dynamic)@event);
-            Version++;
-        }
+        protected abstract void When(IDomainEvent @event);
 
         protected void Apply(IDomainEvent evt)
         {
             _changes.Add(evt);
             When(evt);
+            Version++;
         }
 
         public void Load(IEnumerable<IDomainEvent> events)
@@ -51,6 +37,7 @@ namespace ProjectX.Messenger.Domain
             foreach (var @event in events)
             {
                 When(@event);
+                Version++;
             }
         }
     }

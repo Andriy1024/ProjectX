@@ -2,43 +2,26 @@
 
 namespace ProjectX.Messenger.Domain
 {
-    public struct ConversationId : IEquatable<ConversationId>
+    public readonly struct ConversationId : IEquatable<ConversationId>
     {
         private const string _keyPrefix = "CONVERSATION";
 
-        public string Value { get; }
+        public readonly string Value;
 
         public ConversationId(long user1, long user2)
         {
-            if (user1 > user2)
-            {
-                Value = $"{_keyPrefix}.{user1}-{user2}";
-            }
-            else
-            {
-                Value = $"{_keyPrefix}.{user2}-{user1}";
-            }
+            Value = user1 > user2
+                          ? $"{_keyPrefix}.{user1}-{user2}"
+                          : $"{_keyPrefix}.{user2}-{user1}";
         }
 
-        public override string ToString()
-        {
-            return Value;
-        }
+        public override string ToString() => Value;
 
-        public override int GetHashCode()
-        {
-            return Value.GetHashCode();
-        }
+        public override int GetHashCode() => Value.GetHashCode();
 
-        public override bool Equals(object obj)
-        {
-            return obj != null && obj is ConversationId key && Equals(key);
-        }
+        public override bool Equals(object obj) => obj != null && obj is ConversationId key && Equals(key);
 
-        public bool Equals(ConversationId other)
-        {
-            return Value.Equals(other.Value);
-        }
+        public bool Equals(ConversationId other) => Value.Equals(other.Value);
 
         public static implicit operator string(ConversationId id) => id.Value;
     }

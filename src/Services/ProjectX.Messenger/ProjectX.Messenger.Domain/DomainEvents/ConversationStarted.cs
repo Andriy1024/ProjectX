@@ -15,7 +15,7 @@ namespace ProjectX.Messenger.Domain
 
         private ConversationStarted() {}
 
-        public ConversationStarted(ConversationId id, DateTimeOffset createdAt, long firstParticipant, long secondParticipant)
+        public ConversationStarted(string id, DateTimeOffset createdAt, long firstParticipant, long secondParticipant)
         {
             Id = id;
             CreatedAt = createdAt;

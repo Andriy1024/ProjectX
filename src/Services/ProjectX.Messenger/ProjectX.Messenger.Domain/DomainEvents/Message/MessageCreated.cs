@@ -17,7 +17,7 @@ namespace ProjectX.Messenger.Domain
 
         private MessageCreated() { }
 
-        public MessageCreated(Guid messageId, ConversationId conversationId, long authorId, string content, DateTimeOffset createdAt)
+        public MessageCreated(Guid messageId, string conversationId, long authorId, string content, DateTimeOffset createdAt)
         {
             MessageId = messageId;
             ConversationId = conversationId;

@@ -1,4 +1,5 @@
-﻿using ProjectX.Messenger.Domain;
+﻿using ProjectX.Core;
+using ProjectX.Messenger.Domain;
 using System.Threading.Tasks;
 
 namespace ProjectX.Messenger.Application

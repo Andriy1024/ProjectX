@@ -1,11 +1,10 @@
 ﻿using ProjectX.Core;
+using ProjectX.Messenger.Application.Views;
 
 namespace ProjectX.Messenger.Application
 {
-    public class SendMessage : ICommand
+    public class GetConversationViewQuery : IQuery<ConversationView>
     {
         public long CompanionId { get; set; }
-
-        public string Content { get; set; }
     }
 }

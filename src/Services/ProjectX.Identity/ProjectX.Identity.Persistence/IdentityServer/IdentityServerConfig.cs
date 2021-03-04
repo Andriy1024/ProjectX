@@ -13,6 +13,7 @@ namespace ProjectX.Identity.Persistence.IdentityServer
             public const string Internal = "internal";
             public const string Realtime = "realtime";
             public const string Blog = "blog";
+            public const string Messenger = "messenger";
         }
 
         public static class Clients
@@ -41,6 +42,7 @@ namespace ProjectX.Identity.Persistence.IdentityServer
                 new ApiResource(Scopes.Blog, "Api blog"),
                 new ApiResource(Scopes.Internal, "Internal"),
                 new ApiResource(Scopes.Realtime, "Api realtime"),
+                new ApiResource(Scopes.Messenger, "Api messenger")
             };
 
         public static IEnumerable<Client> GetClients() =>
@@ -72,6 +74,7 @@ namespace ProjectX.Identity.Persistence.IdentityServer
                         Scopes.Identity,
                         Scopes.Blog,
                         Scopes.Realtime,
+                        Scopes.Messenger
                     }
                 },
 
@@ -101,7 +104,8 @@ namespace ProjectX.Identity.Persistence.IdentityServer
                         Scopes.Identity,
                         Scopes.Realtime,
                         Scopes.Internal,
-                        Scopes.Blog
+                        Scopes.Blog,
+                        Scopes.Messenger
                     }
                 },
 
@@ -134,6 +138,7 @@ namespace ProjectX.Identity.Persistence.IdentityServer
                         Scopes.Blog,
                         Scopes.Internal,
                         Scopes.Realtime,
+                        Scopes.Messenger
                     }
                 }
             };
