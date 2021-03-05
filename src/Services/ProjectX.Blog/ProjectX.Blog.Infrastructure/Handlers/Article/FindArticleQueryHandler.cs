@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectX.Blog.Infrastructure.Handlers
 {
-    public sealed class FindArticleQueryHandler : IQueryHandler<FindArticleQuery, ArticleDto>
+    public sealed class FindArticleQueryHandler : IQueryHandler<FindArticleQuery, FullArticleDto>
     {
         private readonly IMapper _mapper;
         private readonly IArticleRepository _repository;
@@ -17,14 +17,14 @@ namespace ProjectX.Blog.Infrastructure.Handlers
             _repository = repository;
         }
 
-        public async Task<IResponse<ArticleDto>> Handle(FindArticleQuery query, CancellationToken cancellationToken)
+        public async Task<IResponse<FullArticleDto>> Handle(FindArticleQuery query, CancellationToken cancellationToken)
         {
             var maybeArticle = await _repository.GetFullArticleAsync(a => a.Id == query.Id, cancellationToken);
 
             if (maybeArticle.IsFailed)
-                return ResponseFactory.Failed<ArticleDto>(maybeArticle.Error);
+                return ResponseFactory.Failed<FullArticleDto>(maybeArticle.Error);
 
-            return ResponseFactory.Success(_mapper.Map<ArticleDto>(maybeArticle.Result));
+            return ResponseFactory.Success(_mapper.Map<FullArticleDto>(maybeArticle.Result));
         }
     }
 }

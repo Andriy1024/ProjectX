@@ -26,7 +26,7 @@ namespace ProjectX.Blog.Domain
 
         public ArticleSpecificationBuilder Search(string search) 
         {
-            if (string.IsNullOrEmpty(search)) 
+            if (!string.IsNullOrEmpty(search)) 
             {
                 SetSpecification(new ArticleSearchSpecefication(search));
             }

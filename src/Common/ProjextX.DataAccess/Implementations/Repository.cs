@@ -245,14 +245,14 @@ namespace ProjectX.DataAccess
                 : ResultOf<TOut>.Success(entity);
         }
 
-        private ValueTask<int> CountAsync<T>(Expression<Func<TEntity, bool>> expression, T[] entities, IPaginationOptions pagination, CancellationToken cancellationToken)
+        protected ValueTask<int> CountAsync<T>(Expression<Func<TEntity, bool>> expression, T[] entities, IPaginationOptions pagination, CancellationToken cancellationToken)
         {
             return pagination.Skip == 0 && entities.Length < pagination.Take
                       ? new ValueTask<int>(entities.Length)
                       : new ValueTask<int>(DbSet.CountAsync(expression, cancellationToken));
         }
 
-        private ValueTask<int> CountAsync<T>(T[] entities, IPaginationOptions pagination, CancellationToken cancellationToken)
+        protected ValueTask<int> CountAsync<T>(T[] entities, IPaginationOptions pagination, CancellationToken cancellationToken)
         {
             return pagination.Skip == 0 && entities.Length < pagination.Take
                       ? new ValueTask<int>(entities.Length)

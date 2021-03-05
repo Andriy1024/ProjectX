@@ -53,7 +53,7 @@ namespace ProjectX.Outbox
             }));
         }
 
-        private IIntegrationEvent? Deserialize(string type, string json) 
+        private object? Deserialize(string type, string json) 
         {
             try
             {

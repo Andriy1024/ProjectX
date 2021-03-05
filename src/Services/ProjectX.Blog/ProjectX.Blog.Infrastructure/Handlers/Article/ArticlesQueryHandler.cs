@@ -20,7 +20,7 @@ namespace ProjectX.Blog.Infrastructure.Handlers
 
         public async Task<IResponse<ArticleDto[]>> Handle(ArticlesQuery query, CancellationToken cancellationToken)
         {
-            var response = await _repository.GetAsync(ArticleEntity.SpeceficationFactory
+            var response = await _repository.GetArticlesWithAuthorAsync(ArticleEntity.SpeceficationFactory
                                             .Search(query.Search)
                                             .WhereAuthor(query.AuthorId)
                                             .PublishedAt(query.PublishedAt)

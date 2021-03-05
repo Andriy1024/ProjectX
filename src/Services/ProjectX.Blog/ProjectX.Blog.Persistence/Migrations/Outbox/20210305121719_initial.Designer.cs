@@ -10,13 +10,14 @@ using ProjectX.Outbox;
 namespace ProjectX.Blog.Persistence.Migrations.Outbox
 {
     [DbContext(typeof(OutboxDbContext))]
-    [Migration("20210220150410_initial")]
+    [Migration("20210305121719_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("ProjectX.Outbox")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
@@ -57,7 +58,7 @@ namespace ProjectX.Blog.Persistence.Migrations.Outbox
 
                     b.Property<string>("SerializedMessage")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("json");
 
                     b.HasKey("Id");
 

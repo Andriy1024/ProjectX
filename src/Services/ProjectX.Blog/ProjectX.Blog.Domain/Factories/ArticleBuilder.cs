@@ -7,11 +7,11 @@ namespace ProjectX.Blog.Domain
     {
         public sealed class Builder : EntityBuilder<ArticleEntity>
         {
-            public Builder CreateArticle(string tittle, string body)
+            public Builder CreateArticle(string title, string body)
             {
                 Entity = new ArticleEntity()
                 {
-                    Title = tittle,
+                    Title = title,
                     Body = body
                 };
 
