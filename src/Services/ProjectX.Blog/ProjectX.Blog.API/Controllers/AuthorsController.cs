@@ -14,10 +14,10 @@ namespace ProjectX.Blog.API.Controllers
     /// </summary>
     [Route("api/authors")]
     [Authorize]
-    public class AuthorsController : BaseApiController
+    public sealed class AuthorsController : BaseApiController
     {
-        readonly IMapper _mapper;
-        readonly IAuthorRepository _repository;
+        private readonly IMapper _mapper;
+        private readonly IAuthorRepository _repository;
 
         public AuthorsController(IMapper mapper, IAuthorRepository repository)
         {

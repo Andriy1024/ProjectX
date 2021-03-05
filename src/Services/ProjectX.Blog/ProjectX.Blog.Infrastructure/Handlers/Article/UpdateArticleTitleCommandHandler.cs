@@ -9,9 +9,9 @@ namespace ProjectX.Blog.Infrastructure.Handlers
 {
     public sealed class UpdateArticleTitleCommandHandler : ICommandHandler<UpdateArticleTitleCommand, ArticleDto>
     {
-        readonly IArticleRepository _repository;
-        readonly ICurrentUser _currentUser;
-        readonly IMapper _mapper;
+        private readonly IArticleRepository _repository;
+        private readonly ICurrentUser _currentUser;
+        private readonly IMapper _mapper;
 
         public UpdateArticleTitleCommandHandler(IArticleRepository repository, ICurrentUser currentUser, IMapper mapper)
         {

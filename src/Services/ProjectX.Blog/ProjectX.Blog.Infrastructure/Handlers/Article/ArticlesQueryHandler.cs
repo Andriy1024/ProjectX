@@ -9,8 +9,8 @@ namespace ProjectX.Blog.Infrastructure.Handlers
 {
     public sealed class ArticlesQueryHandler : IQueryHandler<ArticlesQuery, ArticleDto[]>
     {
-        readonly IMapper _mapper;
-        readonly IArticleRepository _repository;
+        private readonly IMapper _mapper;
+        private readonly IArticleRepository _repository;
 
         public ArticlesQueryHandler(IMapper mapper, IArticleRepository repository)
         {

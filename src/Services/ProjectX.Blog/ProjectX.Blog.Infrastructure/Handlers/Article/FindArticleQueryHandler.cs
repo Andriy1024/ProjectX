@@ -8,8 +8,8 @@ namespace ProjectX.Blog.Infrastructure.Handlers
 {
     public sealed class FindArticleQueryHandler : IQueryHandler<FindArticleQuery, ArticleDto>
     {
-        readonly IMapper _mapper;
-        readonly IArticleRepository _repository;
+        private readonly IMapper _mapper;
+        private readonly IArticleRepository _repository;
 
         public FindArticleQueryHandler(IMapper mapper, IArticleRepository repository)
         {

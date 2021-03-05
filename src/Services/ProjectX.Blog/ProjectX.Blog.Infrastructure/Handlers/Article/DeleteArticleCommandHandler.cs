@@ -8,8 +8,8 @@ namespace ProjectX.Blog.Infrastructure.Handlers
 {
     public sealed class DeleteArticleCommandHandler : ICommandHandler<DeleteArticleCommand>
     {
-        readonly IArticleRepository _repository;
-        readonly ICurrentUser _currentUser;
+        private readonly IArticleRepository _repository;
+        private readonly ICurrentUser _currentUser;
 
         public DeleteArticleCommandHandler(IArticleRepository repository, ICurrentUser currentUser)
         {

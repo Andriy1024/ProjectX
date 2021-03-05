@@ -4,17 +4,28 @@ using Microsoft.Extensions.DependencyInjection;
 using ProjectX.Infrastructure.REST;
 using ProjectX.Core;
 using System;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace ProjectX.Infrastructure.Controllers
 {
     /// <summary>
     /// Represents base api controller with integrated IMediator service, and response mapping.
     /// </summary>
-    [ApiControllerAttribute]
+    [ApiController]
     [Produces("application/json")]
     public abstract class BaseApiController : ControllerBase
     {
         protected IMediator Mediator => HttpContext.RequestServices.GetRequiredService<IMediator>();
+
+        protected async Task<IActionResult> Send(ICommand command) 
+            => MapResponse(await Mediator.Send(command));
+
+        protected async Task<IActionResult> Send<TResult>(ICommand<TResult> command)
+            => MapResponse(await Mediator.Send(command));
+
+        protected async Task<IActionResult> Send<TResult>(IQuery<TResult> command, CancellationToken ct)
+            => MapResponse(await Mediator.Send(command, ct));
 
         protected IActionResult MapResponse<T>(IResponse<T> response)
         {

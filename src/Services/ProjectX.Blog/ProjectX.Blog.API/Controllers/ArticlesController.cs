@@ -7,7 +7,7 @@ using ProjectX.Infrastructure.Controllers;
 namespace ProjectX.Blog.API.Controllers
 {
     [Route("api/articles")]
-    public class ArticlesController : BaseApiController
+    public sealed class ArticlesController : BaseApiController
     {
         [HttpGet("{id:long:min(1)}")]
         public async Task<IActionResult> FindArticleAsync([FromRoute] long id, CancellationToken cancellationToken)

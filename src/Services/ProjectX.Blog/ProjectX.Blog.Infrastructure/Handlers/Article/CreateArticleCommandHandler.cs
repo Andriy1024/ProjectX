@@ -10,10 +10,10 @@ namespace ProjectX.Blog.Infrastructure.Handlers
 {
     public sealed class CreateArticleCommandHandler : CommandHandler<CreateArticleCommand, ArticleDto>
     {
-        readonly IMapper _mapper;
-        readonly IArticleRepository _articleRepository;
-        readonly ICurrentUser _currentUser;
-        readonly IAuthorRepository _authorRepository;
+        private readonly IMapper _mapper;
+        private readonly IArticleRepository _articleRepository;
+        private readonly ICurrentUser _currentUser;
+        private readonly IAuthorRepository _authorRepository;
 
         public CreateArticleCommandHandler(IMapper mapper, 
             IArticleRepository articleRepository, 

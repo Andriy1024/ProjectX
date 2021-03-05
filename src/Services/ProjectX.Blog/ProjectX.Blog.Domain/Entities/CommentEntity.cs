@@ -1,4 +1,5 @@
 ﻿using ProjectX.Core;
+using ProjectX.Core.Exceptions;
 using System;
 
 namespace ProjectX.Blog.Domain
@@ -18,27 +19,32 @@ namespace ProjectX.Blog.Domain
 
         private CommentEntity() { }
 
-        public CommentEntity(AuthorEntity author, ArticleEntity article, string text)
+        public CommentEntity(long authorId, long articleId, string text)
         {
-            Utill.ThrowIfNull(author, nameof(author));
-            Utill.ThrowIfNull(article, nameof(article));
-
-            Author = author;
-            AuthorId = author.Id;
-            Article = article;
-            ArticleId = article.Id;
+            AuthorId = authorId;
+            ArticleId = articleId;
             Text = text;
             CreatedAt = UpdatedAt = DateTime.UtcNow;
             AddDomainEvent(new CommentCreated(this));
         }
 
-        public void Delete() 
+        public void Delete(long deleteBy) 
         {
+            if(deleteBy != AuthorId) 
+            {
+                throw new InvalidPermissionException(ErrorCode.InvalidPermission, "Comment can be deleted only by the owner.");
+            }
+
             AddDomainEvent(new CommentDeleted(this));
         }
 
-        public void Update(string text) 
+        public void Update(string text, long updateBy) 
         {
+            if (updateBy != AuthorId)
+            {
+                throw new InvalidPermissionException(ErrorCode.InvalidPermission, "Comment can be updated only by the owner.");
+            }
+
             Text = text;
             UpdatedAt = DateTime.UtcNow;
             AddDomainEvent(new CommentUpdated(this));
