@@ -41,21 +41,21 @@ namespace ProjectX.Core.Threading.Workers
             }
         }
 
-        public ValueTask EnqueueAsync(T job)
+        public async ValueTask EnqueueAsync(T job)
         {
             if (_isDisposed)
             {
                 _logger.LogWarning("Trying write to disposed channel.");
-                return default;
+                
+                return;
             }
 
-            return _writer.WriteAsync(job);
+            await _writer.WriteAsync(job);
         }
 
         public void Dispose()
         {
-            if (_isDisposed)
-                return;
+            if (_isDisposed) return;
 
             _writer.Complete();
             _isDisposed = true;

@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProjectX.Infrastructure.Setup;
 using ProjectX.Realtime.Application;
+using ProjectX.Realtime.Infrastructure;
+using WebSocketMiddleware = ProjectX.Realtime.Infrastructure.WebSocketMiddleware;
 
 namespace ProjectX.Realtime.API
 {
@@ -18,13 +20,15 @@ namespace ProjectX.Realtime.API
         public void ConfigureServices(IServiceCollection services)
         {
             BaseConfigure(services);
+            services.AddSingleton<WebSocketAuthenticationManager>();
+            services.AddSingleton<WebSocketConnectionManager>();
         }
 
         public void Configure(IApplicationBuilder app)
         {
             BaseConfigure(app);
             app.UseWebSockets();
-            app.UseMiddleware<ProjectX.Realtime.Infrastructure.WebSocket.WebSocketMiddleware>();
+            app.UseMiddleware<WebSocketMiddleware>();
         }
     }
 }

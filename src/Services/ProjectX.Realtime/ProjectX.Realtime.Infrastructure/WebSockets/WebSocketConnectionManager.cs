@@ -1,163 +1,167 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
 using ProjectX.Core.JSON;
-using ProjectX.Realtime.Application;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.WebSockets;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq;
+using ProjectX.Core.Threading;
 
 namespace ProjectX.Realtime.Infrastructure
 {
-    public sealed class WebSocketConnectionManager : IWebSocketMessageHandler
+    public sealed class WebSocketConnectionManager 
     {
-        #region Private members
-
-        private readonly IMemoryCache _tempSessionIdCache;
         private readonly ILogger<WebSocketConnectionManager> _logger;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly RealtimeAppOptions _realtimeOptions;
-        //private readonly IRoomManager _roomManager;
         private readonly ISystemTextJsonSerializer _serializer;
 
-        #endregion
-
-        #region Constructor
+        private readonly Dictionary<long, HashSet<WebSocketContext>> _userIdToConnections = new Dictionary<long, HashSet<WebSocketContext>>();
+        private readonly ReaderWriterLockSlim _connectionsSync = new ReaderWriterLockSlim();
 
         public WebSocketConnectionManager(ILogger<WebSocketConnectionManager> logger,
-            ILoggerFactory loggerFactory,
-            IOptions<RealtimeAppOptions> realtimeOptions,
-            //IRoomManager roomManager,
-            ISystemTextJsonSerializer serializer)
+                                          ILoggerFactory loggerFactory,
+                                          ISystemTextJsonSerializer serializer)
         {
             _logger = logger;
             _loggerFactory = loggerFactory;
-            //_roomManager = roomManager;
-            _realtimeOptions = realtimeOptions.Value;
             _serializer = serializer;
-
-            var cacheOptions = new MemoryCacheOptions { ExpirationScanFrequency = TimeSpan.FromSeconds(_realtimeOptions.ExpirationScanFrequency) };
-            _tempSessionIdCache = new MemoryCache(cacheOptions, _loggerFactory);
         }
 
-        #endregion
-
-        #region IWebSocketConnectionManager members
-
-        public string GenerateConnectionId(long userId)
+        /// <summary>
+        /// The action adds the WebSocket to the collection and begins receiving messages from the WebSocket.
+        /// </summary>
+        public async Task HandleAsync(ConnectionId connectionId, long userId, WebSocket webSocket, CancellationToken cancellationToken)
         {
-            var connectionId = Guid.NewGuid().ToString();
+            var webSocketContext = new WebSocketContext(connectionId, userId, webSocket, cancellationToken, _loggerFactory, HandleMessageAsync);
+            
+            bool added = false;
 
-            _tempSessionIdCache.Set(connectionId, userId, TimeSpan.FromSeconds(_realtimeOptions.CacheItemExpirationTime));
+            using (new WriteLock(_connectionsSync)) 
+            {
+                if(_userIdToConnections.TryGetValue(userId, out var connections)) 
+                {
+                    added = connections.Add(webSocketContext);
+                }
+                else 
+                {
+                    _userIdToConnections.Add(userId, new HashSet<WebSocketContext>() { webSocketContext });
+                }
+            }
 
-            return connectionId;
+            if (!added) 
+            {
+                webSocketContext.Dispose();
+                
+                throw new Exception($"Connection failed WebSocketContext {connectionId}.");
+            }
+
+            _logger.LogInformation($"WebSocket was connected, id: {webSocketContext.ConnectionId}.");
+
+            try
+            {
+                await webSocketContext.StartReceiveMessageAsync().ConfigureAwait(false);
+            }
+            finally 
+            {
+                await HandleDisconnectionAsync(webSocketContext).ConfigureAwait(false);
+            }
         }
 
-        public bool TryGetUserId(string connectionId, out long userId)
+        public Task HandleDisconnectionAsync(WebSocketContext connection)
         {
-            var exist = _tempSessionIdCache.TryGetValue(connectionId, out userId);
+            using (new WriteLock(_connectionsSync))
+            {
+                if (_userIdToConnections.TryGetValue(connection.UserId, out var connections))
+                {
+                    connections.Remove(connection);
 
-            if (exist)
-                _tempSessionIdCache.Remove(connectionId);
+                    if (connections.Count == 0)
+                    {
+                        _userIdToConnections.Remove(connection.UserId);
+                    }
+                }
+            }
 
-            return exist;
+            return Task.CompletedTask;
         }
 
-        public async Task ConnectAsync(string connectionId, long userId, WebSocket webSocket, CancellationToken cancellationToken)
+        /// <summary>
+        /// Send the message to all active connections.
+        /// </summary>
+        public Task SendAsync<T>(T message) 
         {
-            var webSocketConnection = new WebSocketConnection(connectionId, userId, webSocket, cancellationToken, _loggerFactory, this);
+            WebSocketContext[] receivers = null;
 
-            _roomManager.AddConnection(webSocketConnection);
-            _logger.LogInformation($"New WebSocket session {webSocketConnection.ConnectionId} connected.");
+            using (new ReadLock(_connectionsSync)) 
+            {
+                receivers = _userIdToConnections.SelectMany(c => c.Value).ToArray();
+            }
 
-            await webSocketConnection.StartReceiveMessageAsync().ConfigureAwait(false);
+            return SendAsync(message, receivers);
         }
 
-        #endregion
-
-        #region IWebSocketHandler members
-
-        public void HandleDisconnection(WebSocketConnection connection)
+        /// <summary>
+        /// Send the message to the users.
+        /// </summary>
+        public Task SendAsync<T>(T message, IEnumerable<long> users) 
         {
-            //_roomManager.RemoveConnection(connection);
+            WebSocketContext[] receivers = null;
+
+            using (new ReadLock(_connectionsSync))
+            {
+                receivers = _userIdToConnections.Where(c => users.Contains(c.Key))
+                                                .SelectMany(c => c.Value)
+                                                .ToArray();
+            }
+
+            return SendAsync(message, receivers);
         }
 
-        public void HandleMessage(WebSocketMessage message)
+        public WebSocketContext[] GetConnections() 
         {
-            //var response = new ClientMessageResponse();
-            //try
-            //{
-            //    _logger.LogInformation($"Start handle socket client message.");
-            //    var subscribeMessage = ConvertBytesToMessage(message.Payload);
-
-            //    if (subscribeMessage == default)
-            //    {
-            //        response.Success = false;
-            //        response.Message = "Invalid request model";
-            //        return;
-            //    }
-
-            //    response.RequestId = subscribeMessage.RequestId;
-
-            //    if (subscribeMessage.Action == SubscribeAction.Subscribe)
-            //    {
-            //        _roomManager.JoinRoom(message.Connection, subscribeMessage);
-            //        response.Success = true;
-            //        response.Message = "Subscription was successful";
-            //    }
-            //    else if (subscribeMessage.Action == SubscribeAction.Unsubscribe)
-            //    {
-            //        _roomManager.LeaveRoom(message.Connection, subscribeMessage);
-            //        response.Success = true;
-            //        response.Message = "Unsubscription was successful";
-            //    }
-            //    else
-            //    {
-            //        response.Success = false;
-            //        response.Message = $"Invalid subscribe action: {subscribeMessage.Action}";
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError(ex, ex.Message);
-            //    response.Success = false;
-            //    response.Message = ex.Message;
-            //}
-            //finally
-            //{
-            //    var bytes = ConvertMessageToBytes(response);
-            //    message.Connection.Send(bytes);
-            //}
+            using (new ReadLock(_connectionsSync))
+            {
+                return _userIdToConnections.SelectMany(c => c.Value)
+                                           .ToArray();
+            }
         }
 
-        #endregion
-
-        #region Private methods
-
-        private byte[] ConvertMessageToBytes<T>(T message)
+        private async Task SendAsync<T>(T message, WebSocketContext[] connections) 
         {
-            return _serializer.SerializeToBytes(message);
+            if (connections.Length == 0) return;
+
+            var byteMessage = _serializer.SerializeToBytes(message);
+
+            for (int i = 0; i < connections.Length; i++)
+            {
+                try
+                {
+                    await connections[i].SendAsync(byteMessage);
+                }
+                catch
+                {
+                }
+            }
         }
 
-        //private ClientMessageRequest ConvertBytesToMessage(byte[] messageBytes)
-        //{
-        //    try
-        //    {
-        //        var request = _serializer.Deserialize<ClientMessageRequest>(messageBytes);
-        //        if (request == null)
-        //            throw new InvalidDataException(ErrorCode.InvalidData);
+        /// <summary>
+        /// Represents <see cref="WebSocketContext.MessageHandler">.
+        /// Extend this in future if will be needed.
+        /// </summary>
+        public Task HandleMessageAsync(WebSocketMessage message)
+        {
+            try
+            {
+                Console.WriteLine(Encoding.UTF8.GetString(message.Payload));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+            }
 
-        //        return request;
-        //    }
-        //    catch (JsonException ex)
-        //    {
-        //        return null;
-        //    }
-        //}
-
-        #endregion
+            return Task.CompletedTask;
+        }
     }
 }

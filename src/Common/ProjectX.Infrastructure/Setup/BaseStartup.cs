@@ -31,7 +31,6 @@ namespace ProjectX.Infrastructure.Setup
         protected IWebHostEnvironment Environment { get; }
         protected ILoggerFactory LoggerFactory { get; }
         protected IConfiguration Configuration { get; }
-
         protected IMvcBuilder MvcBuilder { get; private set; }
 
         protected internal BaseStartup(IWebHostEnvironment environment, ILoggerFactory loggerFactory, IConfiguration configuration)
@@ -40,7 +39,7 @@ namespace ProjectX.Infrastructure.Setup
             LoggerFactory = loggerFactory;
             Configuration = configuration;
             AppOptions = Configuration.Get<TOptions>() ?? throw new ArgumentNullException(nameof(AppOptions));
-            DBConnectionString = Configuration.GetConnectionString(nameof(ConnectionStrings.DbConnection)) ?? throw new ArgumentNullException(nameof(ConnectionStrings.DbConnection));
+            DBConnectionString = Configuration.GetConnectionString(nameof(ConnectionStrings.DbConnection));
             var paths = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*Application.dll").ToList();
             paths.AddRange(Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*Infrastructure.dll"));
             Assemblies = paths.Select(path => Assembly.Load(AssemblyName.GetAssemblyName(path))).ToArray();

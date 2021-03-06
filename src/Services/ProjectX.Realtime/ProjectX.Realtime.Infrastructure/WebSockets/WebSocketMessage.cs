@@ -5,13 +5,13 @@
     /// </summary>
     public sealed class WebSocketMessage
     {
-        public WebSocketMessage(WebSocketConnection connection, byte[] payload)
+        public WebSocketMessage(WebSocketContext connection, byte[] payload)
         {
             Connection = connection;
             Payload = payload;
         }
 
-        public WebSocketConnection Connection { get; }
+        public WebSocketContext Connection { get; }
         public byte[] Payload { get; }
     }
 }
