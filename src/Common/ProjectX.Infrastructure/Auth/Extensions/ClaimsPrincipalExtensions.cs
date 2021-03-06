@@ -10,10 +10,14 @@ namespace ProjectX.Infrastructure.Auth
     {
         public static long GetIdentityId(this ClaimsPrincipal user)
         {
-            if (!long.TryParse(user.Claims.FirstOrDefault(c => c.Type == ClaimType.IdentityId)?.Value, out long value))
-                throw new InvalidDataException(ErrorCode.NoIdentityIdInAccessToken);
+            var stringId = user.Claims.FirstOrDefault(c => c.Type == ClaimType.IdentityId)?.Value;
 
-            return value;
+            if (!string.IsNullOrEmpty(stringId) && long.TryParse(stringId, out long value)) 
+            {
+                return value;
+            }
+
+            throw new InvalidDataException(ErrorCode.NoIdentityIdInAccessToken);
         }
 
         public static string GetIdentityRole(this ClaimsPrincipal user)

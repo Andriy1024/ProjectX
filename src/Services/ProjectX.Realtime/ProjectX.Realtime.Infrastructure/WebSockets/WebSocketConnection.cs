@@ -21,7 +21,7 @@ namespace ProjectX.Realtime.Infrastructure
         private readonly CancellationToken _cancellationToken;
         private readonly ILogger<WebSocketConnection> _logger;
         private readonly ChannelQueue<byte[]> _senderChannel;
-        private readonly IWebSocketHandler _handler;
+        private readonly IWebSocketMessageHandler _handler;
 
         #endregion
 
@@ -32,7 +32,7 @@ namespace ProjectX.Realtime.Infrastructure
             WebSocket webSocket,
             CancellationToken cancellationToken,
             ILoggerFactory loggerFactory,
-            IWebSocketHandler handler)
+            IWebSocketMessageHandler handler)
         {
             Utill.ThrowIfNullOrEmpty(connectionId, nameof(connectionId));
             Utill.ThrowIfNull(handler, nameof(handler));

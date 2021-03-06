@@ -2,7 +2,7 @@
 
 namespace ProjectX.Realtime.Infrastructure
 {
-    public interface IWebSocketHandler
+    public interface IWebSocketMessageHandler
     {
         Task HandleMessageAsync(WebSocketMessage message);
         Task HandleDisconnectionAsync(WebSocketConnection connection);
