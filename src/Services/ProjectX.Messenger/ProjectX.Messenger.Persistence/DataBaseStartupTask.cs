@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 using ProjectX.Core;
 using ProjectX.Core.Setup;
-using ProjectX.Messenger.Application.Views;
+using ProjectX.Messenger.Domain;
 using System;
 using System.Linq;
 using System.Threading;

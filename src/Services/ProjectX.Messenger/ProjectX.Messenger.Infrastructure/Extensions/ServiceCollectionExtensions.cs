@@ -2,8 +2,8 @@
 using Marten.Events;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectX.Core;
-using ProjectX.Messenger.Application.Views;
 using ProjectX.Messenger.Domain;
+using ProjectX.Messenger.Infrastructure.Projections;
 using ProjectX.Messenger.Infrastructure.Setup;
 using ProjectX.Messenger.Persistence;
 
@@ -20,10 +20,11 @@ namespace ProjectX.Messenger.Infrastructure.Extensions
                 o.DatabaseSchemaName = "DocumentStore";
                 o.Events.DatabaseSchemaName = "EventStore";
 
-                // This is enough to tell Marten that the ConversationView
-                // document is persisted and needs schema objects
-                o.Schema.For<ConversationView>();
+                // This is enough to tell Marten that the ConversationView document is persisted and needs schema objects
+                o.Schema.For<ConversationView>().UseOptimisticConcurrency(true);
+                o.Schema.For<UserConversationsView>().Identity(x => x.UserId);
                 o.Events.InlineProjections.Add(new ConversationViewProjection());
+                o.Events.InlineProjections.Add(new UserConversationsViewProjection());
 
                 // Lets Marten know that the event store is active
                 o.Events.AddEventType(typeof(ConversationStarted));
