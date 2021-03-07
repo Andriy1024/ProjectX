@@ -42,7 +42,7 @@ namespace ProjectX.Messenger.Persistence
 
             foreach (var @event in uncommitedChanges)
             {
-                await _mediator.Publish(uncommitedChanges);
+                await _mediator.Publish(@event);
             }
 
             await _documentSession.SaveChangesAsync();

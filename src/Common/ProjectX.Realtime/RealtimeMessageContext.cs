@@ -8,9 +8,9 @@ namespace ProjectX.Realtime
     {
         public Guid Id { get; set; }
 
-        RealtimeMessageContext Message { get; set; }
+        public RealtimeMessageContext Message { get; set; }
 
-        IEnumerable<long> Receivers { get; set; }
+        public IEnumerable<long> Receivers { get; set; }
 
         public RealtimeIntegrationEvent()
         {
@@ -26,9 +26,9 @@ namespace ProjectX.Realtime
 
     public class RealtimeMessageContext
     {
-        string Type { get; set; }
+        public string Type { get; set; }
 
-        object Message { get; set; }
+        public object Message { get; set; }
 
         public RealtimeMessageContext()
         {

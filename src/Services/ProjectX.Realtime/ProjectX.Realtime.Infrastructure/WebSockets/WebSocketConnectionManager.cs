@@ -47,6 +47,8 @@ namespace ProjectX.Realtime.Infrastructure
                 else 
                 {
                     _userIdToConnections.Add(userId, new HashSet<WebSocketContext>() { webSocketContext });
+                    
+                    added = true;
                 }
             }
 

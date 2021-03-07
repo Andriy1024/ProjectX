@@ -10,39 +10,24 @@ namespace ProjectX.Realtime.API.Controllers
     [Route("api/realtime")]
     public class RealtimeController : ControllerBase
     {
-        private readonly WebSocketAuthenticationManager _authenticationManager;
-        private readonly WebSocketConnectionManager _connectionManager;
-        private readonly ICurrentUser _currentUser;
-
-        public RealtimeController(WebSocketAuthenticationManager authenticationManager, 
-                                  WebSocketConnectionManager connectionManager,
-                                  ICurrentUser currentUser)
-        {
-            _authenticationManager = authenticationManager;
-            _connectionManager = connectionManager;
-            _currentUser = currentUser;
-        }
-
         [Authorize]
         [HttpPost("connect")]
-        public IActionResult GenerateConnectionId()
+        public IActionResult GenerateConnectionId([FromServices] WebSocketAuthenticationManager authenticationManager, [FromServices] ICurrentUser currentUser)
         {
             return Ok(new
             {
-                ConnectionId = _authenticationManager.GenerateConnectionId(_currentUser).Value
+                ConnectionId = authenticationManager.GenerateConnectionId(currentUser).Value
             });
         }
 
         [Authorize(Roles = IdentityRoles.Admin)]
         [HttpGet("connections")]
-        public IActionResult GetConnections()
+        public IActionResult GetConnections([FromServices] WebSocketConnectionManager connectionManager)
         {
-            var connections = _connectionManager.GetConnections();
-
-            return Ok(connections.Select(c => new 
+            return Ok(connectionManager.GetConnections().Select(c => new 
             {
                 c.UserId,
-                c.ConnectionId
+                ConnectionId = c.ConnectionId.Value
             }));
         }
     }

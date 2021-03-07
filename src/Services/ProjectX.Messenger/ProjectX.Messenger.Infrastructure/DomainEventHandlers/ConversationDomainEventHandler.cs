@@ -10,7 +10,8 @@ namespace ProjectX.Messenger.Infrastructure.DomainEventHandlers
     public sealed class ConversationDomainEventHandler
         : IDomainEventHandler<MessageCreated>,
           IDomainEventHandler<MessageDeleted>,
-          IDomainEventHandler<MessageUpdated>
+          IDomainEventHandler<MessageUpdated>,
+          IDomainEventHandler<ConversationStarted>
     {
         private readonly IRealtimeTransactionContext _realtime;
 
@@ -29,24 +30,38 @@ namespace ProjectX.Messenger.Infrastructure.DomainEventHandlers
                                           content: domainEvent.Content,
                                           createdAt: domainEvent.CreatedAt));
 
-            _realtime.Add(realTimeMessege, new long[] {domainEvent.AuthorId, domainEvent.Recipient });
+            _realtime.Add(realTimeMessege, domainEvent.Users);
 
             return Task.CompletedTask;
         }
 
         public Task Handle(MessageDeleted domainEvent, CancellationToken cancellationToken)
         {
-            //var realTimeMessege = new RealtimeMessageContext(
-            //                          new MessageDeletedMessage(
-            //                              messageId: domainEvent.MessageId,
-            //                              conversationId: domainEvent.ConversationId));
+            var realTimeMessege = new RealtimeMessageContext(
+                                      new MessageDeletedMessage(
+                                          messageId: domainEvent.MessageId,
+                                          conversationId: domainEvent.ConversationId));
 
-            //_realtime.Add(realTimeMessege, new long[] { domainEvent.AuthorId, domainEvent.Recipient });
+            _realtime.Add(realTimeMessege, domainEvent.Users);
 
             return Task.CompletedTask;
         }
 
         public Task Handle(MessageUpdated domainEvent, CancellationToken cancellationToken)
+        {
+            var realTimeMessege = new RealtimeMessageContext(
+                                      new MessageUpdatedMessage(
+                                          messageId: domainEvent.MessageId,
+                                          conversationId: domainEvent.ConversationId,
+                                          content: domainEvent.Content,
+                                          updatedAt: domainEvent.UpdatedAt));
+
+            _realtime.Add(realTimeMessege, domainEvent.Users);
+
+            return Task.CompletedTask;
+        }
+
+        public Task Handle(ConversationStarted notification, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

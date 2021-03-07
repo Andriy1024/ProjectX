@@ -1,5 +1,6 @@
 ﻿using ProjectX.Core;
 using System;
+using System.Collections.Generic;
 
 namespace ProjectX.Messenger.Domain
 {
@@ -9,9 +10,9 @@ namespace ProjectX.Messenger.Domain
 
         public string ConversationId { get; private set; }
 
-        public long AuthorId { get; private set; }
+        public IEnumerable<long> Users { get; set; }
 
-        public long Recipient { get; private set; }
+        public long AuthorId { get; private set; }
 
         public string Content { get; private set; }
 
@@ -20,16 +21,16 @@ namespace ProjectX.Messenger.Domain
         private MessageCreated() { }
 
         public MessageCreated(Guid messageId, 
-            string conversationId, 
+            string conversationId,
+            IEnumerable<long> users,
             long authorId,
-            long recipient,
             string content, 
             DateTimeOffset createdAt)
         {
             MessageId = messageId;
             ConversationId = conversationId;
+            Users = users;
             AuthorId = authorId;
-            Recipient = recipient;
             Content = content;
             CreatedAt = createdAt;
         }

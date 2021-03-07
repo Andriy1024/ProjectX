@@ -5,7 +5,7 @@
         /// <summary>
         /// Event type. For example: UserNameUpdatedEvent
         /// </summary>
-        public string RoutingKey { get; set; }
+        public string RoutingKey { get; set; } = "";
 
         /// <summary>
         /// ServiceNameOfConsumer/Exchange.RoutingKey 

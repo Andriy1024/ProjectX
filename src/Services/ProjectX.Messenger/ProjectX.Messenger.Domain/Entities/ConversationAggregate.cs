@@ -10,11 +10,11 @@ namespace ProjectX.Messenger.Domain
     {
         public ConversationId Id { get; private set; }
 
-        public long FirstParticipant { get; private set; }
-
-        public long SecondParticipant { get; private set; }
-
         public DateTimeOffset CreatedAt { get; private set; }
+
+        public IReadOnlyCollection<long> Users => _users;
+
+        private readonly HashSet<long> _users = new HashSet<long>(2);
 
         public IReadOnlyCollection<MessageEntity> Messages => _messages;
 
@@ -22,9 +22,9 @@ namespace ProjectX.Messenger.Domain
 
         public ConversationAggregate() { }
 
-        private ConversationAggregate(ConversationId id, long firstParticipant, long secondParticipant) 
+        private ConversationAggregate(ConversationId id, long firstUser, long secondUser) 
         {
-            var @event = new ConversationStarted(id, DateTimeOffset.UtcNow, firstParticipant, secondParticipant);
+            var @event = new ConversationStarted(id, DateTimeOffset.UtcNow, new[] { firstUser, secondUser });
             
             Apply(@event);
         }
@@ -36,9 +36,14 @@ namespace ProjectX.Messenger.Domain
             conversation.Load(events);
         }
 
-        public static ConversationAggregate Start(long firstParticipant, long secondParticipant) 
+        public static ConversationAggregate Start(long firstUser, long secondUser) 
         {
-            return new ConversationAggregate(new ConversationId(firstParticipant, secondParticipant), firstParticipant, secondParticipant);
+            if(firstUser == secondUser) 
+            {
+                throw new InvalidDataException(ErrorCode.InvalidData, $"Invalid participant ids: {firstUser} == {secondUser}.");
+            }
+
+            return new ConversationAggregate(new ConversationId(firstUser, secondUser), firstUser, secondUser);
         }
 
         public override string GetId() => Id;
@@ -51,9 +56,9 @@ namespace ProjectX.Messenger.Domain
             }
 
             var @event = new MessageCreated(messageId: messageId, 
-                                            conversationId: Id, 
+                                            conversationId: Id,
+                                            users: _users,
                                             authorId: author, 
-                                            recipient: author == FirstParticipant ? FirstParticipant: SecondParticipant,
                                             content: content, 
                                             createdAt: DateTimeOffset.UtcNow);
 
@@ -67,6 +72,7 @@ namespace ProjectX.Messenger.Domain
             var message = GetMessageRequired(id);
 
             var @event = new MessageUpdated(conversationId: Id,
+                                            users: _users,
                                             messageId: message.Id,
                                             content: content,
                                             updatedAt: DateTimeOffset.UtcNow);
@@ -83,12 +89,12 @@ namespace ProjectX.Messenger.Domain
                 throw new InvalidPermissionException(ErrorCode.InvalidPermission, "Message can be deleted only by the owner.");
             }
 
-            var @event = new MessageDeleted(conversationId: Id, messageId: message.Id);
+            var @event = new MessageDeleted(conversationId: Id, users: _users, messageId: message.Id);
             
             Apply(@event);
         }
 
-        private bool IsBelongToConversation(long userId) => FirstParticipant == userId || SecondParticipant == userId;
+        private bool IsBelongToConversation(long userId) => _users.Contains(userId);
         
         private MessageEntity GetMessageRequired(Guid id) 
         {
@@ -104,9 +110,11 @@ namespace ProjectX.Messenger.Domain
 
         private void When(ConversationStarted @event) 
         {
-            Id = new ConversationId(@event.FirstParticipant, @event.SecondParticipant);
-            FirstParticipant = @event.FirstParticipant;
-            SecondParticipant = @event.SecondParticipant;
+            var firstUser = @event.Users.First();
+            var secondUser = @event.Users.Last();
+            Id = new ConversationId(firstUser, secondUser);
+            _users.Add(firstUser);
+            _users.Add(secondUser);
             CreatedAt = @event.CreatedAt;
         }
 

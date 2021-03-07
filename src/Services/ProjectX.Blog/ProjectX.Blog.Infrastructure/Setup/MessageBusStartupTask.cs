@@ -22,6 +22,7 @@ namespace ProjectX.Blog.Infrastructure.Setup
                 o.Exchange.Name = Exchange.Name.Identity;
                 o.Queue.AutoDelete = false;
                 o.Queue.Exclusive = false;
+                o.Consumer.Autoack = false;
             });
            
             _messageBus.Subscribe<UserDeletedIntegrationEvent>(o => 
@@ -29,6 +30,7 @@ namespace ProjectX.Blog.Infrastructure.Setup
                 o.Exchange.Name = Exchange.Name.Identity;
                 o.Queue.AutoDelete = false;
                 o.Queue.Exclusive = false;
+                o.Consumer.Autoack = false;
             });
         }
     }

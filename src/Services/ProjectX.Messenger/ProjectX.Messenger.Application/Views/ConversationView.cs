@@ -9,9 +9,7 @@ namespace ProjectX.Messenger.Application.Views
     {
         public string Id { get; set; }
 
-        public long FirstParticipant { get; set; }
-
-        public long SecondParticipant { get; set; }
+        public IEnumerable<long> Users { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
 
@@ -20,8 +18,7 @@ namespace ProjectX.Messenger.Application.Views
         public void Apply(ConversationStarted @event)
         {
             Id = @event.Id;
-            FirstParticipant = @event.FirstParticipant;
-            SecondParticipant = @event.SecondParticipant;
+            Users = @event.Users;
             CreatedAt = @event.CreatedAt;
         }
 

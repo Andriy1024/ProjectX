@@ -94,7 +94,7 @@ namespace ProjectX.RabbitMq
         {
             var properties = PublishProperties.Validate(eventBusProperties, allowEmptyRoutingKey: true);
 
-            if (!properties.Exchange.IsFanout && string.IsNullOrEmpty(properties.RoutingKey)) 
+            if (string.IsNullOrEmpty(properties.RoutingKey)) 
             {
                 properties.RoutingKey = PublishProperties.CreateRoutingKey(integrationEvent);
             }

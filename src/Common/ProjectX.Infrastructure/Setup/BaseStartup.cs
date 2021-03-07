@@ -50,7 +50,7 @@ namespace ProjectX.Infrastructure.Setup
                     .AddOptions()
                     .AddHttpContextAccessor()
                     .Configure<BaseOptions>(Configuration)
-                    .Configure<ConnectionStrings>(Configuration)
+                    .Configure<ConnectionStrings>(Configuration.GetSection(nameof(ConnectionStrings)))
                     .Configure<TOptions>(Configuration)
                     .AddSwagger(AppOptions.ApiName, AppOptions.IdentityUrl)
                     .AddIdentityServerAuthorization()

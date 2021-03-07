@@ -5,9 +5,9 @@ namespace ProjectX.RabbitMq
 {
     public class PublishProperties 
     {
-        public ExchangeProperties Exchange { get; set; } 
+        public ExchangeProperties Exchange { get; set; }
 
-        public string RoutingKey { get; set; }
+        public string RoutingKey { get; set; } = "";
 
         public bool EnableRetryPolicy { get; set; }
 

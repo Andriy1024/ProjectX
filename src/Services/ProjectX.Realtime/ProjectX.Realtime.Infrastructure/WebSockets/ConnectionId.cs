@@ -19,7 +19,7 @@ namespace ProjectX.Realtime.Infrastructure
 
         public ConnectionId(string value)
         {
-            if (!Guid.TryParse(value, out Guid id))
+            if (!Guid.TryParse(value, out Guid id) || Guid.Empty == id)
             {
                 throw new ArgumentException($"Invalid connection id: {value}");
             }

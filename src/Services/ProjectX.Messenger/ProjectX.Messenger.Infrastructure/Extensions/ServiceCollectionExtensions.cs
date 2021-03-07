@@ -1,8 +1,11 @@
 ﻿using Marten;
 using Marten.Events;
 using Microsoft.Extensions.DependencyInjection;
+using ProjectX.Core;
 using ProjectX.Messenger.Application.Views;
 using ProjectX.Messenger.Domain;
+using ProjectX.Messenger.Infrastructure.Setup;
+using ProjectX.Messenger.Persistence;
 
 namespace ProjectX.Messenger.Infrastructure.Extensions
 {
@@ -12,24 +15,9 @@ namespace ProjectX.Messenger.Infrastructure.Extensions
         {
             services.AddMarten(o =>
             {
-                //o.CreateDatabasesForTenants(c =>
-                //{
-                //    c.MaintenanceDatabase(DBConnectionString);
-
-                //    c.ForTenant()
-                //      .CheckAgainstPgDatabase()
-                //      .WithOwner("postgres")
-                //      .WithEncoding("UTF-8")
-                //      .ConnectionLimit(-1)
-                //      .OnDatabaseCreated(c => System.Console.WriteLine("DB CREATED"));
-                //});
-
                 o.Connection(connectionString);
-
                 o.AutoCreateSchemaObjects = AutoCreate.All;
-
                 o.DatabaseSchemaName = "DocumentStore";
-
                 o.Events.DatabaseSchemaName = "EventStore";
 
                 // This is enough to tell Marten that the ConversationView
@@ -44,9 +32,13 @@ namespace ProjectX.Messenger.Infrastructure.Extensions
                 o.Events.AddEventType(typeof(MessageUpdated));
 
                 o.Events.StreamIdentity = StreamIdentity.AsString;
-            }).InitializeStore();
+            });
 
             return services;
         }
+
+        public static IServiceCollection AddStartupTasks(this IServiceCollection services)
+            => services.AddScoped<IStartupTask, MessageBusStartupTask>()
+                       .AddScoped<IStartupTask, DataBaseStartupTask>();
     }
 }

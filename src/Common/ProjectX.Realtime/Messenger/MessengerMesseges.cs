@@ -50,5 +50,17 @@ namespace ProjectX.Realtime.Messenger
         public string ConversationId { get; set; }
         public string Content { get; set; }
         public DateTimeOffset UpdatedAt { get; set; }
+
+        public MessageUpdatedMessage()
+        {
+        }
+
+        public MessageUpdatedMessage(Guid messageId, string conversationId, string content, DateTimeOffset updatedAt)
+        {
+            MessageId = messageId;
+            ConversationId = conversationId;
+            Content = content;
+            UpdatedAt = updatedAt;
+        }
     }
 }

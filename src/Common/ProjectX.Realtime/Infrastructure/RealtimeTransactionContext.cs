@@ -18,7 +18,7 @@ namespace ProjectX.Realtime
             var publishProperties = new PublishProperties(
                                         new ExchangeProperties(
                                             name: Exchange.Name.Realtime,
-                                            type: Exchange.Type.Direct,
+                                            type: Exchange.Type.Fanout,
                                             autoDelete: true,
                                             durable: false));
 

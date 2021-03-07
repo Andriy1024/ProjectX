@@ -9,7 +9,7 @@ namespace ProjectX.Messenger.Domain
         public readonly string Value;
 
         public ConversationId(long user1, long user2)
-        {
+        { 
             Value = user1 > user2
                           ? $"{_keyPrefix}.{user1}-{user2}"
                           : $"{_keyPrefix}.{user2}-{user1}";
