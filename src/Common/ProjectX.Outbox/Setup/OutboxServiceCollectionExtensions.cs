@@ -18,7 +18,7 @@ namespace ProjectX.Outbox
                       .Configure<OutboxOptions>(configuration.GetSection(nameof(OutboxOptions)))
                       .AddScoped<IStartupTask, OutboxStartupTask>()
                       .AddDbContext<OutboxDbContext>(dbContextOptions)
-                      .AddScoped<IOutboxTransaction, OutboxTransaction>()
+                      .AddScoped<IOutboxTransactionContext, OutboxTransactionContext>()
                       .AddTransient(typeof(IPipelineBehavior<,>), typeof(InboxMessageBehaviour<,>))
                       .AddTransient<INotificationHandler<TransactionCommitedEvent>, TransactionCommitedOutboxHandler>()
                       .AddSingleton<OutboxChannel>()

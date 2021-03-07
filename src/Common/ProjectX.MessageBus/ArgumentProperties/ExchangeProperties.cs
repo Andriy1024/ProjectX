@@ -21,6 +21,16 @@ namespace ProjectX.RabbitMq
             Name = name;
         }
 
+        public ExchangeProperties(Exchange.Name name, 
+                                  Exchange.Type type, 
+                                  bool autoDelete, 
+                                  bool durable) : this(name)
+        {
+            Type = type;
+            AutoDelete = autoDelete;
+            Durable = durable;
+        }
+
         public override string ToString()
         {
             return $"{nameof(Name)}: {Name?.Value}, {nameof(Type)}: {Type?.Value}, {nameof(AutoDelete)}: {AutoDelete}, {nameof(Durable)}: {Durable}.";

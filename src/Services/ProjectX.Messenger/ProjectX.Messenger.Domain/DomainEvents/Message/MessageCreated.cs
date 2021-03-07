@@ -11,17 +11,25 @@ namespace ProjectX.Messenger.Domain
 
         public long AuthorId { get; private set; }
 
+        public long Recipient { get; private set; }
+
         public string Content { get; private set; }
 
         public DateTimeOffset CreatedAt { get; private set; }
 
         private MessageCreated() { }
 
-        public MessageCreated(Guid messageId, string conversationId, long authorId, string content, DateTimeOffset createdAt)
+        public MessageCreated(Guid messageId, 
+            string conversationId, 
+            long authorId,
+            long recipient,
+            string content, 
+            DateTimeOffset createdAt)
         {
             MessageId = messageId;
             ConversationId = conversationId;
             AuthorId = authorId;
+            Recipient = recipient;
             Content = content;
             CreatedAt = createdAt;
         }

@@ -10,9 +10,9 @@ namespace ProjectX.Outbox
     public sealed class InboxMessageBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IIntegrationEvent
     {
-        private readonly IOutboxTransaction _outboxManager;
+        private readonly IOutboxTransactionContext _outboxManager;
 
-        public InboxMessageBehaviour(IOutboxTransaction outboxManager)
+        public InboxMessageBehaviour(IOutboxTransactionContext outboxManager)
         {
             _outboxManager = outboxManager;
         }

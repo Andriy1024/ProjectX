@@ -7,6 +7,7 @@ using ProjectX.Infrastructure.Setup;
 using ProjectX.Messenger.Application;
 using ProjectX.Messenger.Infrastructure.Extensions;
 using ProjectX.Messenger.Persistence;
+using ProjectX.Realtime.Setup;
 
 namespace ProjectX.Messenger.API
 {
@@ -22,7 +23,8 @@ namespace ProjectX.Messenger.API
         public void ConfigureServices(IServiceCollection services)
                  => BaseConfigure(services)
                    .AddMarten(DBConnectionString)
-                   .AddScoped<IEventStore, MartenEventStore>();
+                   .AddScoped<IEventStore, MartenEventStore>()
+                   .AddRealtimeServices();
         
         public void Configure(IApplicationBuilder app) => BaseConfigure(app);
     }

@@ -1,15 +1,14 @@
-﻿using MediatR;
-using ProjectX.DataAccess;
+﻿using ProjectX.DataAccess;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProjectX.Outbox
 {
-    public sealed class TransactionCommitedOutboxHandler : INotificationHandler<TransactionCommitedEvent>
+    public sealed class TransactionCommitedOutboxHandler : ITransactionCommitedEventHandler
     {
-        private readonly IOutboxTransaction _outboxTransaction;
+        private readonly IOutboxTransactionContext _outboxTransaction;
 
-        public TransactionCommitedOutboxHandler(IOutboxTransaction outboxTransaction)
+        public TransactionCommitedOutboxHandler(IOutboxTransactionContext outboxTransaction)
         {
             _outboxTransaction = outboxTransaction;
         }

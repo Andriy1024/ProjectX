@@ -7,11 +7,11 @@ namespace ProjectX.Core.Threading.Workers
 {
     public class ChannelWorker<T> : IDisposable
     {
-        readonly ChannelWriter<T> _writer;
-        readonly ChannelReader<T> _reader;
-        readonly ILogger<ChannelWorker<T>> _logger;
-        readonly Func<T, Task> _handler;
-        bool _isDisposed;
+        private readonly ChannelWriter<T> _writer;
+        private readonly ChannelReader<T> _reader;
+        private readonly ILogger<ChannelWorker<T>> _logger;
+        private readonly Func<T, Task> _handler;
+        private bool _isDisposed;
 
         public ChannelWorker(Func<T, Task> handler, ILogger<ChannelWorker<T>> logger)
         {

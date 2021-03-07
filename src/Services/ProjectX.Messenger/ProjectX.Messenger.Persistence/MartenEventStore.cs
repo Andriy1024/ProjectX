@@ -1,7 +1,8 @@
 ﻿using Marten;
+using MediatR;
 using ProjectX.Core;
+using ProjectX.DataAccess;
 using ProjectX.Messenger.Application;
-using ProjectX.Messenger.Domain;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,10 +11,12 @@ namespace ProjectX.Messenger.Persistence
     public sealed class MartenEventStore : IEventStore
     {
         private readonly IDocumentSession _documentSession;
+        private readonly IMediator _mediator;
 
-        public MartenEventStore(IDocumentSession documentSession)
+        public MartenEventStore(IDocumentSession documentSession, IMediator mediator)
         {
             _documentSession = documentSession;
+            _mediator = mediator;
         }
 
         public async Task<T> LoadAsync<T>(string id) where T : IEventSourcedAggregate, new()
@@ -37,7 +40,14 @@ namespace ProjectX.Messenger.Persistence
 
             _documentSession.Events.Append(aggregate.GetId(), aggregate.Version, uncommitedChanges);
 
+            foreach (var @event in uncommitedChanges)
+            {
+                await _mediator.Publish(uncommitedChanges);
+            }
+
             await _documentSession.SaveChangesAsync();
+            
+            await _mediator.Publish(new TransactionCommitedEvent());
         }
     }
 }

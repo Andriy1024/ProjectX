@@ -8,7 +8,7 @@ namespace ProjectX.Outbox
     /// <summary>
     /// The service using db connection and transaction of main app DB context, and used to save Out/Inbox messages in the scope of the request's transaction.
     /// </summary>
-    public interface IOutboxTransaction
+    public interface IOutboxTransactionContext
     {
         /// <summary>
         /// Save the integration event to Outbox.

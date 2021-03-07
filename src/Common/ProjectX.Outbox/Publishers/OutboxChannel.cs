@@ -6,7 +6,7 @@ using System.Threading.Channels;
 namespace ProjectX.Outbox
 {
     /// <summary>
-    /// The channel serves as bridge between <see cref="OutboxTransaction"/> and <see cref="OutboxChannelPublisher"/> channel publisher to reduce publish delay.
+    /// The channel serves as bridge between <see cref="OutboxTransactionContext"/> and <see cref="OutboxChannelPublisher"/> channel publisher to reduce publish delay.
     /// </summary>
     public sealed class OutboxChannel
     {

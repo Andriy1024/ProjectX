@@ -60,7 +60,7 @@ namespace ProjectX.DataAccess
                     }
                 }
 
-                await Mediator.Publish(new TransactionCommitedEvent(this));
+                await Mediator.Publish(new TransactionCommitedEvent());
             }
         }
 

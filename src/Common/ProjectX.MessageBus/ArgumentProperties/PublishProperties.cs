@@ -5,7 +5,7 @@ namespace ProjectX.RabbitMq
 {
     public class PublishProperties 
     {
-        public ExchangeProperties Exchange { get; set; } = new ExchangeProperties();
+        public ExchangeProperties Exchange { get; set; } 
 
         public string RoutingKey { get; set; }
 
@@ -13,11 +13,19 @@ namespace ProjectX.RabbitMq
 
         public PublishProperties()
         {
+            Exchange = new ExchangeProperties();
         }
 
         public PublishProperties(Exchange.Name exchangeName)
         {
             Exchange.Name = exchangeName;
+        }
+
+        public PublishProperties(ExchangeProperties exchange)
+        {
+            Utill.ThrowIfNull(exchange, nameof(exchange));
+
+            Exchange = exchange;
         }
 
         public static PublishProperties Validate(PublishProperties properties, bool allowEmptyRoutingKey = false) 

@@ -1,4 +1,5 @@
-﻿using ProjectX.Core;
+﻿using MediatR;
+using ProjectX.Core;
 using ProjectX.Core.Auth;
 using ProjectX.Messenger.Application;
 using ProjectX.Messenger.Domain;

@@ -1,14 +1,12 @@
-﻿//using MediatR;
+﻿using MediatR;
 
-//namespace ProjectX.Core.DataAccess
-//{
-//    public sealed class TransactionCommitedEvent : INotification
-//    {
-//        public TransactionCommitedEvent(IUnitOfWork unitOfWork)
-//        {
-//            UnitOfWork = unitOfWork;
-//        }
+namespace ProjectX.DataAccess
+{
+    public sealed class TransactionCommitedEvent : INotification
+    {
+    }
 
-//        public IUnitOfWork UnitOfWork { get; }
-//    }
-//}
+    public interface ITransactionCommitedEventHandler : INotificationHandler<TransactionCommitedEvent> 
+    {
+    }
+}
