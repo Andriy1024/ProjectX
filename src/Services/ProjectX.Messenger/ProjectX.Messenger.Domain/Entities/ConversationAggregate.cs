@@ -53,6 +53,7 @@ namespace ProjectX.Messenger.Domain
             var @event = new MessageCreated(messageId: messageId, 
                                             conversationId: Id, 
                                             authorId: author, 
+                                            recipient: author == FirstParticipant ? FirstParticipant: SecondParticipant,
                                             content: content, 
                                             createdAt: DateTimeOffset.UtcNow);
 

@@ -1,5 +1,4 @@
 ﻿using ProjectX.Core.JSON;
-using ProjectX.Core.Realtime;
 using System;
 using System.Text.Json;
 
@@ -13,8 +12,7 @@ namespace ProjectX.RabbitMq.Implementations
         {
             _serializerOptions = SerializationOptionsBuilder
                                     .DefaultOptions()
-                                    .AddJsonNonStringKeyDictionaryConverterFactory()
-                                    .AddConverter(new RealtimeMessageConverter());
+                                    .AddJsonNonStringKeyDictionaryConverterFactory();
         }
 
         public T Deserialize<T>(ReadOnlySpan<byte> obj)
