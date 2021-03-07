@@ -39,8 +39,6 @@ namespace ProjectX.Messenger.Infrastructure.Projections
 
                 session.Store(userConversations);
             }
-
-            await session.SaveChangesAsync();
         }
     }
 }

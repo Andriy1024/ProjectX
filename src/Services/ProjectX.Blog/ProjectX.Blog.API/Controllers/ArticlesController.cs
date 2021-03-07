@@ -10,27 +10,27 @@ namespace ProjectX.Blog.API.Controllers
     public sealed class ArticlesController : BaseApiController
     {
         [HttpGet("{id:long:min(1)}")]
-        public async Task<IActionResult> FindArticleAsync([FromRoute] long id, CancellationToken cancellationToken)
-            => MapResponse(await Mediator.Send(new FindArticleQuery(id), cancellationToken));
+        public Task<IActionResult> FindArticleAsync([FromRoute] long id, CancellationToken cancellationToken)
+            => Send(new FindArticleQuery(id), cancellationToken);
 
         [HttpGet]
-        public async Task<IActionResult> GetArticlesAsync([FromQuery] ArticlesQuery query, CancellationToken cancellationToken)
-            => MapResponse(await Mediator.Send(query, cancellationToken));
+        public Task<IActionResult> GetArticlesAsync([FromQuery] ArticlesQuery query, CancellationToken cancellationToken) 
+            => Send(query, cancellationToken);
 
         [HttpPost]
-        public async Task<IActionResult> CreateArticleAsync([FromBody] CreateArticleCommand command)
-            => MapResponse(await Mediator.Send(command));
+        public Task<IActionResult> CreateArticleAsync([FromBody] CreateArticleCommand command) 
+            => Send(command);
 
         [HttpPut("titles")]
-        public async Task<IActionResult> UpdateArticleTitleAsync([FromBody] UpdateArticleTitleCommand command)
-           => MapResponse(await Mediator.Send(command));
+        public Task<IActionResult> UpdateArticleTitleAsync([FromBody] UpdateArticleTitleCommand command) 
+            => Send(command);
 
         [HttpPut("bodies")]
-        public async Task<IActionResult> UpdateArticleBodyAsync([FromBody] UpdateArticleBodyCommand command)
-           => MapResponse(await Mediator.Send(command));
+        public Task<IActionResult> UpdateArticleBodyAsync([FromBody] UpdateArticleBodyCommand command) 
+            => Send(command);
 
         [HttpDelete("{id:long:min(1)}")]
-        public async Task<IActionResult> DeleteArticleAsync([FromRoute] long id)
-           => MapResponse(await Mediator.Send(new DeleteArticleCommand(id)));
+        public Task<IActionResult> DeleteArticleAsync([FromRoute] long id)
+           => Send(new DeleteArticleCommand(id));
     }
 }

@@ -12,23 +12,18 @@ namespace ProjectX.Messenger.API.Controllers
     public class ConversationsController : BaseApiController
     {
         [HttpPost]
-        public async Task<IActionResult> SendMessageAsync([FromBody] SendMessage command)
-            => MapResponse(await Mediator.Send(command));
+        public Task<IActionResult> SendMessageAsync([FromBody] SendMessage command) => Send(command);
 
         [HttpPut]
-        public async Task<IActionResult> UpdateMessageAsync([FromBody] UpdateMessage command)
-            => MapResponse(await Mediator.Send(command));
+        public Task<IActionResult> UpdateMessageAsync([FromBody] UpdateMessage command) => Send(command);
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteMessageAsync([FromBody] DeleteMessage command)
-            => MapResponse(await Mediator.Send(command));
+        public Task<IActionResult> DeleteMessageAsync([FromBody] DeleteMessage command) => Send(command);
 
         [HttpGet]
-        public async Task<IActionResult> GetConversationViewAsync([FromQuery] ConversationViewQuery query, CancellationToken cancellation)
-           => MapResponse(await Mediator.Send(query, cancellation));
+        public Task<IActionResult> GetConversationViewAsync([FromQuery] ConversationViewQuery query, CancellationToken cancellation) => Send(query, cancellation);
 
         [HttpGet("my")]
-        public async Task<IActionResult> GetConversationViewAsync(CancellationToken cancellation)
-           => MapResponse(await Mediator.Send(new UserConversationsQuery(), cancellation));
+        public Task<IActionResult> GetConversationViewAsync(CancellationToken cancellation) => Send(new UserConversationsQuery(), cancellation);
     }
 }

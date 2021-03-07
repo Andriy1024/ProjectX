@@ -11,15 +11,12 @@ namespace ProjectX.Blog.API.Controllers
     public sealed class CommentsController : BaseApiController
     {
         [HttpPost]
-        public Task<IActionResult> CreateCommentAsync([FromBody] CreateCommentCommand command)
-            => Send(command);
+        public Task<IActionResult> CreateCommentAsync([FromBody] CreateCommentCommand command) => Send(command);
 
         [HttpPut]
-        public Task<IActionResult> CreateCommentAsync([FromBody] UpdateCommentCommand command)
-            => Send(command);
+        public Task<IActionResult> CreateCommentAsync([FromBody] UpdateCommentCommand command) => Send(command);
 
         [HttpDelete("{id:long:min(1)}")]
-        public Task<IActionResult> DeleteCommentAsync([FromRoute] long id)
-            => Send(new DeleteCommentCommand(id));
+        public Task<IActionResult> DeleteCommentAsync([FromRoute] long id) => Send(new DeleteCommentCommand(id));
     }
 }
