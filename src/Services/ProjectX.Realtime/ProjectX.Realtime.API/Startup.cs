@@ -8,11 +8,10 @@ using ProjectX.Core.IntegrationEvents;
 using ProjectX.Infrastructure.Setup;
 using ProjectX.RabbitMq.Configuration;
 using ProjectX.Realtime.Application;
-using ProjectX.Realtime.Application.Setup;
 using ProjectX.Realtime.Infrastructure;
 using ProjectX.Realtime.Infrastructure.IntegrationEventHandlers;
 using WebSocketMiddleware = ProjectX.Realtime.Infrastructure.WebSocketMiddleware;
-
+using ProjectX.Realtime.Infrastructure.PublicContract;
 namespace ProjectX.Realtime.API
 {
     public sealed class Startup : BaseStartup<RealtimeAppOptions>
@@ -32,6 +31,7 @@ namespace ProjectX.Realtime.API
         
         public void Configure(IApplicationBuilder app)
                  => BaseConfigure(app)
+                   .Map("/contracts", o => o.UseMiddleware<RealtimeContractsMiddleware>())
                    .UseWebSockets()
                    .UseMiddleware<WebSocketMiddleware>();
     }

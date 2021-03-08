@@ -3,7 +3,7 @@ using ProjectX.RabbitMq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ProjectX.Realtime.Application.Setup
+namespace ProjectX.Realtime.Infrastructure.IntegrationEventHandlers
 {
     public sealed class MessageBusStartupTask : IStartupTask
     {
@@ -20,8 +20,8 @@ namespace ProjectX.Realtime.Application.Setup
             {
                 o.Exchange.Name = Exchange.Name.Realtime;
                 o.Exchange.Type = Exchange.Type.Fanout;
-                o.Consumer.Autoack = false;
-                o.Consumer.RetryOnFailure = true;
+                o.Consumer.Autoack = true;
+                o.Consumer.RetryOnFailure = false;
             });
 
             return Task.CompletedTask;

@@ -29,13 +29,6 @@ namespace ProjectX.Messenger.Domain
             Apply(@event);
         }
 
-        public ConversationAggregate(IEnumerable<IDomainEvent> events) 
-        {
-            var conversation = new ConversationAggregate();
-            
-            conversation.Load(events);
-        }
-
         public static ConversationAggregate Start(long firstUser, long secondUser) 
         {
             if(firstUser == secondUser) 

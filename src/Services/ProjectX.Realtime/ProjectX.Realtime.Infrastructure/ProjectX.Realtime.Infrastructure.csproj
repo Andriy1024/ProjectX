@@ -9,7 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ProjectX.Realtime.Application\ProjectX.Realtime.Application.csproj" />
+    <ProjectReference Include="..\..\..\Common\ProjectX.Infrastructure\ProjectX.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Common\ProjectX.MessageBus\ProjectX.RabbitMq.csproj" />
+    <ProjectReference Include="..\..\..\Common\ProjectX.Realtime\ProjectX.Realtime.csproj" />
   </ItemGroup>
 
 </Project>
