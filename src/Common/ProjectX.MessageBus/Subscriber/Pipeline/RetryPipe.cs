@@ -13,7 +13,7 @@ namespace ProjectX.RabbitMq.Pipeline
     internal sealed class RetryPipe : IPipeLine<SubscriberRequest>
     {
         /// <summary>
-        /// Retry tiggered if thw handler retruns false;
+        /// Retry tiggered if the handler retruns false;
         /// </summary>
         public delegate bool ErrorHandler(Exception ex);
 
@@ -22,7 +22,7 @@ namespace ProjectX.RabbitMq.Pipeline
         private ErrorHandler _handleError;
 
         public RetryPipe(ILogger logger)
-            : this(logger, DefaultErrorHandler)
+            : this(logger, InternalErrorHandler)
         {
         }
 
@@ -47,15 +47,14 @@ namespace ProjectX.RabbitMq.Pipeline
                       {
                           _logger.LogError(ex, ex.Message);
 
-                          if (_handleError(ex))
-                              return;
+                          if (_handleError(ex)) return;
 
                           throw;
                       }
                   });
         }
 
-        private static bool DefaultErrorHandler(Exception ex) => ex switch
+        private static bool InternalErrorHandler(Exception ex) => ex switch
         {
             InvalidPermissionException e => true,
             InvalidDataException e => true,

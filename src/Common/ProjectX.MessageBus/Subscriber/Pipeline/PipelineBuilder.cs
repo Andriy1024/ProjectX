@@ -8,14 +8,14 @@ namespace ProjectX.RabbitMq.Pipeline
         {
             private readonly Handler<T> _handler;
 
-            private readonly List<Pipe.Line<T>> _pipes = new List<Line<T>>();
+            private readonly List<Line<T>> _pipes = new List<Line<T>>();
 
             public Builder(Handler<T> lastPipe)
             {
                 _handler = lastPipe;
             }
 
-            public Builder<T> Add(Pipe.Line<T> pipe)
+            public Builder<T> Add(Line<T> pipe)
             {
                 _pipes.Add(pipe); return this;
             }
@@ -29,11 +29,11 @@ namespace ProjectX.RabbitMq.Pipeline
             {
                 if (index < _pipes.Count - 1)
                 {
-                    return (message) => _pipes[index](message, Build(index + 1));
+                    return (T request) => _pipes[index](request, Build(index + 1));
                 }
                 else
                 {
-                    return (message) => _pipes[index](message, _handler);
+                    return (T request) => _pipes[index](request, _handler);
                 }
             }
 

@@ -92,7 +92,7 @@ namespace ProjectX.gRPC
         }
 
         protected ResultOf<T> Map<T>(T data, ErrorResponse error)
-          where T : class
+            where T : class
         {
             return error != null
                 ? ResultOf<T>.Failed(GrpcMapper.Map(error))
@@ -107,7 +107,7 @@ namespace ProjectX.gRPC
         }
 
         protected ResultOf<TOut> Map<TOut>(ErrorResponse error, Func<TOut> func)
-         where TOut : class
+            where TOut : class
         {
             return error != null
                 ? ResultOf<TOut>.Failed(GrpcMapper.Map(error))

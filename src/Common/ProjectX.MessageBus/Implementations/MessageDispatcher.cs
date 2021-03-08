@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ProjectX.RabbitMq.Implementations
 {
-    public class MessageDispatcher : IMessageDispatcher
+    internal class MessageDispatcher : IMessageDispatcher
     {
         private readonly IServiceScopeFactory _scopeFactory;
 

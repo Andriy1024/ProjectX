@@ -14,7 +14,7 @@ using System.Threading;
 
 namespace ProjectX.RabbitMq.Implementations
 {
-    public sealed class RabbitMqConnectionService : IRabbitMqConnectionService
+    internal sealed class RabbitMqConnectionService : IRabbitMqConnectionService
     {
         #region Private members
 
