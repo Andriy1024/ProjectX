@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ProjectX.RabbitMq.Implementations;
 using Microsoft.Extensions.Configuration;
+using ProjectX.RabbitMq.Publisher;
+using ProjectX.RabbitMq.Subscriber;
 
 namespace ProjectX.RabbitMq.Configuration
 {

@@ -1,10 +1,10 @@
 ﻿using RabbitMQ.Client;
 
-namespace ProjectX.RabbitMq
+namespace ProjectX.RabbitMq.Publisher
 {
-    public sealed class Publisher 
+    internal sealed class PublisherContext 
     {
-        public Publisher(ExchangeProperties exchange, string routingKey, IModel channel)
+        public PublisherContext(ExchangeProperties exchange, string routingKey, IModel channel)
         {
             Exchange = exchange;
             RoutingKey = routingKey;

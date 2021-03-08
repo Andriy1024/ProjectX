@@ -34,9 +34,11 @@ namespace ProjectX.RabbitMq
 
             ExchangeProperties.Validate(properties.Exchange);
 
-            if(!allowEmptyRoutingKey)
+            if (!allowEmptyRoutingKey) 
+            {
                 Utill.ThrowIfNullOrEmpty(properties.RoutingKey, nameof(properties.RoutingKey));
-
+            }
+                
             return properties;
         }
 

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ProjectX.Outbox
 {
-    public sealed class OutboxTransactionContext : IOutboxTransactionContext
+    internal sealed class OutboxTransactionContext : IOutboxTransactionContext
     {
         private readonly IJsonSerializer _serializer;
         private readonly OutboxDbContext _outboxDbContext;

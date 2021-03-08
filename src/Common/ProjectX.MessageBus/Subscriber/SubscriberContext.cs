@@ -1,17 +1,19 @@
 ﻿using ProjectX.Core;
 using RabbitMQ.Client;
 using System;
+using ProjectX.RabbitMq.Pipeline;
 
 namespace ProjectX.RabbitMq
 {
-    public class Subscriber
+    internal sealed class SubscriberContext
     {
-        public Subscriber(SubscriptionKey key,
+        public SubscriberContext(SubscriptionKey key,
                           Type eventType, 
                           IModel channel, 
                           QueueProperties queue, 
                           ExchangeProperties exchange, 
-                          ConsumerProperties consumer)
+                          ConsumerProperties consumer,
+                          Pipe.Handler<SubscriberRequest> handler)
         {
             Utill.ThrowIfNull(eventType, nameof(eventType));
             Utill.ThrowIfNull(channel, nameof(channel));
@@ -25,6 +27,7 @@ namespace ProjectX.RabbitMq
             Queue = queue;
             Exchange = exchange;
             Consumer = consumer;
+            Handler = handler;
         }
 
         public SubscriptionKey Key { get; }
@@ -38,6 +41,8 @@ namespace ProjectX.RabbitMq
         public ExchangeProperties Exchange { get; }
 
         public ConsumerProperties Consumer { get; }
+          
+        public Pipe.Handler<SubscriberRequest> Handler { get; }
 
         public override string ToString()
         {

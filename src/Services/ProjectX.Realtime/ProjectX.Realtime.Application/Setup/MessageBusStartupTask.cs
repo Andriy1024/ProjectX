@@ -20,6 +20,8 @@ namespace ProjectX.Realtime.Application.Setup
             {
                 o.Exchange.Name = Exchange.Name.Realtime;
                 o.Exchange.Type = Exchange.Type.Fanout;
+                o.Consumer.Autoack = false;
+                o.Consumer.RetryOnFailure = true;
             });
 
             return Task.CompletedTask;

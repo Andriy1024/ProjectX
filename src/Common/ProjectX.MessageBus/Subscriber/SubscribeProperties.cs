@@ -2,7 +2,7 @@
 
 namespace ProjectX.RabbitMq
 {
-    public class SubscribeProperties
+    public sealed class SubscribeProperties
     {
         public ExchangeProperties Exchange { get; set; } = new ExchangeProperties();
 

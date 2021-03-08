@@ -12,13 +12,13 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace ProjectX.RabbitMq
+namespace ProjectX.RabbitMq.Publisher
 {
     public sealed class RabbitMqPublisher : IRabbitMqPublisher, IDisposable
     {
         private readonly ReaderWriterLockSlim _syncRootForPublishers = new ReaderWriterLockSlim();
         
-        private readonly Dictionary<SubscriptionKey, Publisher> _publishers = new Dictionary<SubscriptionKey, Publisher>();
+        private readonly Dictionary<SubscriptionKey, PublisherContext> _publishers = new Dictionary<SubscriptionKey, PublisherContext>();
 
         private readonly IRabbitMqConnectionService _connectionService;
         
@@ -53,7 +53,7 @@ namespace ProjectX.RabbitMq
 
             var key = new SubscriptionKey(properties.Exchange.Name, properties.RoutingKey);
 
-            Publisher publisher = null;
+            PublisherContext publisher = null;
 
             var result = false;
 
@@ -123,7 +123,7 @@ namespace ProjectX.RabbitMq
             }
         }
 
-        private Publisher InitPublisher(PublishProperties properties)
+        private PublisherContext InitPublisher(PublishProperties properties)
         {
             if (!_connectionService.IsConnected) 
             {
@@ -159,7 +159,7 @@ namespace ProjectX.RabbitMq
                 }
                 else
                 {
-                    var publisher = new Publisher(exchange, properties.RoutingKey, newChannel);
+                    var publisher = new PublisherContext(exchange, properties.RoutingKey, newChannel);
                     
                     _publishers.Add(key, publisher);
                     

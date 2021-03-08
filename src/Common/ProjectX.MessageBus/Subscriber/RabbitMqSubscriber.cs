@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Polly;
-using ProjectX.Core.Exceptions;
 using ProjectX.Core.IntegrationEvents;
 using ProjectX.Core.Threading;
 using ProjectX.RabbitMq.Configuration;
@@ -11,15 +9,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ProjectX.RabbitMq.Pipeline;
 
-namespace ProjectX.RabbitMq.Implementations
+namespace ProjectX.RabbitMq.Subscriber
 {
     public sealed class RabbitMqSubscriber : IRabbitMqSubscriber, IDisposable
     {
         #region Private members
 
         private readonly ReaderWriterLockSlim _syncRootForSubscribers = new ReaderWriterLockSlim();
-        private readonly Dictionary<SubscriptionKey, Subscriber> _subscribers = new Dictionary<SubscriptionKey, Subscriber>();
+        private readonly Dictionary<SubscriptionKey, SubscriberContext> _subscribers = new Dictionary<SubscriptionKey, SubscriberContext>();
 
         private readonly IRabbitMqConnectionService _connectionService;
         private readonly ILogger<RabbitMqSubscriber> _logger;
@@ -49,7 +48,6 @@ namespace ProjectX.RabbitMq.Implementations
         #endregion
 
         #region IRabbitMqSubscriber members
-
 
         public void Subscribe<T>(Action<SubscribeProperties> action)
             where T : IIntegrationEvent
@@ -119,7 +117,7 @@ namespace ProjectX.RabbitMq.Implementations
 
             var key = new SubscriptionKey(exchangeName, routingKey);
 
-            Subscriber subscriptionInfo = null;
+            SubscriberContext subscriptionInfo = null;
             
             bool exists = false;
 
@@ -176,7 +174,7 @@ namespace ProjectX.RabbitMq.Implementations
 
         private string GetQueueName(string exchange, string routingKey) => $"{_options.ConnectionName}/{exchange}.{routingKey}";
 
-        private Subscriber CreateSubscriberChannel<T>(SubscriptionKey key, SubscribeProperties properties)
+        private SubscriberContext CreateSubscriberChannel<T>(SubscriptionKey key, SubscribeProperties properties)
             where T : IIntegrationEvent
         {
             if (!_connectionService.IsConnected && !_connectionService.TryConnect()) 
@@ -212,7 +210,21 @@ namespace ProjectX.RabbitMq.Implementations
                 CreateSubscriberChannel<T>(key, properties);
             };
 
-            return new Subscriber(key, eventType: typeof(T), channel, properties.Queue, properties.Exchange, properties.Consumer);
+            var pipeBuilder = new Pipe.Builder<SubscriberRequest>(lastPipe: (r) => _dispatcher.HandleAsync(r.IntegrationEvent));
+
+            if (!properties.Consumer.Autoack) 
+            {
+                pipeBuilder.Add(new AcknowledgmentPipe(channel, properties.Consumer.RequeueFailedMessages));
+            }
+
+            if (properties.Consumer.RetryOnFailure) 
+            {
+                pipeBuilder.Add(new RetryPipe(_logger));
+            }
+
+            Pipe.Handler<SubscriberRequest> handler = pipeBuilder.Build();
+
+            return new SubscriberContext(key, eventType: typeof(T), channel, properties.Queue, properties.Exchange, properties.Consumer, handler: handler);
         }
 
         private async Task OnMessageReceived<T>(object sender, BasicDeliverEventArgs ea)
@@ -220,13 +232,13 @@ namespace ProjectX.RabbitMq.Implementations
         {
             var key = new SubscriptionKey(ea.Exchange, ea.RoutingKey);
 
-            Subscriber subscriptionInfo = null;
+            SubscriberContext subscriber = null;
             
             var isSubscriberExist = false;
 
             using (new ReadLock(_syncRootForSubscribers)) 
             {
-                isSubscriberExist = _subscribers.TryGetValue(key, out subscriptionInfo);
+                isSubscriberExist = _subscribers.TryGetValue(key, out subscriber);
             }
 
             if (!isSubscriberExist)
@@ -238,64 +250,15 @@ namespace ProjectX.RabbitMq.Implementations
 
             var message = _serializer.Deserialize<T>(ea.Body.Span);
 
-            await ProcessMessage(message, subscriptionInfo, ea);
-        }
-
-        private async Task ProcessMessage<T>(T message, Subscriber subscriptionInfo, BasicDeliverEventArgs ea)
-            where T : IIntegrationEvent
-        {
-            var retryPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(2, i => TimeSpan.FromSeconds(2));
-            
-            bool success = true;
-            
             try
             {
-                await retryPolicy.ExecuteAsync(async () =>
-                {
-                    try
-                    {
-                        await _dispatcher.HandleAsync(message);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, ex.Message);
-
-                        if (IsCustomError(ex))
-                            return;
-
-                        throw;
-                    }
-                });
+                await subscriber.Handler(new SubscriberRequest(ea, message));
             }
-            catch
+            catch (Exception e)
             {
-                success = false;
-            }
-            finally
-            {
-                if (!subscriptionInfo.Consumer.Autoack)
-                {
-                    if (success) 
-                    {
-                        subscriptionInfo.Channel.BasicAck(ea.DeliveryTag, false);
-                    }
-                    else 
-                    {
-                        // in a REAL WORLD app this should be handled with a Dead Letter Exchange (DLX). 
-                        // For more information see: https://www.rabbitmq.com/dlx.html
-                        subscriptionInfo.Channel.BasicNack(ea.DeliveryTag, false, subscriptionInfo.Consumer.RequeueFailedMessages);
-                    }
-                }
+                _logger.LogError(e, e.Message);
             }
         }
-
-        private bool IsCustomError(Exception ex) => ex switch 
-        {
-            InvalidPermissionException e => true,
-            InvalidDataException e => true,
-            NotFoundException e => true,
-            _ => false
-        };
        
         #endregion
     }
