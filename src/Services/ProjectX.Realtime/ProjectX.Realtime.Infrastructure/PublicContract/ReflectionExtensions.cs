@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 
 namespace ProjectX.Realtime.Infrastructure.PublicContract
 {
-    public static class ReflectionExtensions
+    internal static class ReflectionExtensions
     {
         public static object SetDefaultInstanceProperties(this object instance)
         {

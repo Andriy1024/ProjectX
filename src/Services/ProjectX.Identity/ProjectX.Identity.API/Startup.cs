@@ -57,12 +57,8 @@ namespace ProjectX.Identity.API
         }
                    
         public void Configure(IApplicationBuilder app)
-        {
-            app.UseMiddleware<BlackListMiddleware>();
-          
-            BaseConfigure(app);
-
-            app.UseIdentityServer();
-        }
+                => BaseConfigure(app)
+                  .UseMiddleware<BlackListMiddleware>()
+                  .UseIdentityServer();
     }
 }

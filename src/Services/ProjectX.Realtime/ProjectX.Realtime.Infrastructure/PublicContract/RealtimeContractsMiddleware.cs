@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace ProjectX.Realtime.Infrastructure.PublicContract
 {
+    /// <summary>
+    /// Returns all possible realtime's messages.
+    /// </summary>
     public class RealtimeContractsMiddleware
     {
         private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings

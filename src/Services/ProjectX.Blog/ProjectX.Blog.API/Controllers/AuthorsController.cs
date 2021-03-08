@@ -4,6 +4,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectX.Blog.Application;
+using ProjectX.Core;
 using ProjectX.Infrastructure.Controllers;
 
 namespace ProjectX.Blog.API.Controllers
@@ -26,6 +27,7 @@ namespace ProjectX.Blog.API.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(Response<AuthorDto[]>), 200)]
         public async Task<IActionResult> GetAuthorsAsync(CancellationToken cancellationToken)
         {
             return MapResponse(await _repository.GetAsync<AuthorDto>(_mapper, cancellationToken: cancellationToken));
