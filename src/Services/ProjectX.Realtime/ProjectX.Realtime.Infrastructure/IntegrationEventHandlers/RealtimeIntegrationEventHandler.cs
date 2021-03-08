@@ -7,9 +7,9 @@ namespace ProjectX.Realtime.Infrastructure.IntegrationEventHandlers
 {
     public sealed class RealtimeIntegrationEventHandler : IIntegrationEventHandler<RealtimeIntegrationEvent>
     {
-        private readonly WebSocketConnectionManager _webSocketManager;
+        private readonly WebSocketManager _webSocketManager;
 
-        public RealtimeIntegrationEventHandler(WebSocketConnectionManager webSocketManager)
+        public RealtimeIntegrationEventHandler(WebSocketManager webSocketManager)
         {
             _webSocketManager = webSocketManager;
         }

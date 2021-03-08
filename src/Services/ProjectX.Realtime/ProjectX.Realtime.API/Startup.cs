@@ -25,7 +25,7 @@ namespace ProjectX.Realtime.API
         public void ConfigureServices(IServiceCollection services)
                  => BaseConfigure(services)
                    .AddSingleton<WebSocketAuthenticationManager>()
-                   .AddSingleton<WebSocketConnectionManager>()
+                   .AddSingleton<WebSocketManager>()
                    .AddTransient<IIntegrationEventHandler<RealtimeIntegrationEvent>, RealtimeIntegrationEventHandler>()
                    .AddScoped<IStartupTask, MessageBusStartupTask>()
                    .AddRabbitMqMessageBus(Configuration);

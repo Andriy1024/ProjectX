@@ -10,11 +10,11 @@ namespace ProjectX.Realtime.Infrastructure
     {
         private const string ConnectionIdQueryParamName = "connectionId";
         
-        private readonly WebSocketConnectionManager _connectionManager;
+        private readonly WebSocketManager _connectionManager;
         private readonly WebSocketAuthenticationManager _authenticationManager;
 
         public WebSocketMiddleware(RequestDelegate next,
-               WebSocketConnectionManager connectionManager,
+               WebSocketManager connectionManager,
                WebSocketAuthenticationManager authenticationManager)
         {
             _connectionManager = connectionManager;

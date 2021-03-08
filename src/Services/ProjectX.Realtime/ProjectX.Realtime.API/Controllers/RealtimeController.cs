@@ -22,12 +22,13 @@ namespace ProjectX.Realtime.API.Controllers
 
         [Authorize(Roles = IdentityRoles.Admin)]
         [HttpGet("connections")]
-        public IActionResult GetConnections([FromServices] WebSocketConnectionManager connectionManager)
+        public IActionResult GetConnections([FromServices] WebSocketManager connectionManager)
         {
             return Ok(connectionManager.GetConnections().Select(c => new 
             {
                 c.UserId,
-                ConnectionId = c.ConnectionId.Value
+                ConnectionId = c.ConnectionId.Value,
+                State = c.GetWebSocketState()
             }));
         }
     }

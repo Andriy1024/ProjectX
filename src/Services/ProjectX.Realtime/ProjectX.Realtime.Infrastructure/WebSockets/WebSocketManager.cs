@@ -11,23 +11,23 @@ using ProjectX.Core.Threading;
 
 namespace ProjectX.Realtime.Infrastructure
 {
-    public sealed class WebSocketConnectionManager 
+    public sealed class WebSocketManager 
     {
-        private readonly ILogger<WebSocketConnectionManager> _logger;
+        private readonly ILogger<WebSocketManager> _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ISystemTextJsonSerializer _serializer;
 
         private readonly Dictionary<long, HashSet<WebSocketContext>> _userIdToConnections = new Dictionary<long, HashSet<WebSocketContext>>();
         private readonly ReaderWriterLockSlim _connectionsSync = new ReaderWriterLockSlim();
 
-        public WebSocketConnectionManager(ILogger<WebSocketConnectionManager> logger,
+        public WebSocketManager(ILogger<WebSocketManager> logger,
                                           ILoggerFactory loggerFactory,
                                           ISystemTextJsonSerializer serializer)
         {
             _logger = logger;
             _loggerFactory = loggerFactory;
-            _serializer = serializer;
-        }
+            _serializer = serializer; 
+        } 
 
         /// <summary>
         /// The action adds the WebSocket to the collection and begins receiving messages from the WebSocket.
@@ -63,7 +63,7 @@ namespace ProjectX.Realtime.Infrastructure
 
             try
             {
-                await webSocketContext.StartReceiveMessageAsync().ConfigureAwait(false);
+                await webSocketContext.StartReceiveMessagesAsync().ConfigureAwait(false);
             }
             finally 
             {

@@ -86,15 +86,10 @@ namespace ProjectX.Realtime.Infrastructure
             }
         }
 
-        public Task StartReceiveMessageAsync()
+        public async Task StartReceiveMessagesAsync()
         {
-            if (_isDisposed) return Task.CompletedTask;
+            if (_isDisposed) return;
 
-            return ReceiveMessagesUntilCloseAsync();
-        }
-
-        private async Task ReceiveMessagesUntilCloseAsync()
-        {
             WebSocketCloseStatus closeStatus = WebSocketCloseStatus.NormalClosure;
 
             try
@@ -207,13 +202,8 @@ namespace ProjectX.Realtime.Infrastructure
             }
         }
 
-        private bool CanClose() 
-        {
-            var state = GetWebSocketState();
-
-            return !(state == WebSocketState.Aborted || state == WebSocketState.Closed || state == WebSocketState.CloseSent);
-        }
-
+        private bool CanClose() => !GetWebSocketState().IsOneOf(WebSocketState.Aborted, WebSocketState.Closed, WebSocketState.CloseSent);
+        
         #region IDisposable members
 
         public void Dispose()
