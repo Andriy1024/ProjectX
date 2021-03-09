@@ -47,7 +47,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectX.Contracts", "Commo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectX.Outbox", "Common\ProjectX.Outbox\ProjectX.Outbox.csproj", "{A59A3C99-4AF5-4B6C-8822-6CD56B4E7C0A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjextX.DataAccess", "Common\ProjextX.DataAccess\ProjextX.DataAccess.csproj", "{A2AA0A6A-A4EC-427A-8D4D-C45C8318F5EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectX.DataAccess", "Common\ProjectX.DataAccess\ProjectX.DataAccess.csproj", "{A2AA0A6A-A4EC-427A-8D4D-C45C8318F5EA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Messenger", "Messenger", "{D15767B6-88B8-4C9C-8FE6-80F1DD5DC84C}"
 EndProject

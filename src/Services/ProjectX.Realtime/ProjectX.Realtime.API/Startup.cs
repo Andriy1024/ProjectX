@@ -12,6 +12,8 @@ using ProjectX.Realtime.Infrastructure;
 using ProjectX.Realtime.Infrastructure.IntegrationEventHandlers;
 using WebSocketMiddleware = ProjectX.Realtime.Infrastructure.WebSocketMiddleware;
 using ProjectX.Realtime.Infrastructure.PublicContract;
+using ProjectX.RabbitMq;
+
 namespace ProjectX.Realtime.API
 {
     public sealed class Startup : BaseStartup<RealtimeAppOptions>
@@ -25,9 +27,10 @@ namespace ProjectX.Realtime.API
                  => BaseConfigure(services)
                    .AddSingleton<WebSocketAuthenticationManager>()
                    .AddSingleton<WebSocketManager>()
-                   .AddTransient<IIntegrationEventHandler<RealtimeIntegrationEvent>, RealtimeIntegrationEventHandler>()
+                   //.AddTransient<IIntegrationEventHandler<RealtimeIntegrationEvent>, RealtimeIntegrationEventHandler>()
                    .AddScoped<IStartupTask, MessageBusStartupTask>()
-                   .AddRabbitMqMessageBus(Configuration);
+                   .AddRabbitMqMessageBus(Configuration)
+                   .AddSingleton<IMessageDispatcher, RealtimeMessageDispatcher>();
         
         public void Configure(IApplicationBuilder app)
                  => BaseConfigure(app)

@@ -38,6 +38,6 @@ namespace ProjectX.Blog.API.Controllers
         [HttpDelete("{id:long:min(1)}")]
         [ProducesResponseType(typeof(IResponse), 200)]
         public Task<IActionResult> DeleteArticleAsync([FromRoute] long id)
-           => Send(new DeleteArticleCommand(id));
+            => Send(new DeleteArticleCommand(id));
     }
 }

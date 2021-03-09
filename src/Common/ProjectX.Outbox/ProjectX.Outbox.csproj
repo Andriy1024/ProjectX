@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProjectX.MessageBus\ProjectX.RabbitMq.csproj" />
-    <ProjectReference Include="..\ProjextX.DataAccess\ProjextX.DataAccess.csproj" />
+    <ProjectReference Include="..\ProjectX.DataAccess\ProjectX.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>
