@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ProjectX.Messenger.Domain
 {
-    public class ConversationView
+    public sealed class ConversationView
     {
         public string Id { get; set; }
 

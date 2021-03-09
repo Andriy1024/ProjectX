@@ -95,7 +95,7 @@ namespace ProjectX.Messenger.Domain
 
             if (message == null)
             {
-                throw new NotFoundException(ErrorCode.ConversationMessageNotFound); // to do add specific error code
+                throw new NotFoundException(ErrorCode.ConversationMessageNotFound);
             }
 
             return message;

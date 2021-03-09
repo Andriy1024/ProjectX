@@ -4,7 +4,10 @@ namespace ProjectX.Messenger.Application
 {
     public class SendMessage : ICommand
     {
-        public long CompanionId { get; set; }
+        /// <summary>
+        /// Receiver's id.
+        /// </summary>
+        public long UserId { get; set; }
 
         public string Content { get; set; }
     }

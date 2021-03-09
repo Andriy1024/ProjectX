@@ -5,7 +5,7 @@ namespace ProjectX.Core
     public abstract class EventSourcedAggregate : IEventSourcedAggregate
     {
         /// <summary>
-        /// Changes that should be committed to an event store.
+        /// The Changes that should be committed to an event store.
         /// </summary>
         public IReadOnlyCollection<IDomainEvent> Changes => _changes;
 

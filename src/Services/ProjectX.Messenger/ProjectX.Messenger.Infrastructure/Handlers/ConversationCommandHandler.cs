@@ -24,9 +24,9 @@ namespace ProjectX.Messenger.Infrastructure.Handlers
 
         public async Task<IResponse> Handle(SendMessage command, CancellationToken cancellationToken)
         {
-            var id = new ConversationId(_currentUser.IdentityId, command.CompanionId);
+            var id = new ConversationId(_currentUser.IdentityId, command.UserId);
             var conversation = await _eventStore.LoadAsync<ConversationAggregate>(id);
-            conversation ??= ConversationAggregate.Start(_currentUser.IdentityId, command.CompanionId);
+            conversation ??= ConversationAggregate.Start(_currentUser.IdentityId, command.UserId);
             conversation.AddMessage(messageId: Guid.NewGuid(), _currentUser.IdentityId, command.Content);
             await _eventStore.StoreAsync(conversation);
             return ResponseFactory.Success();

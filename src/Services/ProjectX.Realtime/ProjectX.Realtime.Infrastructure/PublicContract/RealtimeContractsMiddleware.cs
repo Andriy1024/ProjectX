@@ -16,7 +16,7 @@ namespace ProjectX.Realtime.Infrastructure.PublicContract
     /// </summary>
     public class RealtimeContractsMiddleware
     {
-        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             Converters = new List<JsonConverter>
@@ -26,7 +26,7 @@ namespace ProjectX.Realtime.Infrastructure.PublicContract
             Formatting = Formatting.Indented
         };
 
-        private static readonly ContractTypes Contracts = new ContractTypes();
+        private static readonly ContractTypes _contracts = new ContractTypes();
         private static int _initialized;
         private static string _serializedContracts = "{}";
 
@@ -65,16 +65,16 @@ namespace ProjectX.Realtime.Infrastructure.PublicContract
                 var instance = FormatterServices.GetUninitializedObject(realtimeMessage);
                 var name = instance.GetType().Name;
                 
-                if (Contracts.RealtimeMessages.ContainsKey(name))
+                if (_contracts.RealtimeMessages.ContainsKey(name))
                 {
                     throw new InvalidOperationException($"RealtimeMessage: '{name}' already exists.");
                 }
 
                 instance.SetDefaultInstanceProperties();
-                Contracts.RealtimeMessages[name] = instance;
+                _contracts.RealtimeMessages[name] = instance;
             }
 
-            _serializedContracts = JsonConvert.SerializeObject(Contracts, SerializerSettings);
+            _serializedContracts = JsonConvert.SerializeObject(_contracts, _serializerSettings);
         }
 
         private class ContractTypes
