@@ -1,0 +1,24 @@
+version: '3.7'
+networks:
+  internal-network:
+
+services:
+  projectx.build:
+    image: projectx.build
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - internal-network
+
+  projectx.realtime:
+    image: projectx.realtime
+    build:
+      context: .
+      dockerfile: src/Services/ProjectX.Realtime/ProjectX.Realtime.API/Dockerfile
+    networks:
+      - internal-network
+    ports:
+      - "5003:80"
+    depends_on:
+      - projectx.build
