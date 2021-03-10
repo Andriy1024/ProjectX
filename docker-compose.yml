@@ -11,32 +11,32 @@ services:
       dockerfile: Dockerfile 
     networks:
       - internal
-  
+      
   projectx.postgres:
     image: postgres:12.4
     container_name: projectx.postgres
     restart: unless-stopped
+    networks:
+      - internal
     ports:
-      - 5433:5432 #Map 5433 port for localhost, because i have already installed Postgres on my pc.
+      - 5433:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=root
-    networks:
-      - internal
 
   projectx.rabbitmq:
     image: rabbitmq:3-management
     container_name: projectx.rabbitmq
     restart: unless-stopped
+    networks:
+      - internal
+    ports:
+      - 15673:15672
     environment:
       RABBITMQ_DEFAULT_USER: "guest"
       RABBITMQ_DEFAULT_PASS: "guest"
       RABBITMQ_DEFAULT_VHOST: "/"
-    networks:
-      - internal
-    ports:          # I don't need to expose the 5673 port, because all connection services in the same network namespace.
-      - 15673:15672 # Map 15673 port, because i have already installed RabbitMq on my pc.
-
+      
   projectx.realtime:
     image: projectx.realtime
     build:
@@ -53,7 +53,7 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
       - RabbitMq__Connection__HostName=projectx.rabbitmq
-  
+
   projectx.blog:
     image: projectx.blog
     build:
