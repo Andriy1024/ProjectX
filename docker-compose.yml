@@ -1,24 +1,49 @@
 version: '3.7'
+
 networks:
-  internal-network:
+  internal:
 
 services:
   projectx.build:
     image: projectx.build
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile 
     networks:
-      - internal-network
+      - internal
+
+  projectx.rabbitmq:
+    image: rabbitmq:3-management
+    container_name: projectx.rabbitmq
+    volumes:
+      - /data/rabbitmq/data/:/var/lib/rabbitmq/
+      - /data/rabbitmq/logs/:/var/log/rabbitmq/
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+      RABBITMQ_DEFAULT_VHOST: "/" 
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+    networks:
+      - internal
+    ports:
+      - 5672:5672
+      - 15672:15672
 
   projectx.realtime:
     image: projectx.realtime
     build:
       context: .
       dockerfile: src/Services/ProjectX.Realtime/ProjectX.Realtime.API/Dockerfile
+    restart: on-failure
     networks:
-      - internal-network
+      - internal
     ports:
-      - "5003:80"
+      - 5003:80
     depends_on:
       - projectx.build
+      - projectx.rabbitmq
+    environment:
+      - RabbitMq__Connection__HostName=projectx.rabbitmq
