@@ -11,10 +11,25 @@ services:
       dockerfile: Dockerfile 
     networks:
       - internal
+  
+  projectx.postgres:
+    image: postgres:12.4
+    container_name: projectx.postgres
+    restart: unless-stopped
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+    networks:
+      - internal
+    volumes:
+      - /data/postgresql_data:/var/lib/postgresql/data/
 
   projectx.rabbitmq:
     image: rabbitmq:3-management
     container_name: projectx.rabbitmq
+    restart: unless-stopped
     volumes:
       - /data/rabbitmq/data/:/var/lib/rabbitmq/
       - /data/rabbitmq/logs/:/var/log/rabbitmq/
