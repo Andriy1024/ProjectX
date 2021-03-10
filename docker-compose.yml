@@ -4,32 +4,32 @@ networks:
   internal:
 
 services:
-  projectx.build:
-    image: projectx.build
+  projectx-build:
+    image: projectx-build
     build:
       context: .
-      dockerfile: Dockerfile 
+      dockerfile: Dockerfile
     networks:
-      - internal
+      - internal 
       
-  projectx.postgres:
+  projectx-postgres:
     image: postgres:12.4
-    container_name: projectx.postgres
+    container_name: projectx-postgres
     restart: unless-stopped
     networks:
-      - internal
+      - internal 
     ports:
       - 5433:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=root
 
-  projectx.rabbitmq:
+  projectx-rabbitmq:
     image: rabbitmq:3-management
-    container_name: projectx.rabbitmq
+    container_name: projectx-rabbitmq
     restart: unless-stopped
     networks:
-      - internal
+      - internal 
     ports:
       - 15673:15672
     environment:
@@ -37,38 +37,60 @@ services:
       RABBITMQ_DEFAULT_PASS: "guest"
       RABBITMQ_DEFAULT_VHOST: "/"
       
-  projectx.realtime:
-    image: projectx.realtime
+  projectx-realtime:
+    image: projectx-realtime
     build:
       context: .
       dockerfile: src/Services/ProjectX.Realtime/ProjectX.Realtime.API/Dockerfile
     restart: on-failure
     networks:
-      - internal
+      - internal 
     ports:
       - 5003:80
     depends_on:
-      - projectx.build
-      - projectx.rabbitmq
+      - projectx-build
+      - projectx-rabbitmq
     environment:
       - ASPNETCORE_URLS=http://+:80
-      - RabbitMq__Connection__HostName=projectx.rabbitmq
+      - RabbitMq__Connection__HostName=projectx-rabbitmq
+      - IdentityUrl=http://projectx-identity
 
-  projectx.blog:
-    image: projectx.blog
+  projectx-identity:
+    image: projectx-identity
+    build:
+      context: .
+      dockerfile: src/Services/ProjectX.Identity/ProjectX.Identity.API/Dockerfile
+    restart: on-failure
+    depends_on:
+      - projectx-build
+      - projectx-rabbitmq
+      - projectx-postgres
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - RabbitMq__Connection__HostName=projectx-rabbitmq
+      - ConnectionStrings__DbConnection=Host=projectx-postgres;Database=ProjectX.Identity;Username=postgres;Password=root
+      - IdentityUrl=http://127.0.0.1:5000
+    networks:
+      - internal 
+    ports:
+      - "5000:80"
+
+  projectx-blog:
+    image: projectx-blog
     build:
       context: .
       dockerfile: src/Services/ProjectX.Blog/ProjectX.Blog.API/Dockerfile
     restart: on-failure
     networks:
-      - internal
+      - internal 
     ports:
       - 5001:80
     depends_on:
-      - projectx.build
-      - projectx.rabbitmq
-      - projectx.postgres
+      - projectx-build
+      - projectx-rabbitmq
+      - projectx-postgres
     environment:
       - ASPNETCORE_URLS=http://+:80
-      - RabbitMq__Connection__HostName=projectx.rabbitmq
-      - ConnectionStrings__DbConnection=Host=projectx.postgres;Database=ProjectX.Blog;Username=postgres;Password=root
+      - RabbitMq__Connection__HostName=projectx-rabbitmq
+      - ConnectionStrings__DbConnection=Host=projectx-postgres;Database=ProjectX.Blog;Username=postgres;Password=root
+      - IdentityUrl=http://projectx-identity

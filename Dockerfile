@@ -3,3 +3,4 @@ WORKDIR /src
 COPY . .
 RUN dotnet publish src/Services/ProjectX.Realtime/ProjectX.Realtime.API/ProjectX.Realtime.API.csproj -c Release -o /app/ProjectX.Realtime
 RUN dotnet publish src/Services/ProjectX.Blog/ProjectX.Blog.API/ProjectX.Blog.API.csproj -c Release -o /app/ProjectX.Blog
+RUN dotnet publish src/Services/ProjectX.Identity/ProjectX.Identity.API/ProjectX.Identity.API.csproj -c Release -o /app/ProjectX.Identity

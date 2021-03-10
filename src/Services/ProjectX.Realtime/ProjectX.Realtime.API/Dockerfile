@@ -4,5 +4,5 @@ EXPOSE 80
 
 FROM base AS final
 WORKDIR /app
-COPY --from=projectx.build /app/ProjectX.Realtime .
+COPY --from=projectx-build /app/ProjectX.Realtime .
 ENTRYPOINT ["dotnet", "ProjectX.Realtime.API.dll"]

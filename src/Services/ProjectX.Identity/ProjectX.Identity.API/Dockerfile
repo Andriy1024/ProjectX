@@ -4,5 +4,5 @@ EXPOSE 80
 
 FROM base AS final
 WORKDIR /app
-COPY --from=projectx-build /app/ProjectX.Blog .
-ENTRYPOINT ["dotnet", "ProjectX.Blog.API.dll"]
+COPY --from=projectx-build /app/ProjectX.Identity .
+ENTRYPOINT ["dotnet", "ProjectX.Identity.API.dll"]
