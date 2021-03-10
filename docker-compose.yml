@@ -66,12 +66,12 @@ services:
       - projectx-rabbitmq
       - projectx-postgres
     environment:
-      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ASPNETCORE_URLS=http://+:80
       - RabbitMq__Connection__HostName=projectx-rabbitmq
-      - ConnectionStrings__DbConnection=Host=projectx-postgres;Database=ProjectX.Identity;Username=postgres;Password=root
       - IdentityUrl=http://127.0.0.1:5000
+      - ConnectionStrings__DbConnection=Host=projectx-postgres;Database=ProjectX.Identity;Username=postgres;Password=root
     networks:
-      - internal 
+      - internal
     ports:
       - "5000:80"
 
@@ -92,5 +92,5 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
       - RabbitMq__Connection__HostName=projectx-rabbitmq
-      - ConnectionStrings__DbConnection=Host=projectx-postgres;Database=ProjectX.Blog;Username=postgres;Password=root
       - IdentityUrl=http://projectx-identity
+      - ConnectionStrings__DbConnection=Host=projectx-postgres;Database=ProjectX.Blog;Username=postgres;Password=root
