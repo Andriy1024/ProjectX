@@ -43,7 +43,7 @@ namespace ProjectX.Identity.API
                    .AddUserManager<UserManager>()
                    .AddDefaultTokenProviders()
                    .Services
-                   .AddIdentityServer4(DBConnectionString, typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)
+                   .AddIdentityServer4(DBConnectionString, AppOptions.IdentityUrl, typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)
                    .AddStartupTasks()
                    .AddTransactinBehaviour()
                    .AddScopedCache()

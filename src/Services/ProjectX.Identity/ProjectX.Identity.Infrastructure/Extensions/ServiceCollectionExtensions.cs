@@ -13,8 +13,8 @@ namespace ProjectX.Identity.Infrastructure.Extensions
              services.AddTransient<IStartupTask, AspNetIdentityStartupTask>()
                      .AddTransient<IStartupTask, IdentityServerStartupTask>();
 
-        public static IServiceCollection AddIdentityServer4(this IServiceCollection services, string connectionString, string assemblyName) =>
-             services.AddIdentityServer()
+        public static IServiceCollection AddIdentityServer4(this IServiceCollection services, string connectionString, string issuerUrl, string assemblyName) =>
+             services.AddIdentityServer(o => o.IssuerUri = issuerUrl)
                      .AddDeveloperSigningCredential()
                      .AddAspNetIdentity<UserEntity>()
                      .AddProfileService<ProfileManager>()

@@ -56,7 +56,7 @@ namespace ProjectX.Infrastructure.Setup
                   .Configure<BaseOptions>(Configuration)
                   .Configure<ConnectionStrings>(Configuration.GetSection(nameof(ConnectionStrings)))
                   .Configure<TOptions>(Configuration)
-                  .AddSwagger(AppOptions.ApiName, AppOptions.IdentityUrl)
+                  .AddSwagger(AppOptions.ApiName, AppOptions.ExternalIdentityUrl)
                   .AddIdentityServerAuthorization()
                   .AddIdentityServerAuthentication(AppOptions.ApiName, AppOptions.IdentityUrl)
                   .AddCurrentUser()

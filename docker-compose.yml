@@ -43,14 +43,15 @@ services:
     networks:
       - projectx 
     ports:
-      - 5003:80
+      - 5003:5003
     depends_on:
       - projectx-build
       - projectx-rabbitmq
     environment:
-      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_URLS=http://0.0.0.0:5003
       - RabbitMq__Connection__HostName=projectx-rabbitmq
-      - IdentityUrl=http://localhost:5000
+      - IdentityUrl=http://projectx-identity:5000 # for jwt validation
+      - ExternalIdentityUrl=http://127.0.0.1:5000 # for swagger
 
   projectx-identity:
     image: projectx-identity
@@ -65,7 +66,8 @@ services:
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5000
       - RabbitMq__Connection__HostName=projectx-rabbitmq
-      - IdentityUrl=http://127.0.0.1:5000
+      - IdentityUrl=http://projectx-identity:5000 # for jwt validation
+      - ExternalIdentityUrl=http://127.0.0.1:5000 # for swagger
       - ConnectionStrings__DbConnection=Host=projectx-postgres;Database=ProjectX.Identity;Username=postgres;Password=root
     networks:
       - projectx
@@ -89,9 +91,11 @@ services:
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - RabbitMq__Connection__HostName=projectx-rabbitmq
-      - IdentityUrl=http://projectx-identity:5000
+      - IdentityUrl=http://projectx-identity:5000 # for jwt validation
+      - ExternalIdentityUrl=http://127.0.0.1:5000 # for swagger
       - ConnectionStrings__DbConnection=Host=projectx-postgres;Database=ProjectX.Blog;Username=postgres;Password=root
 
 networks:
   projectx:
     name: projectx-network
+    external: true
