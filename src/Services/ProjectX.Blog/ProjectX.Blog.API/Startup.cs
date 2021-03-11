@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 using ProjectX.Blog.Application;
 using ProjectX.Blog.Infrastructure.Extensions;
 using ProjectX.Blog.Persistence;
@@ -27,14 +28,14 @@ namespace ProjectX.Blog.API
                    .AddDbServices<BlogDbContext>(o => o.UseNpgsql(DBConnectionString))
                    .AddTransactinBehaviour()
                    .AddRabbitMqMessageBus(Configuration)
-                   .AddOutboxMessageServices(MvcBuilder, Configuration, o => o.UseNpgsql(DBConnectionString, sql => 
+                   .AddOutboxMessageServices(MvcBuilder, Configuration, o => o.UseNpgsql(DBConnectionString, sql =>
                    {
                        sql.MigrationsAssembly(typeof(BlogDbContext).GetTypeInfo().Assembly.GetName().Name);
                        //sql.MigrationsHistoryTable("_MigrationHistory", BlogDbContext.SchemaName)
                    }))
                    .AddRepositories()
                    .AddStartupTasks();
-
+       
         public void Configure(IApplicationBuilder app) => BaseConfigure(app);
     }
 }

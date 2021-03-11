@@ -21,7 +21,6 @@ using ProjectX.RabbitMq.Configuration;
 using Microsoft.EntityFrameworkCore;
 using ProjectX.Outbox;
 using ProjextX.DataAccess.Extensions;
-using Microsoft.IdentityModel.Logging;
 
 namespace ProjectX.Identity.API
 {
@@ -34,9 +33,7 @@ namespace ProjectX.Identity.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            IdentityModelEventSource.ShowPII = true;
-
-            services.AddDbServices<IdentityDbContext>(o => o.UseNpgsql(DBConnectionString))
+           services.AddDbServices<IdentityDbContext>(o => o.UseNpgsql(DBConnectionString))
                    .AddIdentity<UserEntity, RoleEntity>(options =>
                    {
                        options.User.RequireUniqueEmail = true;

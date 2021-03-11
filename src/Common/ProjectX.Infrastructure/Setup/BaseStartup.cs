@@ -18,6 +18,7 @@ using System.Reflection;
 using ProjectX.Core;
 using ProjectX.Core.JSON;
 using ProjectX.Infrastructure.JSON;
+using Microsoft.IdentityModel.Logging;
 
 namespace ProjectX.Infrastructure.Setup
 {
@@ -46,25 +47,29 @@ namespace ProjectX.Infrastructure.Setup
         }
 
         public virtual IServiceCollection BaseConfigure(IServiceCollection services)
-                  => AddMvc(services)
-                    .AddOptions()
-                    .AddHttpContextAccessor()
-                    .Configure<BaseOptions>(Configuration)
-                    .Configure<ConnectionStrings>(Configuration.GetSection(nameof(ConnectionStrings)))
-                    .Configure<TOptions>(Configuration)
-                    .AddSwagger(AppOptions.ApiName, AppOptions.IdentityUrl)
-                    .AddIdentityServerAuthorization()
-                    .AddIdentityServerAuthentication(AppOptions.ApiName, AppOptions.IdentityUrl)
-                    .AddCurrentUser()
-                    .AddMediatR(Assemblies)
-                    .AddAutoMapper(Assemblies)
-                    .AddSingleton<IJsonSerializer, DefaultJsonSerializer>()
-                    .AddSingleton<ISystemTextJsonSerializer, SystemTextJsonSerializer>()
-                    .AddCors(o => o.AddPolicy("CustomPolicy",
-                                b => b.AllowAnyOrigin()
-                                    .AllowAnyHeader()
-                                    .AllowAnyMethod()));
+        {
+            IdentityModelEventSource.ShowPII = true;
 
+            return AddMvc(services)
+                  .AddOptions()
+                  .AddHttpContextAccessor()
+                  .Configure<BaseOptions>(Configuration)
+                  .Configure<ConnectionStrings>(Configuration.GetSection(nameof(ConnectionStrings)))
+                  .Configure<TOptions>(Configuration)
+                  .AddSwagger(AppOptions.ApiName, AppOptions.IdentityUrl)
+                  .AddIdentityServerAuthorization()
+                  .AddIdentityServerAuthentication(AppOptions.ApiName, AppOptions.IdentityUrl)
+                  .AddCurrentUser()
+                  .AddMediatR(Assemblies)
+                  .AddAutoMapper(Assemblies)
+                  .AddSingleton<IJsonSerializer, DefaultJsonSerializer>()
+                  .AddSingleton<ISystemTextJsonSerializer, SystemTextJsonSerializer>()
+                  .AddCors(o => o.AddPolicy("CustomPolicy",
+                           b => b.AllowAnyOrigin()
+                                 .AllowAnyHeader()
+                                 .AllowAnyMethod()));
+        }
+       
         protected virtual IServiceCollection AddMvc(IServiceCollection services) 
         {
             MvcBuilder = services.AddMvc();
