@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProjectX.Core;
-using ProjectX.Core.IntegrationEvents;
 using ProjectX.Infrastructure.Setup;
 using ProjectX.RabbitMq.Configuration;
 using ProjectX.Realtime.Application;
@@ -27,11 +26,10 @@ namespace ProjectX.Realtime.API
                  => BaseConfigure(services)
                    .AddSingleton<WebSocketAuthenticationManager>()
                    .AddSingleton<WebSocketManager>()
-                   //.AddTransient<IIntegrationEventHandler<RealtimeIntegrationEvent>, RealtimeIntegrationEventHandler>()
                    .AddScoped<IStartupTask, MessageBusStartupTask>()
                    .AddRabbitMqMessageBus(Configuration)
                    .AddSingleton<IMessageDispatcher, RealtimeMessageDispatcher>();
-        
+
         public void Configure(IApplicationBuilder app)
                  => BaseConfigure(app)
                    .Map("/contracts", o => o.UseMiddleware<RealtimeContractsMiddleware>())

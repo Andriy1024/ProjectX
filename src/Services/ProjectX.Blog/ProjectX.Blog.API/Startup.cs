@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Logging;
 using ProjectX.Blog.Application;
 using ProjectX.Blog.Infrastructure.Extensions;
 using ProjectX.Blog.Persistence;
@@ -35,7 +34,7 @@ namespace ProjectX.Blog.API
                    }))
                    .AddRepositories()
                    .AddStartupTasks();
-       
+
         public void Configure(IApplicationBuilder app) => BaseConfigure(app);
     }
 }

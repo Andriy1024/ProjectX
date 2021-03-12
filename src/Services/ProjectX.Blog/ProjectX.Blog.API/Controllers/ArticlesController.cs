@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectX.Blog.Application;
 using ProjectX.Core;
@@ -21,6 +22,7 @@ namespace ProjectX.Blog.API.Controllers
             => Send(query, cancellationToken);
 
         [HttpPost]
+        [Authorize]
         [ProducesResponseType(typeof(IResponse<ArticleDto>), 200)]
         public Task<IActionResult> CreateArticleAsync([FromBody] CreateArticleCommand command) 
             => Send(command);
@@ -30,11 +32,13 @@ namespace ProjectX.Blog.API.Controllers
         public Task<IActionResult> UpdateArticleTitleAsync([FromBody] UpdateArticleTitleCommand command) 
             => Send(command);
 
+        [Authorize]
         [HttpPut("bodies")]
         [ProducesResponseType(typeof(IResponse<ArticleDto>), 200)]
         public Task<IActionResult> UpdateArticleBodyAsync([FromBody] UpdateArticleBodyCommand command) 
             => Send(command);
 
+        [Authorize]
         [HttpDelete("{id:long:min(1)}")]
         [ProducesResponseType(typeof(IResponse), 200)]
         public Task<IActionResult> DeleteArticleAsync([FromRoute] long id)
