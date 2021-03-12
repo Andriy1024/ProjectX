@@ -31,5 +31,22 @@ namespace ProjectX.Realtime.API.Controllers
                 State = c.GetWebSocketState()
             }));
         }
+
+        [HttpGet("reverse-proxy-headers")]
+        public IActionResult GetProxyHeadersAsync() 
+        {
+            HttpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var xfor);
+            HttpContext.Request.Headers.TryGetValue("X-Forwarded-Proto", out var xproto);
+            HttpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var xhost);
+            HttpContext.Request.Headers.TryGetValue("X-Forwarded-Location", out var xlocation);
+
+            return Ok(new
+            {
+                X_Forwarded_For = xfor.FirstOrDefault(),
+                X_Forwarded_Proto = xproto.FirstOrDefault(),
+                X_Forwarded_Host = xhost.FirstOrDefault(),
+                X_Forwarded_Location = xlocation.FirstOrDefault()
+            });
+        }
     }
 }

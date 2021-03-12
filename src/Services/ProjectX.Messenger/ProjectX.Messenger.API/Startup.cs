@@ -29,6 +29,6 @@ namespace ProjectX.Messenger.API
                    .AddRabbitMqMessageBus(Configuration)
                    .AddStartupTasks();
 
-        public void Configure(IApplicationBuilder app) => BaseConfigure(app);
+        public void Configure(IApplicationBuilder app) => BaseConfigure(app); 
     }
 }

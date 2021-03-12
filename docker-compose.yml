@@ -33,25 +33,23 @@ services:
       RABBITMQ_DEFAULT_USER: "guest"
       RABBITMQ_DEFAULT_PASS: "guest"
       RABBITMQ_DEFAULT_VHOST: "/"
-      
-  projectx-realtime:
-    image: projectx-realtime
-    build:
+  
+  # Reverse Proxy
+  projectx-nginx:
+    image: projectx-nginx
+    build: 
       context: .
-      dockerfile: src/Services/ProjectX.Realtime/ProjectX.Realtime.API/Dockerfile
-    restart: on-failure
-    networks:
-      - projectx 
-    ports:
-      - 5003:5003
+      dockerfile: nginx/Dockerfile
+    container_name: projectx-nginx
     depends_on:
-      - projectx-build
-      - projectx-rabbitmq
-    environment:
-      - ASPNETCORE_URLS=http://0.0.0.0:5003
-      - RabbitMq__Connection__HostName=projectx-rabbitmq
-      - IdentityUrl=http://projectx-identity:5000 # for jwt validation
-      - ExternalIdentityUrl=http://127.0.0.1:5000 # for swagger
+      - projectx-identity   # http://localhost/identity/swagger
+      - projectx-blog       # http://localhost/blog/swagger
+      - projectx-messenger  # http://localhost/messenger/swagger
+      - projectx-realtime   # http://localhost/realtime/swagger WebSocket has not configured for Nginx yet.
+    networks:
+      - projectx
+    ports:
+      - 80:80
 
   projectx-identity:
     image: projectx-identity
@@ -72,7 +70,7 @@ services:
     networks:
       - projectx
     ports:
-      - "5000:5000"
+      - "5000:5000" # This is for debugging, we can reach our services through NGINX
 
   projectx-blog:
     image: projectx-blog
@@ -83,7 +81,7 @@ services:
     networks:
       - projectx 
     ports:
-      - 5001:5001
+      - 5001:5001 # This is for debugging, we can reach our services through NGINX
     depends_on:
       - projectx-build
       - projectx-rabbitmq
@@ -104,7 +102,7 @@ services:
     networks:
       - projectx 
     ports:
-      - 5002:5002
+      - 5002:5002 # This is for debugging, we can reach our services through NGINX
     depends_on:
       - projectx-build
       - projectx-rabbitmq
@@ -116,7 +114,25 @@ services:
       - ExternalIdentityUrl=http://127.0.0.1:5000 # for swagger
       - ConnectionStrings__DbConnection=Host=projectx-postgres;Database=ProjectX.Messenger;Username=postgres;Password=root
 
+  projectx-realtime:
+    image: projectx-realtime
+    build:
+      context: .
+      dockerfile: src/Services/ProjectX.Realtime/ProjectX.Realtime.API/Dockerfile
+    restart: on-failure
+    networks:
+      - projectx 
+    ports:
+      - 5003:5003
+    depends_on:
+      - projectx-build
+      - projectx-rabbitmq
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5003
+      - RabbitMq__Connection__HostName=projectx-rabbitmq
+      - IdentityUrl=http://projectx-identity:5000 # for jwt validation
+      - ExternalIdentityUrl=http://127.0.0.1:5000 # for swagger
+
 networks:
   projectx:
     name: projectx-network
-    external: true

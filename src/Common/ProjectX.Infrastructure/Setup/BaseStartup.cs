@@ -19,6 +19,7 @@ using ProjectX.Core;
 using ProjectX.Core.JSON;
 using ProjectX.Infrastructure.JSON;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace ProjectX.Infrastructure.Setup
 {
@@ -55,6 +56,11 @@ namespace ProjectX.Infrastructure.Setup
                   .AddHttpContextAccessor()
                   .Configure<BaseOptions>(Configuration)
                   .Configure<ConnectionStrings>(Configuration.GetSection(nameof(ConnectionStrings)))
+                  .Configure<ForwardedHeadersOptions>(options => 
+                  {
+                      // It is for incoming requests from a reverse proxy (NGINX)
+                      options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto; 
+                  })
                   .Configure<TOptions>(Configuration)
                   .AddSwagger(AppOptions.ApiName, AppOptions.ExternalIdentityUrl)
                   .AddIdentityServerAuthorization()
@@ -92,13 +98,15 @@ namespace ProjectX.Infrastructure.Setup
         }
 
         public virtual IApplicationBuilder BaseConfigure(IApplicationBuilder app)
-              => app.UseRouting()
+              => app.UseForwardedHeaders() // It is for incoming requests from a reverse proxy (NGINX)
+                    .UseRouting()
                     .UseCors("CustomPolicy")
                     .UseMiddleware<ErrorHandlerMiddleware>()
                     .UseAuthentication()
                     .UseAuthorization()
-                    .ConfigureSwagger(AppOptions.ApiName, "/swagger/v1/swagger.json")
-                    .UseEndpoints(endpoints => {
+                    .ConfigureSwagger(AppOptions.ApiName, "v1/swagger.json")
+                    .UseEndpoints(endpoints => 
+                    {
                         endpoints.MapControllers();
                     });
     }

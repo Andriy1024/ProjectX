@@ -55,7 +55,7 @@ namespace ProjectX.Identity.API
                     BaseConfigure(services)
                    .AddOutboxMessageServices(MvcBuilder, Configuration, o => o.UseNpgsql(DBConnectionString, sql => sql.MigrationsAssembly(typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)));
         }
-                   
+
         public void Configure(IApplicationBuilder app)
                  => BaseConfigure(app)
                    .UseMiddleware<BlackListMiddleware>()
