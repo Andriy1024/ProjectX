@@ -83,17 +83,38 @@ services:
     networks:
       - projectx 
     ports:
-      - 5001:80
+      - 5001:5001
     depends_on:
       - projectx-build
       - projectx-rabbitmq
       - projectx-postgres
     environment:
-      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ASPNETCORE_URLS=http://0.0.0.0:5001
       - RabbitMq__Connection__HostName=projectx-rabbitmq
       - IdentityUrl=http://projectx-identity:5000 # for jwt validation
       - ExternalIdentityUrl=http://127.0.0.1:5000 # for swagger
       - ConnectionStrings__DbConnection=Host=projectx-postgres;Database=ProjectX.Blog;Username=postgres;Password=root
+  
+  projectx-messenger:
+    image: projectx-messenger
+    build:
+      context: .
+      dockerfile: src/Services/ProjectX.Messenger/ProjectX.Messenger.API/Dockerfile
+    restart: on-failure
+    networks:
+      - projectx 
+    ports:
+      - 5002:5002
+    depends_on:
+      - projectx-build
+      - projectx-rabbitmq
+      - projectx-postgres
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5002
+      - RabbitMq__Connection__HostName=projectx-rabbitmq
+      - IdentityUrl=http://projectx-identity:5000 # for jwt validation
+      - ExternalIdentityUrl=http://127.0.0.1:5000 # for swagger
+      - ConnectionStrings__DbConnection=Host=projectx-postgres;Database=ProjectX.Messenger;Username=postgres;Password=root
 
 networks:
   projectx:
