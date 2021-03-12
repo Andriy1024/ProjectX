@@ -1,10 +1,12 @@
-﻿namespace ProjectX.Core
+﻿using ProjectX.Core.Extensions;
+
+namespace ProjectX.Core
 {
     public class Error : IError
     {
         public Error(ErrorType type, ErrorCode errorCode, string message)
         {
-            Message = message;
+            Message = message ?? errorCode.GetDescription();
             Type = type;
             ErrorCode = errorCode;
         }
