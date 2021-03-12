@@ -5,7 +5,7 @@ namespace ProjectX.RabbitMq
 {
     public class PublishProperties 
     {
-        public ExchangeProperties Exchange { get; set; }
+        public ExchangeProperties Exchange { get; }
 
         public string RoutingKey { get; set; } = "";
 

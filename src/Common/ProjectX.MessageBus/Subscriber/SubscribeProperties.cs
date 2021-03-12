@@ -4,15 +4,15 @@ namespace ProjectX.RabbitMq
 {
     public sealed class SubscribeProperties
     {
-        public ExchangeProperties Exchange { get; set; } = new ExchangeProperties();
+        public ExchangeProperties Exchange { get; } = new ExchangeProperties();
 
-        public QueueProperties Queue { get; set; } = new QueueProperties();
+        public QueueProperties Queue { get; } = new QueueProperties();
 
-        public ConsumerProperties Consumer { get; set; } = new ConsumerProperties();
+        public ConsumerProperties Consumer { get; } = new ConsumerProperties();
 
         public override string ToString()
         {
-            return $"{nameof(Exchange)}: {Exchange?.ToString()}, {nameof(Queue)}: {Queue?.ToString()}, {nameof(Consumer)}: {Consumer?.ToString()}.";
+            return $"{nameof(Exchange)}: {Exchange.ToString()}, {nameof(Queue)}: {Queue.ToString()}, {nameof(Consumer)}: {Consumer.ToString()}.";
         }
 
         public static SubscribeProperties Validate(SubscribeProperties properties)

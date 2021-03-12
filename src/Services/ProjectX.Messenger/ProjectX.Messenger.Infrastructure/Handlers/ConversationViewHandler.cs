@@ -15,6 +15,7 @@ namespace ProjectX.Messenger.Infrastructure.Handlers
     {
         private readonly IDocumentSession _session;
         private readonly ICurrentUser _currentUser;
+        private readonly static List<UserConversationsView.Conversation> _empty = new List<UserConversationsView.Conversation>();
 
         public ConversationViewHandler(IDocumentSession session, ICurrentUser currentUser)
         {
@@ -39,7 +40,7 @@ namespace ProjectX.Messenger.Infrastructure.Handlers
 
             return conversations != null
                 ? ResponseFactory.Success(conversations.Conversations)
-                : ResponseFactory.NotFound<List<UserConversationsView.Conversation>>(ErrorCode.NotFound);
+                : ResponseFactory.Success(_empty);
         }
     }
 }
