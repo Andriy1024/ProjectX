@@ -15,3 +15,26 @@ It is built using Clean Architecture principles with CQRS (Command Query Respons
 
 
 The application's functionality is broken up into many distinct microservices. Each of these separate services has its own persistent storage. Asynchronous communication between the services is done by using a message bus (RabbitMq).
+
+### Technology stack:
+
+  - .NET Core
+  - PostgreSQL
+  - Entity Framework
+  - Marten (Event store)
+  - Identity Server 4
+  - RabbitMq
+  - Redis
+  - Docker Compose
+  - NGINX (Reverse proxy)
+  - MediatR
+
+### Patterns/Architecture:
+
+  - Microservices
+  - CQRS
+  - Event Sourcing 
+  - Domain-Driven Design
+  - Unit of Work (ACID), Generic Repository
+  - Event-Driven Architecture (Domain Events, Integration Events, Outbox/Inbox)
+  - REST
