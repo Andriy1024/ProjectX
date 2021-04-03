@@ -18,6 +18,10 @@ h1{
 h2{
     font-size: 20px;
 }
+a{
+    text-decoration: none;
+    color: white;
+}
 hr{
     border: none; /* Убираем границу для браузера Firefox */
     color: white; /* Цвет линии для остальных браузеров */
@@ -28,21 +32,47 @@ hr{
 p,li{
     line-height: 1.2em;
 }
-li{
-    margin-left: 15px;
-}
+
 header{
     -webkit-box-flex: 0; 
 	    -ms-flex: 0 0 auto; 
-	        flex: 0 0 auto; /*щоб прижати футер*/
+	        flex: 0 0 auto;
 }
+
 main{
     -webkit-box-flex: 1;
 	     -ms-flex: 1 0 auto;
-	         flex: 1 0 auto; /*щоб прижати футер */
+	         flex: 1 0 auto;
 }
+
+.services{
+    text-align: center;
+    display:flex;
+    flex-direction: column;
+    background-color: #75e6c9;
+    background-color:rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+}
+
+.services div{
+    padding: 5px;
+}
+
+.services div:first-child{
+    background: #000705;
+    background-color:rgba(0, 0, 0, 0.7);
+}
+
+.services a{
+    display: block;
+}
+
+.services div:hover{
+    background-color:rgba(0, 0, 0, 0.7);
+}
+
 footer{
     -webkit-box-flex: 0;
 	    -ms-flex: 0 0 auto;
-			flex: 0 0 auto; /*щоб прижати футер*/
+			flex: 0 0 auto;
 }
