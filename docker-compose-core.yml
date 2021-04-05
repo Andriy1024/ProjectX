@@ -1,0 +1,67 @@
+version: '3.7'
+
+networks:
+  projectx:
+    name: projectx-network
+    external: true
+
+services:
+  projectx-postgres:
+    image: postgres:12.4
+    container_name: projectx-postgres
+    restart: unless-stopped
+    networks:
+      - projectx 
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+    # volumes:
+    #   - /data/postgresql_data:/var/lib/postgresql/data/
+    
+  projectx-rabbitmq:
+    image: rabbitmq:3-management
+    container_name: projectx-rabbitmq
+    restart: unless-stopped
+    networks:
+      - projectx 
+    ports:
+      - 15673:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    # volumes:
+    #   - /data/rabbitmq/data/:/var/lib/rabbitmq/
+    #   - /data/rabbitmq/logs/:/var/log/rabbitmq/
+      
+  redis:
+    container_name: projectx-redis
+    image: 'bitnami/redis:5.0.5'
+    environment:
+      #- ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_PASSWORD=RedisPassword
+    networks:
+      - projectx
+    ports:
+      - "6379:6379"
+    # volumes:
+    #   - /data/redis:/bitnami/redis/data
+    
+  # Reverse Proxy
+  projectx-nginx:
+    image: projectx-nginx
+    build: 
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: projectx-nginx
+    # depends_on:
+      # - projectx-identity   # http://localhost/identity/swagger
+      # - projectx-blog       # http://localhost/blog/swagger
+      # - projectx-messenger  # http://localhost/messenger/swagger
+      # - projectx-realtime   # http://localhost/realtime/swagger WebSocket has not configured for Nginx yet.
+    networks:
+      - projectx
+    ports:
+      - 80:80

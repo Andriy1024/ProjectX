@@ -9,47 +9,65 @@ services:
     networks:
       - projectx 
       
-  projectx-postgres:
-    image: postgres:12.4
-    container_name: projectx-postgres
-    restart: unless-stopped
-    networks:
-      - projectx 
-    ports:
-      - 5433:5432
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=root
+  # projectx-postgres:
+  #   image: postgres:12.4
+  #   container_name: projectx-postgres
+  #   restart: unless-stopped
+  #   networks:
+  #     - projectx 
+  #   ports:
+  #     - 5433:5432
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=root
+  # volumes:
+  #   - /data/postgresql_data:/var/lib/postgresql/data/
 
-  projectx-rabbitmq:
-    image: rabbitmq:3-management
-    container_name: projectx-rabbitmq
-    restart: unless-stopped
-    networks:
-      - projectx 
-    ports:
-      - 15673:15672
-    environment:
-      RABBITMQ_DEFAULT_USER: "guest"
-      RABBITMQ_DEFAULT_PASS: "guest"
-      RABBITMQ_DEFAULT_VHOST: "/"
+  # projectx-rabbitmq:
+  #   image: rabbitmq:3-management
+  #   container_name: projectx-rabbitmq
+  #   restart: unless-stopped
+  #   networks:
+  #     - projectx 
+  #   ports:
+  #     - 15673:15672
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: "guest"
+  #     RABBITMQ_DEFAULT_PASS: "guest"
+  #     RABBITMQ_DEFAULT_VHOST: "/"
+  # volumes:
+  #   - /data/rabbitmq/data/:/var/lib/rabbitmq/
+  #   - /data/rabbitmq/logs/:/var/log/rabbitmq/
   
+  # redis:
+  #   container_name: projectx-redis
+  #   image: 'bitnami/redis:5.0.5'
+  #   environment:
+  #     #- ALLOW_EMPTY_PASSWORD=yes
+  #     - REDIS_PASSWORD=RedisPassword
+  #   networks:
+  #     - projectx
+  #   ports:
+  #     - "6379:6379"
+  # volumes:
+  #   - /data/redis:/bitnami/redis/data  
+
   # Reverse Proxy
-  projectx-nginx:
-    image: projectx-nginx
-    build: 
-      context: .
-      dockerfile: nginx/Dockerfile
-    container_name: projectx-nginx
-    depends_on:
-      - projectx-identity   # http://localhost/identity/swagger
-      - projectx-blog       # http://localhost/blog/swagger
-      - projectx-messenger  # http://localhost/messenger/swagger
-      - projectx-realtime   # http://localhost/realtime/swagger WebSocket has not configured for Nginx yet.
-    networks:
-      - projectx
-    ports:
-      - 80:80
+  # projectx-nginx:
+  #   image: projectx-nginx
+  #   build: 
+  #     context: .
+  #     dockerfile: nginx/Dockerfile
+  #   container_name: projectx-nginx
+  #   depends_on:
+  #     - projectx-identity   # http://localhost/identity/swagger
+  #     - projectx-blog       # http://localhost/blog/swagger
+  #     - projectx-messenger  # http://localhost/messenger/swagger
+  #     - projectx-realtime   # http://localhost/realtime/swagger WebSocket has not configured for Nginx yet.
+  #   networks:
+  #     - projectx
+  #   ports:
+  #     - 80:80
 
   projectx-identity:
     image: projectx-identity
@@ -59,11 +77,13 @@ services:
     restart: on-failure
     depends_on:
       - projectx-build
-      - projectx-rabbitmq
-      - projectx-postgres
+      # - projectx-rabbitmq
+      # - projectx-postgres
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5000
       - RabbitMq__Connection__HostName=projectx-rabbitmq
+      - RedisOptions__Server__Hosts__0__Host=projectx-redis
+      - RedisOptions__Server__Password=RedisPassword
       - IdentityUrl=http://projectx-identity:5000 # for jwt validation
       - ExternalIdentityUrl=http://127.0.0.1:5000 # for swagger
       - ConnectionStrings__DbConnection=Host=projectx-postgres;Database=ProjectX.Identity;Username=postgres;Password=root
@@ -84,8 +104,8 @@ services:
       - 5001:5001 # This is for debugging, we can reach our services through NGINX
     depends_on:
       - projectx-build
-      - projectx-rabbitmq
-      - projectx-postgres
+      # - projectx-rabbitmq
+      # - projectx-postgres
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5001
       - RabbitMq__Connection__HostName=projectx-rabbitmq
@@ -105,8 +125,8 @@ services:
       - 5002:5002 # This is for debugging, we can reach our services through NGINX
     depends_on:
       - projectx-build
-      - projectx-rabbitmq
-      - projectx-postgres
+      # - projectx-rabbitmq
+      # - projectx-postgres
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5002
       - RabbitMq__Connection__HostName=projectx-rabbitmq
@@ -126,7 +146,7 @@ services:
       - 5003:5003
     depends_on:
       - projectx-build
-      - projectx-rabbitmq
+      # - projectx-rabbitmq
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5003
       - RabbitMq__Connection__HostName=projectx-rabbitmq
@@ -136,3 +156,4 @@ services:
 networks:
   projectx:
     name: projectx-network
+    external: true
