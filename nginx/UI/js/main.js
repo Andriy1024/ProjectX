@@ -1,27 +1,36 @@
 (function(document){
     
-    var description  = document.getElementsByClassName("description")[0];
-    var descriptionBtn = document.getElementById("description-btn");
+    sectionSlideUpDown("description-section-header", "description-section-content");
+    sectionSlideUpDown("services-section-header", "services-section-content");
+    sectionSlideUpDown("stack-section-header", "stack-section-content");
+    sectionSlideUpDown("architecture-section-header", "architecture-section-content");
+    sectionSlideUpDown("author-section-header", "author-section-content");
 
-    descriptionBtn.onclick = function() {
-        
-        var element_classes = (" "+description.className+" ").replace(/[\n\t\r]/g, " "),
-            remove_class    = "slide-down",
-            add_class       = "slide-up",
-            is_showing      = element_classes.indexOf(" "+remove_class+" ") > -1;
-
-        if ( ! is_showing) {
-            // Switch variable values
-            remove_class = [add_class, add_class = remove_class][0];
-            descriptionBtn.innerHTML = "Description &#129045;";
-        }else{
-            descriptionBtn.innerHTML = "Description &#129047;";   
-        }
-
-        // Remove the previous class (if present) and add the new class
-        description.className = (element_classes.replace(" "+remove_class+" ", "") + " "+add_class+" ").trim();
-
-        return false;
-    };
+    let sections = document.getElementsByClassName("section");
+    let arrows = document.getElementsByClassName("arrow");
     
+    for(let i = 0; i < sections.length; i++)
+    {
+        let temp = i;
+        let section = sections[temp];
+        let arrow = arrows[temp];
+
+        section.addEventListener('click', function(event){
+            arrow.classList.toggle("rotated");
+        });
+    }
+
 })(document);
+
+function sectionSlideUpDown(sectionHeaderSelector, sectionContentSelector){
+    
+    var sectionHeader  = document.getElementById(sectionHeaderSelector);
+    var sectionContent = document.getElementById(sectionContentSelector);
+
+    sectionHeader.onclick = function() {
+        if(!sectionContent.classList.contains("slide-down"))
+            sectionContent.classList.add('slide-down');
+        else
+            sectionContent.classList.remove('slide-down');
+    };
+};

@@ -13,8 +13,12 @@ body {
     margin: 0 auto;
     padding: 3% 3% 1% 3%;
 }
+/* button:focus{
+    border:none;
+} */
 h1{
     font-size: 30px;
+    font-weight:600;
 }
 h2{
     font-size: 20px;
@@ -30,10 +34,13 @@ hr{
     height: 2px; /* Толщина линии */
     margin: 10px 0px;
 }
-p,li{
-    line-height: 1.2em;
+
+p{
+    line-height: 1.3em;
+    font-size: 1.2em;
 }
 
+/* Start Push footer to the bottom */
 header{
     -webkit-box-flex: 0; 
 	    -ms-flex: 0 0 auto; 
@@ -42,66 +49,122 @@ header{
 
 main{
     -webkit-box-flex: 1;
-	     -ms-flex: 1 0 auto;
-	         flex: 1 0 auto;
-}
-
-.slide-up, .slide-down {
-    max-height: 0;            
-    overflow-y: hidden;
-    -webkit-transition: max-height 0.5s ease-in-out;
-    -moz-transition: max-height 0.5s ease-in-out;
-    -o-transition: max-height 0.5s ease-in-out;
-    transition: max-height 0.5s ease-in-out;
-}
-
-.slide-down {            
-    max-height: 100%;
-}
-
-button:focus{
-    border:none;
-}
-
-#description-btn{
-    width: 100%;
-    margin: 5px 0px;
-    background-color:rgba(0, 0, 0, 0.8);
-    border: none;
-    outline:none;
-    color:white;
-    font-family:  "DejaVu Sans Mono", "Fira Mono", monospace;
-    padding: 5px;
-    line-height: 1.2em;
-} 
-
-.services{
-    text-align: center;
-    display:flex;
-    flex-direction: column; 
-    background-color:rgba(0, 0, 0, 0.3);
-    border-radius: 2px;
-}
-
-.services div{
-    padding: 5px;
-}
-
-.services div:first-child{
-    background: #000705;
-    background-color:rgba(0, 0, 0, 0.7);
-}
-
-.services a{
-    display: block;
-}
-
-.services div:hover{
-    background-color:rgba(0, 0, 0, 0.7);
+	    -ms-flex: 1 0 auto;
+	        flex: 1 0 auto;
 }
 
 footer{
     -webkit-box-flex: 0;
 	    -ms-flex: 0 0 auto;
 			flex: 0 0 auto;
+}
+/* End Push footer to the bottom */
+
+/* Start Rotate Arrow */
+.arrow{
+    content:'';
+    display:block;
+    position:relative;
+    top:1px;
+    left: 0px; 
+    height:15px;
+    width:15px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border-top:4px solid white;
+    border-right:4px solid white;
+    -webkit-transform:rotate(45deg);
+    -moz-transform:rotate(45deg);
+    -ms-transform:rotate(45deg);
+    -o-transform:rotate(45deg);
+    transform:rotate(45deg);
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    margin-left:5px;
+}
+
+.rotated{
+    transform:rotate(135deg); 
+    -webkit-transform:rotate(135deg); 
+    -moz-transform:rotate(135deg); 
+    -o-transform:rotate(135deg); 
+    top:-3.5px;
+    margin-left:10px;
+}
+/* End Rotate Arrow */
+
+.section{
+    display: flex;
+    background-color:rgba(0, 0, 0, 0.5);
+    padding: 10px 0px;;
+    cursor: pointer;
+}
+
+.section:hover{
+    background-color:rgba(0, 0, 0, 0.8); 
+}
+
+.section-name{
+    vertical-align: middle;
+    margin-left: 10px;
+    font-weight:800;
+}
+
+/* Start Slide Up/Down  */
+.slide-up, .slide-down {
+    max-height: 0;            
+    overflow-y: hidden;
+    -webkit-transition: max-height 0.5s ease-in-out;
+    -moz-transition: max-height 0.5s ease-in-out;
+    -o-transition: max-height 0.5s ease-in-out;
+    transition: max-height 0.4s ease-in-out;
+}
+
+.slide-down {            
+    max-height: 100%;
+}
+/* End Slide Up/Down  */
+
+#description-section-content div, 
+#stack-section-content div,
+#architecture-section-content div,
+#author-section-content div{
+    background-color:rgba(0, 0, 0, 0.3);
+    padding: 1%;
+}
+
+#services-section-content{
+    text-align: center;
+    /* display:flex;
+    flex-direction: column;  */
+    background-color:rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+    font-weight:800;
+    font-size: 20px;
+}
+
+#services-section-content div{
+    padding: 10px;
+}
+
+#services-section-content div:hover{
+    background-color:rgba(0, 0, 0, 0.7);
+}
+
+#services-section-content a{
+    display: block;
+}
+
+main ul {
+    list-style-type: disc;
+    list-style-position: inside;
+    margin-left: 9px;
+}
+
+main ul li{
+    padding: 2px 0px;
+    font-size: 1.2em;
 }
