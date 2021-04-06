@@ -20,7 +20,7 @@ namespace ProjectX.Infrastructure.Extensions
                                // It is for incoming requests from a reverse proxy
                                swagger.Servers = new List<OpenApiServer>
                                {
-                                    new OpenApiServer { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}/{location}" }
+                                    new OpenApiServer { Url = $"{httpReq.Headers["X-Forwarded-Proto"]}://{httpReq.Host.Value}/{location}" }
                                };
                            }
                        });
