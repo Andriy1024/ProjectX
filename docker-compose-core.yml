@@ -27,7 +27,8 @@ services:
     networks:
       - projectx 
     ports:
-      - 15673:15672
+      - 15672:15672
+      - 5672:5672
     environment:
       RABBITMQ_DEFAULT_USER: "guest"
       RABBITMQ_DEFAULT_PASS: "guest"
@@ -36,7 +37,7 @@ services:
     #   - /data/rabbitmq/data/:/var/lib/rabbitmq/
     #   - /data/rabbitmq/logs/:/var/log/rabbitmq/
       
-  redis:
+  projectx-redis:
     container_name: projectx-redis
     image: 'bitnami/redis:5.0.5'
     environment:
