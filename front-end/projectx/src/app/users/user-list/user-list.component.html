@@ -1,0 +1,22 @@
+<ul>
+    <li class="list-item" *ngFor="let user of users; let i = index">
+        <span class="list-item-header">
+            <a href=""><h2>{{i + 1}}. {{user.name}}</h2></a> 
+        </span>
+        <span>
+            <button (click)="delete(user)" class="btn remove-btn"><h2>Remove</h2></button>
+        </span>
+    </li>
+    <li>
+        <form class="create-form" (ngSubmit)="createUser()" [formGroup]="createArticleFrom">
+            <input type="text" formControlName="name">
+    
+            <button
+                class="btn create-btn"
+                type="submit"
+                [disabled]="createArticleFrom.invalid">
+                <h2>Create</h2>
+            </button>
+        </form>
+    </li>
+</ul>

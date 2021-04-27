@@ -1,0 +1,22 @@
+<header>
+  <nav>
+    <ul>
+      <li><a  routerLink="" routerLinkActive="activeRouter" [routerLinkActiveOptions]="{exact: true}">ProjectX</a></li>
+      <li><a  routerLink="/users" routerLinkActive="activeRouter">Users</a></li>
+      <li><a  routerLink="/blog" routerLinkActive="activeRouter">Blog</a></li>
+      <li><a href="" disabled="true">Messenger</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="center-block">
+    <router-outlet></router-outlet>
+    <!-- <app-article-list></app-article-list> -->
+  </div>
+</main>
+
+<footer>
+  FOOTER
+</footer>
+
