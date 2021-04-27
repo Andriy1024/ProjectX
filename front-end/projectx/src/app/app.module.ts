@@ -8,6 +8,7 @@ import { ArticleListComponent } from './blog/article-list/article-list.component
 import { UserListComponent } from './users/user-list/user-list.component';
 import { HomeComponent } from './home/home/home.component';
 import { ArticleComponent } from './blog/article/article.component';
+import { CreateArticleComponent } from './blog/create-article/create-article.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { ArticleComponent } from './blog/article/article.component';
     ArticleListComponent,
     UserListComponent,
     HomeComponent,
-    ArticleComponent
+    ArticleComponent,
+    CreateArticleComponent
   ],
   imports: [
     BrowserModule,

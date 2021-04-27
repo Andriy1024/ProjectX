@@ -1,0 +1,28 @@
+<div id="create-article-block">
+    <div><h2>Create Article</h2></div>
+    <div>
+        <form [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
+            <div>
+                <label for="name"><h2>Title</h2> </label> 
+                <input name="name" formControlName="name">
+                <div *ngIf="name?.invalid && name?.touched" class="error-lable">
+                    Invalid name <pre>{{ name?.errors | json  }}</pre>
+                </div>
+            </div>
+            <div>
+                <div>
+                    <label for="content"><h2>Content</h2> </label>
+                </div>
+                <div>
+                    <textarea name="content" formControlName="content"></textarea>
+                </div>
+                <div *ngIf="content?.invalid && content?.touched" class="error-lable">
+                    Invalid content  <pre>{{ content?.errors | json  }}</pre>
+                </div>
+            </div>
+            <div>
+                <button [disabled]="form.invalid" class="btn"><h2>Create</h2></button>
+            </div>  
+        </form>
+    </div>
+</div>

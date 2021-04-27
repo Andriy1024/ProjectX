@@ -27,11 +27,11 @@ html,body{
 	height: 100%;
 }
 
-header {
+header, footer  {
   display: flex;
   flex-direction: row;
   flex-grow: 0; 
-  background-color: chartreuse;
+  background-color: darkblue;
 }
 
 main {
@@ -41,9 +41,6 @@ main {
 }
 
 footer {
-  display: flex;
-  flex-grow: 0; 
-  background-color: darkblue;
   padding: 10px;
 }
 
@@ -62,14 +59,14 @@ ul {
 
 .btn {
     // display: inline-block;
+    // margin-right: .5rem;
+    //transition: opacity .2s;
     background: var(--light-color);
     color: #333;
     padding: 1rem 1rem;
     font-size: 1rem;
     border: none;
     cursor: pointer;
-    // margin-right: .5rem;
-    //transition: opacity .2s;
     outline: none;
   
     &:disabled {
@@ -90,6 +87,10 @@ ul {
         opacity: .8;
         color: var(--primary-color); 
     }
+}
+
+.error-lable{
+  color: red;
 }
 
 .create-btn{
@@ -138,4 +139,10 @@ ul {
   .create-btn{
       width: 125px;
   }
+}
+
+.center-block {
+  max-width: 800px;
+  margin: 0 auto;
+  height: 100%;
 }

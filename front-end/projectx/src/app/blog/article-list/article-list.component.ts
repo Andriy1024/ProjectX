@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Guid } from "guid-typescript";
-import { Article } from '../interfaces/article';
+import { IArticle } from '../interfaces/article';
 import { BlogService } from '../services/blog.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { BlogService } from '../services/blog.service';
 })
 export class ArticleListComponent implements OnInit {
 
-  public articles: Article[] = [];
+  public articles: IArticle[] = [];
 
   public createArticleFrom: FormGroup = new FormGroup({});
 
@@ -25,14 +25,8 @@ export class ArticleListComponent implements OnInit {
     });
   }
 
-  public delete(article: Article): void {
+  public delete(article: IArticle): void {
     this._blogService.deleteArticle(article);
-    this.articles = this._blogService.getArticles();
-  }
-
-  public createArticle(): void {
-    const { name } = this.createArticleFrom.value;
-    this._blogService.addArticle({ id: Guid.create(), name });
     this.articles = this._blogService.getArticles();
   }
 }

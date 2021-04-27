@@ -1,0 +1,63 @@
+:host {
+    height: 100%;
+    display: block;
+}
+
+#create-article-block {
+
+    background-color: blanchedalmond;
+    padding: 2%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    //div with from
+    div:nth-child(2) {
+        flex-grow: 1;
+    }
+
+    button {
+        width: 100%;
+        background-color: green;
+        margin-top: 10px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        box-sizing: border-box; 
+    }
+
+    input, textarea {
+        display: block;
+        width: 100%;
+        border: 2px solid black;
+        padding: 5px;
+        font-size: 1.4rem;
+    }
+
+    textarea { resize: none; }
+
+    // div with textarea
+    form div:nth-child(2) {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+
+        div:nth-child(2) {
+            flex-grow: 1;
+            textarea { height: 100%; width:100%; }
+        }
+    }
+
+    input.ng-touched.ng-invalid,
+    textarea.ng-touched.ng-invalid { 
+        border: solid red 2px; 
+    } 
+
+    input.ng-touched.ng-valid,
+    textarea.ng-touched.ng-valid { 
+        border: solid green 2px; 
+    }
+}

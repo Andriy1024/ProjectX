@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { Article } from '../interfaces/article';
+import { IFullArticle } from '../interfaces/article';
 import { BlogService } from '../services/blog.service';
 
 @Component({
@@ -11,10 +11,12 @@ import { BlogService } from '../services/blog.service';
 })
 export class ArticleComponent implements OnInit {
 
-  public article: Article | undefined;
-  public articleId: Guid | undefined;
+  public article!: IFullArticle;
+  public articleId!: Guid;
 
-  constructor(private _route: ActivatedRoute, private _blogService: BlogService) {}
+  constructor(private _route: ActivatedRoute, 
+              private _blogService: BlogService,
+              private _router: Router) {}
 
   public ngOnInit(): void {
     this._route.params.subscribe(p => 
@@ -33,7 +35,12 @@ export class ArticleComponent implements OnInit {
   }
 
   public getArticle(id: Guid): void {
-    this.article = this._blogService.getArticle(id);
+    this.article = this._blogService.getFullArticle(id);
+  }
+
+  public delete(): void {
+    this._blogService.deleteArticle(this.article);
+    this._router.navigate(['/blog']);
   }
 
 }
