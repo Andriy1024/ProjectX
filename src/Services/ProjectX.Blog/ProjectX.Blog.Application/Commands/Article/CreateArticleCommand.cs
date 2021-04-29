@@ -5,7 +5,7 @@ namespace ProjectX.Blog.Application
 {
     public sealed class CreateArticleCommand : ICommand<ArticleDto>
     {
-        public string Tittle { get; set; }
+        public string Title { get; set; }
         public string Body { get; set; }
     }
 
@@ -14,7 +14,7 @@ namespace ProjectX.Blog.Application
         public CreateArticleCommandValidator()
         {
             RuleFor(c => c.Body).NotEmpty();
-            RuleFor(c => c.Tittle).NotEmpty();
+            RuleFor(c => c.Title).NotEmpty();
         }
     }
 }

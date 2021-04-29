@@ -33,7 +33,7 @@ namespace ProjectX.Blog.Infrastructure.Handlers
                 return ErrorResponse(maybeAuthor.Error);
 
             var article = ArticleEntity.Factory
-                            .CreateArticle(command.Tittle, command.Body)
+                            .CreateArticle(command.Title, command.Body)
                             .Author(maybeAuthor.Result)
                             .Build();
 
