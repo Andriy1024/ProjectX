@@ -3,21 +3,21 @@
     <div>
         <form [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
             <div>
-                <label for="name"><h2>Title</h2> </label> 
-                <input name="name" formControlName="name">
-                <div *ngIf="name?.invalid && name?.touched" class="error-lable">
-                    Invalid name <pre>{{ name?.errors | json  }}</pre>
+                <label for="title"><h2>Title</h2> </label> 
+                <input name="title" formControlName="title">
+                <div *ngIf="title?.invalid && title?.touched" class="error-lable">
+                    Invalid title <pre>{{ title?.errors | json  }}</pre>
                 </div>
             </div>
             <div>
                 <div>
-                    <label for="content"><h2>Content</h2> </label>
+                    <label for="body"><h2>Body</h2> </label>
                 </div>
                 <div>
-                    <textarea name="content" formControlName="content"></textarea>
+                    <textarea name="body" formControlName="body"></textarea>
                 </div>
-                <div *ngIf="content?.invalid && content?.touched" class="error-lable">
-                    Invalid content  <pre>{{ content?.errors | json  }}</pre>
+                <div *ngIf="body?.invalid && body?.touched" class="error-lable">
+                    Invalid body  <pre>{{ body?.errors | json  }}</pre>
                 </div>
             </div>
             <div>

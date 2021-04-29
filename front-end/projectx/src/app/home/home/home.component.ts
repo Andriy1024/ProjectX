@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from 'src/app/auth/auth.service';
+import { Token } from 'src/app/auth/token';
 
 @Component({
   selector: 'app-home',
@@ -7,9 +9,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  public token: Token | null = null;
 
-  ngOnInit(): void {
+  constructor(public _authService: AuthService) { }
+
+  public ngOnInit(): void 
+  {
+      // this._authService.login('admin@projectX.com', 'AdminPass123$$')
+      //     .subscribe(t => 
+      //       {
+      //         this.token = new Token(t.access_token, t.refresh_token, t.expires_in, t.token_type, t.scope);
+      //       });
+
+      this.token = this._authService.getToken();
   }
 
 }

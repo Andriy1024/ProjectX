@@ -1,6 +1,6 @@
-import { Component, Injectable, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Guid } from 'guid-typescript';
+import { Component, OnInit } from '@angular/core';
+import { User } from '../interfaces/user';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-user-list',
@@ -9,63 +9,28 @@ import { Guid } from 'guid-typescript';
 })
 export class UserListComponent implements OnInit {
 
-  users: User[] = [];
+    public users: User[] = [];
 
-  createArticleFrom: FormGroup = new FormGroup({});
+    constructor(private _userService: UserService) { }
 
-  constructor(private _userService: UserService) { }
-
-  ngOnInit(): void {
-    this.users = this._userService.getUsers();
-
-    this.createArticleFrom = new FormGroup({
-      name: new FormControl('', Validators.required),
-    });
-  }
-
-  delete(user: User){
-    this._userService.deleteUser(user);
-    this.users = this._userService.getUsers();
-  }
-
-  createUser() {
-    const { name } = this.createArticleFrom.value;
-    this._userService.addUser({ id: Guid.create(), name });
-    this.users = this._userService.getUsers();
-  }
-}
-
-@Injectable({providedIn: 'root'})
-export class UserService {
-  private _users: User[] = [
+    public ngOnInit(): void 
     {
-      id: Guid.create(),
-      name: 'Andrii'
-    },
-    {
-      id: Guid.create(),
-      name: 'Igor'
-    },
-    {
-      id: Guid.create(),
-      name: 'Taras'
+        this.getUsers();
     }
-  ];
 
-  getUsers() : User[] {
-    return this._users;
-  }
+    public delete(user: User)
+    {
+        this._userService.deleteUser(user);
+        //this.getUsers();
+    }
 
-  addUser(user: User) {
-    this._users.push(user);
-  }
-
-  deleteUser(user: User) {
-    this._users = this._users.filter(u => u.id !== user.id);
-  }
-}
-
-export interface User {
-  id: Guid,
-  name: string
+    private getUsers()
+    {
+        this._userService.getUsersAsync()
+            .subscribe(users => 
+            {
+              console.log('getUsersAsync', users);
+              this.users = users;
+            });
+    }
 }

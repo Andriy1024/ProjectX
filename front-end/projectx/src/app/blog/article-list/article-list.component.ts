@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Guid } from "guid-typescript";
 import { IArticle } from '../interfaces/article';
 import { BlogService } from '../services/blog.service';
 
@@ -11,22 +10,30 @@ import { BlogService } from '../services/blog.service';
 })
 export class ArticleListComponent implements OnInit {
 
-  public articles: IArticle[] = [];
+    public articles: IArticle[] = [];
 
-  public createArticleFrom: FormGroup = new FormGroup({});
+    public createArticleFrom: FormGroup = new FormGroup({});
 
-  constructor(private _blogService: BlogService) {}
+    constructor(private _blogService: BlogService) {}
 
-  public ngOnInit(): void {
-    this.articles = this._blogService.getArticles();
+    public ngOnInit(): void 
+    {
+        this.getArticles();
+    }
 
-    this.createArticleFrom = new FormGroup({
-      name: new FormControl('', Validators.required),
-    });
-  }
+    public delete(article: IArticle): void 
+    {
+        this._blogService.deleteArticleAsync(article);
+        this.getArticles();
+    }
 
-  public delete(article: IArticle): void {
-    this._blogService.deleteArticle(article);
-    this.articles = this._blogService.getArticles();
-  }
+    private getArticles() 
+    {
+        this._blogService.getArticlesAsync()
+                         .subscribe(
+                              (articles) => this.articles = articles,
+                              (error) => console.log('Get articles error: ', error),
+                              () => console.log('Get articles completed.')
+                          );
+    }
 }

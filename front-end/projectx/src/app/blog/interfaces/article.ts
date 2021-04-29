@@ -1,15 +1,27 @@
-import { Guid } from "guid-typescript";
-
 export interface IArticle {
-    id: Guid,
-    name: string
+    id: number,
+    title: string,
+    body: string,
+    createdAt: number,
+    updatedAt: number,
+    author: IAuthor
+}
+
+export interface IAuthor {
+    id: number,
+    firstName: string,
+    lastName: string,
+    email: string
 }
 
 export interface IFullArticle extends IArticle {
-    content: string
+    comments: IComment[]
 }
 
-export interface ICreateArticleCommand {
-    name: string,
-    content: string
+export interface IComment {
+    articleId: number,
+    text: string,
+    createdAt: number,
+    updatedAt: number,
+    author: IAuthor
 }

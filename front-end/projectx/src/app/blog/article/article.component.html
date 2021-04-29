@@ -1,10 +1,15 @@
 <div class="article">
     <div>
         <h2>id: {{article?.id}}</h2>
-        <h2>name: {{article?.name}}</h2>
+        <h2>title: {{article?.title}}</h2>
     </div>
     <div>
-        <p>{{article?.content}}</p>
+        <p>{{article?.body}}</p>
+    </div>
+    <div>
+        <pre>
+            {{ article | json }}
+        </pre>
     </div>
     <div>
         <button class="btn remove-btn" (click)="delete()"><h2>Remove</h2></button>

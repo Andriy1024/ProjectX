@@ -1,50 +1,74 @@
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Guid } from "guid-typescript";
-import { IArticle, IFullArticle, ICreateArticleCommand } from "../interfaces/article";
+import { Observable, throwError } from "rxjs";
+import { catchError, map } from "rxjs/operators";
+import { IDataResponse, IResponse } from "src/app/shared/IResponse";
+import { IArticle, IFullArticle } from "../interfaces/article";
+import { ICreateArticleCommand, IDeleteArticleCommand } from "../interfaces/commands";
+import { IArticlesQuery, IFindArticleQuery } from "../interfaces/queries";
 
 @Injectable({providedIn: 'root'})
 export class BlogService {
-    
-    private _articles: IFullArticle[] = [
+
+    private _blogUrl: string = "http://localhost:5001/api"
+
+    constructor(private _blogClient: HttpClient) {}
+
+    public getArticlesAsync(query: IArticlesQuery|null=null): Observable<IArticle[]> 
+    {
+        return this._blogClient
+                   .get<IDataResponse<IArticle[]>>(`${this._blogUrl}/articles`)
+                   .pipe(
+                        map(r => this.map(r)),
+                        catchError(this.handleError)
+                    );
+    }
+
+    public getArticleAsync(query: IFindArticleQuery): Observable<IFullArticle> 
+    {
+        return this._blogClient
+                   .get<IDataResponse<IFullArticle>>(`${this._blogUrl}/articles/${query.id}`)
+                   .pipe(
+                        map(r => this.map(r)),
+                        catchError(this.handleError)
+                    );
+    }
+
+    public deleteArticleAsync(command: IDeleteArticleCommand) : void
+    {
+        this._blogClient.delete(`${this._blogUrl}/articles/${command.id}`)
+                        .pipe(catchError(this.handleError))
+                        .subscribe({
+                            next: (val) => console.log('Delete article result: ', val),
+                            error: (error) => console.log('Delete article error: ', error),
+                            complete: () => console.log('Delete article completed')
+                        });
+    }
+
+    public createArticleAsync(command: ICreateArticleCommand): Observable<IArticle>
+    {
+        return this._blogClient
+                   .post<IDataResponse<IFullArticle>>(`${this._blogUrl}/articles`, command)
+                   .pipe(
+                        map(r => this.map(r)),
+                        catchError(this.handleError)
+                    );
+    }
+
+    private map<TOut>(response: IDataResponse<TOut>): TOut 
+    {
+        if(!response.isSuccess)
         {
-            id: Guid.parse('4860c63b-4cbf-35f0-6ec4-68038347bf8a'),
-            name: 'First Article',
-            content: 'First Article content'
-        },
-        {
-            id: Guid.parse('54e20cfb-a1bc-79ec-1ea3-c486dfe6b29d'),
-            name: 'Second Article',
-            content: 'First Article content'
-        },
-        {
-            id: Guid.parse('9c46482f-7eff-c562-e515-603ee83c1f2c'),
-            name: 'Third Article',
-            content: 'First Article content'
+            console.error('error:', response.error);
+            throw new Error(`Blog service request failed, error: ${response?.error?.msessage}`);
         }
-    ];
 
-    public getArticles(): IArticle[] {
-        return this._articles;
+        return response.data;
     }
 
-    public getFullArticle(id: Guid): IFullArticle {
-        const article = this._articles.find(a => a.id == id);
-        
-        if(!article) throw new Error(`Article with id: ${id} was not found.`);
-
-        return article;
-    }
-
-    public deleteArticle(article: IArticle): void {
-        this._articles = this._articles.filter(a => a.id !== article.id);
-    }
-
-    public createArticle(article: ICreateArticleCommand): void {
-        this._articles.push(
-            {
-                id: Guid.create(),
-                name: article.name,
-                content: article.content
-            });
+    private handleError(error: HttpErrorResponse)
+    {
+        console.error(error.message);
+        return throwError('A data error occurred, please try again.');
     }
 }

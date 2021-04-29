@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ICreateArticleCommand } from '../interfaces/article';
+import { IArticle } from '../interfaces/article';
+import { ICreateArticleCommand } from '../interfaces/commands';
 import { BlogService } from '../services/blog.service';
 
 @Component({
@@ -11,25 +12,33 @@ import { BlogService } from '../services/blog.service';
 })
 export class CreateArticleComponent implements OnInit {
 
-  public form!: FormGroup;
+    public form!: FormGroup;
 
-  constructor(private _formBuilder: FormBuilder,
-              private _blogService: BlogService,
-              private _router: Router) { }
+    constructor(private _formBuilder: FormBuilder,
+                private _blogService: BlogService,
+                private _router: Router) { }
 
-  public ngOnInit(): void {
-    this.form = this._formBuilder.group({
-      name: this._formBuilder.control('', Validators.compose([Validators.required, Validators.minLength(5)])),
-      content: this._formBuilder.control('', Validators.compose([Validators.required, Validators.minLength(10)]))
-    });
-  }
+    public ngOnInit(): void 
+    {
+        this.form = this._formBuilder.group({
+            title: this._formBuilder.control('', Validators.compose([Validators.required, Validators.minLength(5)])),
+            body: this._formBuilder.control('', Validators.compose([Validators.required, Validators.minLength(10)]))
+        });
+    }
 
-  public onSubmit(command: ICreateArticleCommand): void {
-    this._blogService.createArticle(command);
-    this._router.navigate(['/blog']);
-  }
+    public onSubmit(command: ICreateArticleCommand): void 
+    {
+        this._blogService.createArticleAsync(command)
+                         .subscribe({
+                              next: (val) => console.log('Create article result: ', val),
+                              error: (error) => console.log('Create article failed: ', error),
+                              complete: () => console.log('Article created.')
+                         });
+                        
+        this._router.navigate(['/blog']);
+    }
 
-  get name() { return this.form.get('name'); }
+    get title() { return this.form.get('title'); }
 
-  get content() { return this.form.get('content'); }
+    get body() { return this.form.get('body'); }
 }
