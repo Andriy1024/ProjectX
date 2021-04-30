@@ -1,0 +1,47 @@
+#sign-in {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* align horizontal */
+    align-items: center;     /* align vertical */
+
+    h2 {
+        text-align: center;
+    }
+
+    #sign-in-center {
+        background: white;
+        width: 80%;
+        height: 80%;
+        padding: 2%;
+
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+
+            input {
+                display: block;
+                width: 100%;
+                border: 2px solid black;
+                padding: 5px;
+                font-size: 1.4rem;
+            }
+
+            button {
+                margin-top: 10px;
+                width: 100%;
+                background: black;
+                color: white;
+                transition: all .5s;
+                
+                &:disabled {
+                    background-color: silver;
+                    color: black;
+                }
+            }
+        }
+    }
+    
+}

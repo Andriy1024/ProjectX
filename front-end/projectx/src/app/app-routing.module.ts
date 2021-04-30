@@ -4,6 +4,8 @@ import { ArticleListComponent } from './blog/article-list/article-list.component
 import { ArticleComponent } from './blog/article/article.component';
 import { CreateArticleComponent } from './blog/create-article/create-article.component';
 import { HomeComponent } from './home/home/home.component';
+import { SignInComponent } from './sign-in/sign-in.component';
+import { SignUpComponent } from './sign-up/sign-up.component';
 import { UserListComponent } from './users/user-list/user-list.component';
 
 const routes: Routes = [
@@ -11,7 +13,9 @@ const routes: Routes = [
   {path: 'blog', component: ArticleListComponent},
   {path: 'articles/:id', component: ArticleComponent},
   {path: 'articles-create', component: CreateArticleComponent},
-  {path: 'users', component: UserListComponent}
+  {path: 'users', component: UserListComponent},
+  {path: 'sign-in', component: SignInComponent},
+  {path: 'sign-up', component: SignUpComponent}
 ];
 
 @NgModule({

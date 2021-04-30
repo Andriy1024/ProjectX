@@ -1,22 +1,33 @@
 <header>
-  <nav>
+
+  <nav class="header-nav">
     <ul>
-      <li><a  routerLink="" routerLinkActive="activeRouter" [routerLinkActiveOptions]="{exact: true}">ProjectX</a></li>
-      <li><a  routerLink="/users" routerLinkActive="activeRouter">Users</a></li>
-      <li><a  routerLink="/blog" routerLinkActive="activeRouter">Blog</a></li>
-      <li><a href="" disabled="true">Messenger</a></li>
+      <li routerLink="" routerLinkActive="activeRouter" [routerLinkActiveOptions]="{exact: true}"><h3>ProjectX</h3></li>
+      <li routerLink="/users" routerLinkActive="activeRouter"><h3>Users</h3></li>
+      <li routerLink="/blog" routerLinkActive="activeRouter"><h3>Posts</h3></li>
+      <li routerLink=""><h3>Messenger</h3></li>
     </ul>
   </nav>
+ 
+  <nav class="header-nav">
+    <ul *ngIf="!isAuthenticated">
+      <li routerLink="/sign-in"><h3>Sign in</h3></li>
+      <li routerLink="/sign-up"><h3>Sign up</h3></li>
+    </ul>
+    <ul *ngIf="isAuthenticated">
+      <li (click)="logOut()"><h3>Log out</h3></li>
+    </ul>
+  </nav>
+
 </header>
 
 <main>
   <div class="center-block">
     <router-outlet></router-outlet>
-    <!-- <app-article-list></app-article-list> -->
   </div>
 </main>
 
 <footer>
-  <h2>ProjectX</h2>
+  <h3>ProjectX</h3>
 </footer>
 

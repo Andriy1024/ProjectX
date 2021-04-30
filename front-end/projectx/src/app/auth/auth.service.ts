@@ -5,6 +5,7 @@ import { JwtHelperService } from "@auth0/angular-jwt";
 import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
 import { AUTH_API_URL } from "../app-injection-tokens";
+import { ISignInCommand } from "./commands";
 import { Token } from './token';
 
 // npm i @auth0/angular-jwt
@@ -21,21 +22,19 @@ export class AuthService
         @Inject(AUTH_API_URL) private authUrl: string
     ) {}
 
-    public login(email: string, password: string): Observable<Token>
+    public login(command: ISignInCommand): Observable<Token>
     {
         const params = new HttpParams({
                 fromObject: {
                     grant_type: 'password',
-                    username: email,
-                    password: password,
+                    username: command.email,
+                    password: command.password,
                     scope: '',
                     client_id: 'swagger',
                     client_secret: 'swaggerSecret'
                 } 
             });
 
-
-        // /connect/token
         return this._http.post<Token>(`${this.authUrl}connect/token`, params)
                          .pipe(tap(response => 
                             {
@@ -51,19 +50,6 @@ export class AuthService
     }
 
     public isAuthenticated(): boolean
-    {
-        const stringToken = localStorage.getItem(ACCESS_TOKEN_KEY);
-
-        if(stringToken != null)
-        {
-           const token = JSON.parse(stringToken) as Token;
-           return token.isValid();
-        }
-
-        return false;
-    }
-
-    public secondIsAuthenticated(): boolean
     {
         var stringToken = localStorage.getItem(ACCESS_TOKEN_KEY);
         
@@ -81,7 +67,7 @@ export class AuthService
     public logout(): void
     {
         localStorage.removeItem(ACCESS_TOKEN_KEY);
-        this._router.navigate(['']);
+        // this._router.navigate(['']);
     }
 
     public getToken(): Token | null

@@ -4,12 +4,24 @@
     flex-direction: column;
 }
 
-nav ul {
-    display: flex;
-    flex-direction: row;
-    background-color: darkcyan;
-}
+.header-nav {
+    ul {
+        height: 100%;
+        display: flex;
+        flex-direction: row;
 
-nav ul li {
-    padding: 10px;
+        li {
+            padding: 10px;
+            display: flex;
+            justify-content: center; /* align horizontal */
+            align-items: center;     /* align vertical */
+            transition:  all .2s;
+        
+            &:hover {
+                background-color: white;
+                color: black;
+                cursor: pointer;
+            }
+        }
+    }
 }

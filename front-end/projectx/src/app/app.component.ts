@@ -1,10 +1,24 @@
 import { Component } from '@angular/core';
+import { AuthService } from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'projectx';
+export class AppComponent 
+{
+    public title = 'projectx';
+
+    constructor(private _authService: AuthService) {}
+
+    get isAuthenticated(): boolean
+    {
+        return this._authService.isAuthenticated();
+    }
+
+    public logOut()
+    {
+        this._authService.logout();
+    }
 }

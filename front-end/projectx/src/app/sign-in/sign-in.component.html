@@ -1,0 +1,32 @@
+<div id="sign-in">
+    <div id="sign-in-center">
+        <div>
+            <h2>Sign in</h2>
+            <hr class="hr">
+        </div>
+        <div>
+            <form [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
+                <div>
+                    <label for="email"><h3>Email</h3></label>
+                    <input id="email" name="email" type="email" formControlName="email"> 
+                </div>
+                <div>
+                    <label for="password"><h3>Password</h3></label>
+                    <input id="password" name="password" type="password" formControlName="password">
+                </div>
+                <div>
+                    <button [disabled]="form.invalid" class="btn"><h3>Sign in</h3></button>
+                </div>
+                <div *ngIf="error != null" class="error-lable">
+                    <pre>Error: {{ error | json }}</pre>
+                </div>
+                <div *ngIf="email?.invalid && email?.touched" class="error-lable">
+                    Invalid email <pre>{{ email?.errors | json  }}</pre>
+                </div>
+                <div *ngIf="password?.invalid && password?.touched" class="error-lable">
+                    Invalid password <pre>{{ password?.errors | json  }}</pre>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

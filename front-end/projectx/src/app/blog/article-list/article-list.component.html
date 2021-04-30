@@ -1,4 +1,4 @@
-<ul>
+<!-- <ul>
     <li class="list-item" *ngFor="let article of articles; let i = index">
         <span class="list-item-header">
             <a routerLink="/articles/{{article.id}}"><h2>{{i + 1}}. {{article.title}}</h2></a>
@@ -10,4 +10,26 @@
     <li class="list-item">
         <a routerLink="/articles-create"><h2>Create</h2></a>
     </li>
-</ul>
+</ul> -->
+
+<div>
+    <ul class="list">
+        <li class="list-item">
+            <h2 routerLink="/articles-create">+ create</h2>
+        </li>
+        <li class="list-item" *ngFor="let article of articles; let i = index">
+            <h2 routerLink="/articles/{{article.id}}">{{i + 1}}. {{article.title}}</h2>
+        </li>
+        
+        <li class="list-item">
+            <h2 routerLink="/">SADASDASD</h2>
+        </li>
+        <li class="list-item">
+            <h2 routerLink="/">SADASDASD</h2>
+        </li><li class="list-item">
+            <h2 routerLink="/">SADASDASD</h2>
+        </li>
+    </ul>
+</div>
+
+

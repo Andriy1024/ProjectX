@@ -32,10 +32,11 @@ export class CreateArticleComponent implements OnInit {
                          .subscribe({
                               next: (val) => console.log('Create article result: ', val),
                               error: (error) => console.log('Create article failed: ', error),
-                              complete: () => console.log('Article created.')
+                              complete: () => {
+                                  console.log('Article created.');
+                                  this._router.navigate(['/blog']);
+                                }
                          });
-                        
-        this._router.navigate(['/blog']);
     }
 
     get title() { return this.form.get('title'); }

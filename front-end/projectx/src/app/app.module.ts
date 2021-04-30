@@ -13,6 +13,8 @@ import { AUTH_API_URL, BLOG_API_URL } from './app-injection-tokens';
 import { environment } from 'src/environments/environment';
 import { JwtModule } from '@auth0/angular-jwt'
 import { ACCESS_TOKEN_KEY } from './auth/auth.service';
+import { SignInComponent } from './sign-in/sign-in.component';
+import { SignUpComponent } from './sign-up/sign-up.component';
 
 export function tokenGetter() 
 {
@@ -34,7 +36,9 @@ export function tokenGetter()
     UserListComponent,
     HomeComponent,
     ArticleComponent,
-    CreateArticleComponent
+    CreateArticleComponent,
+    SignInComponent,
+    SignUpComponent
   ],
   imports: [
     BrowserModule,

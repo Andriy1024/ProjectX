@@ -5,8 +5,8 @@
 
 #create-article-block {
 
-    background-color: blanchedalmond;
-    padding: 2%;
+    // background-color: blanchedalmond;
+    padding: 10px 20px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -18,8 +18,11 @@
 
     button {
         width: 100%;
-        background-color: green;
         margin-top: 10px;
+
+        &:not(:disabled){
+            background-color: green;
+        }
     }
 
     form {
