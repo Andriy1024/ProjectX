@@ -8,8 +8,8 @@ namespace ProjectX.Identity.Infrastructure.Handlers
 {
     public class FindUserQueryHandler : IQueryHandler<FindUserQuery, UserDto>
     {
-        readonly UserManager _userManager;
-        readonly IMapper _mapper;
+        private readonly UserManager _userManager;
+        private readonly IMapper _mapper;
 
         public FindUserQueryHandler(UserManager userManager, IMapper mapper)
         {
@@ -21,7 +21,9 @@ namespace ProjectX.Identity.Infrastructure.Handlers
         {
             var result = await _userManager.GetUserWithRolesAsync(u => u.Id == query.Id, cancellationToken);
             if (result.IsFailed)
+            {
                 return ResponseFactory.Failed<UserDto>(result.Error);
+            }
 
             var user = result.Result;
             return ResponseFactory.Success(_mapper.Map<UserDto>(user));
