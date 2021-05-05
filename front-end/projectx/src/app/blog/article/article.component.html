@@ -1,19 +1,26 @@
 <div class="article">
-    <div>
-        <h2>id: {{article?.id}}</h2>
-        <h2>title: {{article?.title}}</h2>
+    <div class="text-block">
+        <h2>{{article.title}}</h2>
     </div>
-    <div>
+    <div class="text-block">
+        <h2>{{article.body}}</h2>
+        <h4>Created at: {{article.createdAt | date:'long'}}</h4>
+        <h4>Updated at: {{article.updatedAt | date:'long'}}</h4>
+    </div>
+    <div class="text-block">
+        <h3>Author</h3>
+        <h4>{{article.author.firstName}} {{article.author.lastName}}</h4>
+        <h4>{{article.author.email}}</h4>
+    </div>
+    <div class="text-block">
+        <button class="btn" (click)="delete()"><h3>Remove</h3></button>
+    </div>
+    <!-- <div>
+        <br>
         <hr class="hr">
-        <!-- <p>{{article?.body}}</p> -->
-    </div>
-    <div>
         <pre>
             {{ article | json }}
-            <hr class="hr">
         </pre>
-    </div>
-    <div>
-        <button class="btn remove-btn" (click)="delete()"><h2>Remove</h2></button>
-    </div>
+        <hr class="hr">
+    </div> -->
 </div>

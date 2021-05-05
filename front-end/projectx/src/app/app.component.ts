@@ -17,6 +17,11 @@ export class AppComponent
         return this._authService.isAuthenticated();
     }
 
+    get userId(): number | undefined
+    {
+        return this._authService.currentUser?.id;
+    }
+
     public logOut()
     {
         this._authService.logout();

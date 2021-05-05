@@ -15,6 +15,7 @@
       <li routerLink="/sign-up"><h3>Sign up</h3></li>
     </ul>
     <ul *ngIf="isAuthenticated">
+      <li routerLink="/users/{{userId}}"><h3>Profile</h3></li>
       <li (click)="logOut()"><h3>Log out</h3></li>
     </ul>
   </nav>

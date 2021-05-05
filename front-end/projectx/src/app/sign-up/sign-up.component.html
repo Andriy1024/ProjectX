@@ -1,1 +1,50 @@
-<p>sign-up works!</p>
+<div id="sign-up">
+    <div id="sign-up-center">
+        <div>
+            <h2>Sign up</h2>
+            <hr class="hr">
+        </div>
+        <div>
+            <form [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
+                <div>
+                    <label for="firstName"><h3>First name</h3></label>
+                    <input id="firstName" name="firstName" formControlName="firstName"> 
+                </div>
+                <div>
+                    <label for="lastName"><h3>Last name</h3></label>
+                    <input id="lastName" name="lastName" formControlName="lastName">
+                </div>
+                <div>
+                    <label for="email"><h3>Email</h3></label>
+                    <input id="email" type="email" name="email" formControlName="email">
+                </div>
+                <div>
+                    <label for="password"><h3>Password</h3></label>
+                    <input id="password" name="password" formControlName="password">
+                </div>
+                <div>
+                    <label for="confirmPassword"><h3>Confirm password</h3></label>
+                    <input id="confirmPassword" type="password" name="confirmPassword" formControlName="confirmPassword">
+                </div>
+                <div>
+                    <label for="country"><h3>Country</h3></label>
+                    <input id="country" name="country" formControlName="country">
+                </div>
+                <div>
+                    <label for="city"><h3>City</h3></label>
+                    <input id="city" name="city" formControlName="city">
+                </div>
+                <div>
+                    <label for="street"><h3>Street</h3></label>
+                    <input id="street" name="street" formControlName="street">
+                </div>
+                <div>
+                    <button [disabled]="form.invalid" class="btn"><h3>Sign up</h3></button>
+                </div>
+                <div *ngIf="httpError != null" class="error-lable">
+                    <pre>Error: {{ httpError | json }}</pre>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

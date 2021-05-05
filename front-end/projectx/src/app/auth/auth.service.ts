@@ -15,12 +15,28 @@ export const ACCESS_TOKEN_KEY = 'access_token';
 @Injectable({ providedIn: 'root' })
 export class AuthService
 {
+    public currentUser: CurrentUser | null = null;
+
     constructor(
         private _http: HttpClient,
         private _jwtHelper: JwtHelperService,
         private _router: Router,
         @Inject(AUTH_API_URL) private authUrl: string
-    ) {}
+    ) 
+    {
+        const stringToken = this.getStringTokenObject();
+
+        if(stringToken != null)
+        {
+            const obj = JSON.parse(stringToken);
+            var token = obj.access_token;
+            if (token)
+            {
+                const decoded = this._jwtHelper.decodeToken(token);
+                this.currentUser = new CurrentUser(decoded.sub, decoded.username);
+            }
+        }
+    }
 
     public login(command: ISignInCommand): Observable<Token>
     {
@@ -30,15 +46,14 @@ export class AuthService
                     username: command.email,
                     password: command.password,
                     scope: '',
-                    client_id: 'swagger',
-                    client_secret: 'swaggerSecret'
+                    client_id: 'webclient',
+                    client_secret: 'webclientSecret'
                 } 
             });
 
         return this._http.post<Token>(`${this.authUrl}connect/token`, params)
                          .pipe(tap(response => 
                             {
-                                console.log(response);
                                 localStorage.setItem(ACCESS_TOKEN_KEY, JSON.stringify(
                                       new Token(response.access_token, 
                                                 response.refresh_token,
@@ -57,7 +72,6 @@ export class AuthService
         {
             const obj = JSON.parse(stringToken);
             var token = obj.access_token;
-            console.log('token', token);
             return token != null && !this._jwtHelper.isTokenExpired(token);
         }
 
@@ -67,12 +81,11 @@ export class AuthService
     public logout(): void
     {
         localStorage.removeItem(ACCESS_TOKEN_KEY);
-        // this._router.navigate(['']);
     }
 
     public getToken(): Token | null
     {
-        const stringToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+        const stringToken = this.getStringTokenObject();
 
         if(stringToken != null)
         {
@@ -88,5 +101,22 @@ export class AuthService
         }
 
         return null;
+    }
+
+    private getStringTokenObject(): string | null
+    {
+        return localStorage.getItem(ACCESS_TOKEN_KEY);
+    }
+}
+
+export class CurrentUser
+{
+    public id: number;
+    public username: string;
+
+    constructor(id: number, username: string) 
+    {    
+        this.id = id;
+        this.username = username;
     }
 }

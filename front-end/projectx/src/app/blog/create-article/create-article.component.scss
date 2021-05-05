@@ -50,7 +50,7 @@
 
         div:nth-child(2) {
             flex-grow: 1;
-            textarea { height: 100%; width:100%; }
+            textarea { min-height: 100%; width:100%; }
         }
     }
 

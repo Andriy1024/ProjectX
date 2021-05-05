@@ -1,11 +1,6 @@
 <ul>
     <li class="list-item" *ngFor="let user of users; let i = index">
-        <span class="list-item-header">
-            <a href=""><h2>{{i + 1}}. {{user.firstName}} {{user.lastName}}</h2></a> 
-        </span>
-        <!-- <span>
-            <button (click)="delete(user)" class="btn remove-btn"><h2>Remove</h2></button>
-        </span> -->
+        <h3 routerLink="/users/{{user.id}}">{{i + 1}}. {{user.firstName}} {{user.lastName}}</h3>
     </li>
 </ul>
 

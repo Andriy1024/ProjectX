@@ -1,7 +1,8 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Inject, Injectable } from "@angular/core";
 import { Observable, throwError } from "rxjs";
 import { catchError, map } from "rxjs/operators";
+import { BLOG_API_URL } from "src/app/app-injection-tokens";
 import { IDataResponse, IResponse } from "src/app/shared/IResponse";
 import { IArticle, IFullArticle } from "../interfaces/article";
 import { ICreateArticleCommand, IDeleteArticleCommand } from "../interfaces/commands";
@@ -10,14 +11,13 @@ import { IArticlesQuery, IFindArticleQuery } from "../interfaces/queries";
 @Injectable({providedIn: 'root'})
 export class BlogService {
 
-    private _blogUrl: string = "http://localhost:5001/api"
-
-    constructor(private _blogClient: HttpClient) {}
+    constructor(private _blogClient: HttpClient,
+    @Inject(BLOG_API_URL) private _blogUrl: string) {}
 
     public getArticlesAsync(query: IArticlesQuery|null=null): Observable<IArticle[]> 
     {
         return this._blogClient
-                   .get<IDataResponse<IArticle[]>>(`${this._blogUrl}/articles`)
+                   .get<IDataResponse<IArticle[]>>(`${this._blogUrl}articles`)
                    .pipe(
                         map(r => this.map(r)),
                         catchError(this.handleError)
@@ -27,7 +27,7 @@ export class BlogService {
     public getArticleAsync(query: IFindArticleQuery): Observable<IFullArticle> 
     {
         return this._blogClient
-                   .get<IDataResponse<IFullArticle>>(`${this._blogUrl}/articles/${query.id}`)
+                   .get<IDataResponse<IFullArticle>>(`${this._blogUrl}articles/${query.id}`)
                    .pipe(
                         map(r => this.map(r)),
                         catchError(this.handleError)

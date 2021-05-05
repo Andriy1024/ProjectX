@@ -6,6 +6,7 @@ import { CreateArticleComponent } from './blog/create-article/create-article.com
 import { HomeComponent } from './home/home/home.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { ProfileComponent } from './users/profile/profile.component';
 import { UserListComponent } from './users/user-list/user-list.component';
 
 const routes: Routes = [
@@ -14,6 +15,7 @@ const routes: Routes = [
   {path: 'articles/:id', component: ArticleComponent},
   {path: 'articles-create', component: CreateArticleComponent},
   {path: 'users', component: UserListComponent},
+  {path: 'users/:id', component: ProfileComponent},
   {path: 'sign-in', component: SignInComponent},
   {path: 'sign-up', component: SignUpComponent}
 ];

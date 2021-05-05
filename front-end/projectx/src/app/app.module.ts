@@ -9,12 +9,13 @@ import { UserListComponent } from './users/user-list/user-list.component';
 import { HomeComponent } from './home/home/home.component';
 import { ArticleComponent } from './blog/article/article.component';
 import { CreateArticleComponent } from './blog/create-article/create-article.component';
-import { AUTH_API_URL, BLOG_API_URL } from './app-injection-tokens';
+import { AUTH_API_URL, BLOG_API_URL, USERS_API_URL } from './app-injection-tokens';
 import { environment } from 'src/environments/environment';
 import { JwtModule } from '@auth0/angular-jwt'
 import { ACCESS_TOKEN_KEY } from './auth/auth.service';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { ProfileComponent } from './users/profile/profile.component';
 
 export function tokenGetter() 
 {
@@ -38,7 +39,8 @@ export function tokenGetter()
     ArticleComponent,
     CreateArticleComponent,
     SignInComponent,
-    SignUpComponent
+    SignUpComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -57,7 +59,8 @@ export function tokenGetter()
   ],
   providers: [
     { provide: AUTH_API_URL, useValue: environment.authApi },
-    { provide: BLOG_API_URL, useValue: environment.blogApi }
+    { provide: BLOG_API_URL, useValue: environment.blogApi },
+    { provide: USERS_API_URL, useValue: environment.usersApi }
   ],
   bootstrap: [AppComponent]
 })

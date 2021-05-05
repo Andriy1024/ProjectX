@@ -2,7 +2,6 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 
 :root {
-    --primary-color: #2c17e6;
     --dark-color: #333333;
     --light-color: #f4f4f4;
 }
@@ -55,7 +54,7 @@ ul {
 
 .btn {
     transition: opacity .2s;
-    background: var(black);
+    background: black;
     color: white;
     padding: 1rem 1rem;
     font-size: 1rem;
@@ -70,18 +69,9 @@ ul {
     }
   
     &:hover:not(:disabled) {
-      opacity: .8;
+      opacity: .9;
     }
   }
-
-.remove-btn{
-    background-color: red;
-
-    &:hover:not(:disabled) {
-        opacity: .8;
-        color: var(--primary-color); 
-    }
-}
 
 .error-lable{
   color: red;
@@ -92,7 +82,6 @@ ul {
 
   &:hover:not(:disabled) {
       opacity: .8;
-      color: var(--primary-color); 
   }
 }
 
@@ -149,5 +138,5 @@ ul {
   height: 100%;
   background-color: silver;
   background-color: rgb(192, 192, 192, 0.4);
-  padding: 10px;
+  padding: 20px;
 }
