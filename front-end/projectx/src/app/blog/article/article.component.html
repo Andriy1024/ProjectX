@@ -1,4 +1,4 @@
-<div class="article">
+<div *ngIf="article" class="article">
     <div class="text-block">
         <h2>{{article.title}}</h2>
     </div>
@@ -12,7 +12,7 @@
         <h4>{{article.author.firstName}} {{article.author.lastName}}</h4>
         <h4>{{article.author.email}}</h4>
     </div>
-    <div class="text-block">
+    <div *ngIf="canEdit" class="text-block">
         <button class="btn" (click)="delete()"><h3>Remove</h3></button>
     </div>
     <!-- <div>

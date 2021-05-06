@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { AuthService } from 'src/app/auth/auth.service';
 import { IArticle } from '../interfaces/article';
 import { BlogService } from '../services/blog.service';
 
@@ -14,17 +15,17 @@ export class ArticleListComponent implements OnInit {
 
     public createArticleFrom: FormGroup = new FormGroup({});
 
-    constructor(private _blogService: BlogService) {}
+    constructor(private _blogService: BlogService,
+                private _authService: AuthService) {}
 
     public ngOnInit(): void 
     {
         this.getArticles();
     }
 
-    public delete(article: IArticle): void 
+    get canCreate(): boolean 
     {
-        this._blogService.deleteArticleAsync(article);
-        this.getArticles();
+        return this._authService.isAuthenticated(); 
     }
 
     private getArticles() 

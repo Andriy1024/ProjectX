@@ -41,6 +41,30 @@
                 <div>
                     <button [disabled]="form.invalid" class="btn"><h3>Sign up</h3></button>
                 </div>
+                <div *ngIf="firstName?.invalid && firstName?.touched" class="error-lable">
+                    Invalid firstName <pre>{{ firstName?.errors | json  }}</pre>
+                </div>
+                <div *ngIf="lastName?.invalid && lastName?.touched" class="error-lable">
+                    Invalid lastName <pre>{{ lastName?.errors | json  }}</pre>
+                </div>
+                <div *ngIf="email?.invalid && email?.touched" class="error-lable">
+                    Invalid email <pre>{{ email?.errors | json  }}</pre>
+                </div>
+                <div *ngIf="password?.invalid && password?.touched" class="error-lable">
+                    Invalid password <pre>{{ password?.errors | json  }}</pre>
+                </div>
+                <div *ngIf="confirmPassword?.invalid && confirmPassword?.touched" class="error-lable">
+                    Invalid confirm password <pre>{{ confirmPassword?.errors | json  }}</pre>
+                </div>
+                <div *ngIf="country?.invalid && country?.touched" class="error-lable">
+                    Invalid country <pre>{{ country?.errors | json  }}</pre>
+                </div>
+                <div *ngIf="city?.invalid && city?.touched" class="error-lable">
+                    Invalid city <pre>{{ city?.errors | json  }}</pre>
+                </div>
+                <div *ngIf="street?.invalid && street?.touched" class="error-lable">
+                    Invalid street <pre>{{ street?.errors | json  }}</pre>
+                </div>
                 <div *ngIf="httpError != null" class="error-lable">
                     <pre>Error: {{ httpError | json }}</pre>
                 </div>

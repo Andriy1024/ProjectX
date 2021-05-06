@@ -6,6 +6,7 @@ import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
 import { AUTH_API_URL } from "../app-injection-tokens";
 import { ISignInCommand } from "./commands";
+import { CurrentUser } from "./currentUser";
 import { Token } from './token';
 
 // npm i @auth0/angular-jwt
@@ -24,17 +25,11 @@ export class AuthService
         @Inject(AUTH_API_URL) private authUrl: string
     ) 
     {
-        const stringToken = this.getStringTokenObject();
-
-        if(stringToken != null)
+        const token = this.getAccessToken();
+        if (token)
         {
-            const obj = JSON.parse(stringToken);
-            var token = obj.access_token;
-            if (token)
-            {
-                const decoded = this._jwtHelper.decodeToken(token);
-                this.currentUser = new CurrentUser(decoded.sub, decoded.username);
-            }
+            const decodedToken = this._jwtHelper.decodeToken(token);
+            this.currentUser = new CurrentUser(decodedToken.sub, decodedToken.username);
         }
     }
 
@@ -54,32 +49,38 @@ export class AuthService
         return this._http.post<Token>(`${this.authUrl}connect/token`, params)
                          .pipe(tap(response => 
                             {
-                                localStorage.setItem(ACCESS_TOKEN_KEY, JSON.stringify(
-                                      new Token(response.access_token, 
-                                                response.refresh_token,
-                                                response.expires_in,
-                                                response.token_type,
-                                                response.scope)));
+                                const token =  new Token(response.access_token, 
+                                    response.refresh_token,
+                                    response.expires_in,
+                                    response.token_type,
+                                    response.scope);
+
+                                this.storageToken(token);
+                                const decodedToken = this._jwtHelper.decodeToken(response.access_token);
+                                this.currentUser = new CurrentUser(decodedToken.sub, decodedToken.username);
                             })
                          );
     }
 
     public isAuthenticated(): boolean
-    {
-        var stringToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+    {   
+        const token = this.getAccessToken();
         
-        if(stringToken != null)
+        if(!token) return false;
+
+        const result = !this._jwtHelper.isTokenExpired(token);
+        
+        if(!result)
         {
-            const obj = JSON.parse(stringToken);
-            var token = obj.access_token;
-            return token != null && !this._jwtHelper.isTokenExpired(token);
+            localStorage.removeItem(ACCESS_TOKEN_KEY);
         }
 
-        return false;
+        return result;
     }
 
     public logout(): void
     {
+        this.currentUser = null;
         localStorage.removeItem(ACCESS_TOKEN_KEY);
     }
 
@@ -107,16 +108,20 @@ export class AuthService
     {
         return localStorage.getItem(ACCESS_TOKEN_KEY);
     }
-}
 
-export class CurrentUser
-{
-    public id: number;
-    public username: string;
+    private getAccessToken(): any
+    {
+        var stringToken = this.getStringTokenObject();
+        
+        if(!stringToken) return false;
+        
+        const obj = JSON.parse(stringToken);
+        
+        return obj.access_token;
+    }
 
-    constructor(id: number, username: string) 
-    {    
-        this.id = id;
-        this.username = username;
+    private storageToken(token: Token)
+    {
+        localStorage.setItem(ACCESS_TOKEN_KEY, JSON.stringify(token));
     }
 }

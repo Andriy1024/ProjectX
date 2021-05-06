@@ -36,9 +36,9 @@ export class SignUpComponent implements OnInit {
     {
         this._usersService.createUserAsync(command)
                           .subscribe({
-                              next: (val) => console.log('Create article result: ', val),
+                              next: (val) => console.log('Create user result: ', val),
                               error: (error) => {
-                                  console.log('Create article failed: ', error);
+                                  console.log('Create user failed: ', error);
                                   this.httpError = error;
                               },
                               complete: () => {
@@ -47,4 +47,13 @@ export class SignUpComponent implements OnInit {
                                 }
                           });
     }
+
+    get firstName() { return this.form.get('firstName'); }
+    get lastName() { return this.form.get('lastName'); }
+    get email() { return this.form.get('email'); }
+    get password() { return this.form.get('password'); }
+    get confirmPassword() { return this.form.get('confirmPassword'); }
+    get country() { return this.form.get('country'); }
+    get city() { return this.form.get('city'); }
+    get street() { return this.form.get('street'); }
 }
