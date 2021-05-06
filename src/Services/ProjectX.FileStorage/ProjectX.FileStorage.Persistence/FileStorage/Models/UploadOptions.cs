@@ -1,35 +1,18 @@
 ﻿using Microsoft.AspNetCore.Http;
+using ProjectX.Core;
 using ProjectX.FileStorage.Application.SeedWork;
-using ProjectX.FileStorage.Persistence.FileStorage.Abstractions;
+using ProjectX.FileStorage.Domain;
 using System.IO;
 
 namespace ProjectX.FileStorage.Persistence.FileStorage.Models
 {
-    public class DownloadOptions
-    {
-        public string Location { get; }
-
-        public DownloadOptions(string location)
-        {
-            Location = location;
-        }
-    }
-
-    public class DeleteOptions
-    {
-        public string Location { get; }
-
-        public DeleteOptions(string location)
-        {
-            Location = location;
-        }
-
-    }
-
     public class UploadOptions
     {
         public UploadOptions(Stream file, IStorageEntry entry, bool @override = false)
         {
+            Utill.ThrowIfNull(file, nameof(file));
+            Utill.ThrowIfNull(entry, nameof(entry));
+
             EntryStream = file;
             EntryInfo = entry;
             Override = @override;
@@ -37,6 +20,7 @@ namespace ProjectX.FileStorage.Persistence.FileStorage.Models
 
         public UploadOptions(IFormFile file, string location, bool @override = false)
         {
+            Utill.ThrowIfNull(file, nameof(file));
             var size = file.Length;
             var extension = FileUtill.TryGetExtension(file.FileName);
             var mimeType = FileUtill.TryGetContentType(file.FileName);

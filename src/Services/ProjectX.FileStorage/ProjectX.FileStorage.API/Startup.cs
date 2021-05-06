@@ -4,8 +4,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProjectX.FileStorage.Application;
+using ProjectX.FileStorage.Persistence.Database;
+using ProjectX.FileStorage.Persistence.Database.Documents;
 using ProjectX.FileStorage.Persistence.FileStorage.Setup;
 using ProjectX.Infrastructure.Setup;
+using System;
 
 namespace ProjectX.FileStorage.API
 {
@@ -18,9 +21,11 @@ namespace ProjectX.FileStorage.API
         {
         }
 
-        public void ConfigureServices(IServiceCollection services) 
+        public void ConfigureServices(IServiceCollection services)
                  => BaseConfigure(services)
-                   .AddFileStorage();
+                   .AddFileStorage()
+                   .AddMongo(Configuration)
+                   .AddMongoRepository<FileDocument, Guid>("Files");
 
         public void Configure(IApplicationBuilder app) => BaseConfigure(app);
     }

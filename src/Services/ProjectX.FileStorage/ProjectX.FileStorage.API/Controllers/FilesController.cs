@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ProjectX.FileStorage.Application.Interfaces;
-using ProjectX.FileStorage.Persistence.FileStorage.Local;
-using ProjectX.FileStorage.Persistence.FileStorage.Models;
+using ProjectX.FileStorage.Application;
 using ProjectX.Infrastructure.Controllers;
+using System;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProjectX.FileStorage.API.Controllers
@@ -15,13 +15,10 @@ namespace ProjectX.FileStorage.API.Controllers
     [ApiController]
     public class FilesController : BaseApiController
     {
-        private readonly IFileStorage _storage;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private string _location = "storage";
 
-        public FilesController(IFileStorage storage, IWebHostEnvironment webHostEnvironment)
+        public FilesController(IWebHostEnvironment webHostEnvironment)
         {
-            _storage = storage;
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -35,27 +32,24 @@ namespace ProjectX.FileStorage.API.Controllers
             });
         }
 
-        [HttpGet("directory-files")]
-        public async Task<IActionResult> DirectoryFiles()
-        {
-            var files = Directory.GetFiles(Path.Combine(LocalFileStorage.RootLocation, _location));
-            return Ok(files);
-        }
-
         [HttpPost]
-        public async Task<IActionResult> UploadAsync(IFormFile file, [FromQuery] string location) 
+        public async Task<IActionResult> UploadAsync([FromForm] UploadFileCommand command, CancellationToken cancellation = default) 
         {
-            var uploadOptions = new UploadOptions(file, location);
-
-            var fileInfo = await _storage.UploadAsync(uploadOptions);
-
-            return Ok(fileInfo);
+            return MapResponse(await Mediator.Send(command, cancellation));
         }
 
-        [HttpGet("download")]
-        public async Task<IActionResult> DownloadAsync([FromQuery] string name, [FromQuery] string location)
+        [HttpGet("{id}/download")]
+        public async Task<IActionResult> DownloadAsync([FromRoute] Guid id, CancellationToken cancellation = default)
         {
-            return File(await _storage.DownloadAsync(new DownloadOptions(Path.Combine(location, name))), "image/*");
+            var response = await Mediator.Send(new DownloadFileQuery(id), cancellation);
+
+            return File(response.Data.File, response.Data.MimeType);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFilesAsync(CancellationToken cancellationToken)
+        {
+            return MapResponse(await Mediator.Send(new FilesQuery(), cancellationToken));
         }
     }
 }

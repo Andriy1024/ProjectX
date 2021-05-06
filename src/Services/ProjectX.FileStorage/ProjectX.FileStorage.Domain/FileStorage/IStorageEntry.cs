@@ -1,4 +1,4 @@
-﻿namespace ProjectX.FileStorage.Persistence.FileStorage.Abstractions
+﻿namespace ProjectX.FileStorage.Domain
 {
     /// <summary>
     /// Represents file information

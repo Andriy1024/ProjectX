@@ -1,6 +1,6 @@
 ﻿using ProjectX.Core;
 using ProjectX.FileStorage.Application.Interfaces;
-using ProjectX.FileStorage.Persistence.FileStorage.Abstractions;
+using ProjectX.FileStorage.Domain;
 using ProjectX.FileStorage.Persistence.FileStorage.Models;
 using System;
 using System.IO;

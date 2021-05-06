@@ -1,4 +1,4 @@
-﻿using ProjectX.FileStorage.Persistence.FileStorage.Abstractions;
+﻿using ProjectX.FileStorage.Domain;
 using ProjectX.FileStorage.Persistence.FileStorage.Models;
 using System.IO;
 using System.Threading;

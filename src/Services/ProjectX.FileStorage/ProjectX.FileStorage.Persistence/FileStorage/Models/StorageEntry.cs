@@ -1,10 +1,12 @@
 ﻿using ProjectX.Core;
-using ProjectX.FileStorage.Persistence.FileStorage.Abstractions;
+using ProjectX.FileStorage.Domain;
 
 namespace ProjectX.FileStorage.Persistence.FileStorage.Models
 {
     public class StorageEntry : IStorageEntry
     {
+        public StorageEntry() {}
+
         public StorageEntry(string name, string location, string extension, string mimeType, long size)
         {
             Utill.ThrowIfNullOrEmpty(name, nameof(name));
@@ -16,14 +18,14 @@ namespace ProjectX.FileStorage.Persistence.FileStorage.Models
             Size = size;
         }
 
-        public string Name { get; }
+        public string Name { get; set;  }
 
-        public string Location { get; }
+        public string Location { get; set; }
 
-        public string Extension { get; }
+        public string Extension { get; set; }
 
-        public string MimeType { get; }
+        public string MimeType { get; set; }
 
-        public long Size { get; }
+        public long Size { get; set; }
     }
 }
