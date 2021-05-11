@@ -48,6 +48,8 @@ namespace ProjectX.DataAccess
                     }
                     else 
                     {
+                        await UnitOfWork.RollbackTransactionAsync();
+
                         Logger.LogInformation($"----- Transaction {transaction.TransactionId} was failed.");
                     }
                 }
