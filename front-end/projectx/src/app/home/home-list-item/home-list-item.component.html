@@ -1,0 +1,9 @@
+<div class="section-header" (click)="toggle()" [class.selected]="toggleValue">
+  <div class = "arrow" [class.rotated]="toggleValue"></div>
+  <div class = "header-name"><h2>{{ title }}</h2></div>
+</div>
+<div class="section-content slide-up" [class.slide-down]="toggleValue">
+<div>
+  <ng-content></ng-content>
+</div>
+</div>

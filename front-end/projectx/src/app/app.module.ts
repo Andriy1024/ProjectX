@@ -19,6 +19,7 @@ import { ProfileComponent } from './users/profile/profile.component';
 import { CommonModule } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { NotificationListComponent } from './notifications/notification.component';
+import { HomeListItemComponent } from './home/home-list-item/home-list-item.component';
 
 export function tokenGetter()
 {
@@ -44,7 +45,8 @@ export function tokenGetter()
     SignInComponent,
     SignUpComponent,
     ProfileComponent,
-    NotificationListComponent
+    NotificationListComponent,
+    HomeListItemComponent
   ],
   imports: [
     BrowserModule,

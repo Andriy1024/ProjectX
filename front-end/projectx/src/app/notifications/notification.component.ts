@@ -10,11 +10,7 @@ import { Subscription } from "rxjs";
 })
 export class NotificationListComponent {
 
-    public notifications: Notification[] = [
-      new Notification(1, NotificationType.info, 'title', 'message', 300),
-      new Notification(2, NotificationType.info, 'title', 'message', 300),
-      new Notification(3, NotificationType.info, 'title', 'message', 300)
-    ];
+    public notifications: Notification[] = [];
 
     private _subscription!: Subscription;
 
@@ -31,6 +27,8 @@ export class NotificationListComponent {
 
     public ngOnInit(): void {
         this._subscription = this._notificationSvc.getObservable().subscribe(notification => this._addNotification(notification));
+        this._addNotification(new Notification(1, NotificationType.info, 'title', 'message', 3000));
+        this._addNotification(new Notification(2, NotificationType.info, 'title', 'message', 3000));
     }
 
     public ngOnDestroy(): void {
