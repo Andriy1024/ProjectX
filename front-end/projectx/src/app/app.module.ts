@@ -16,8 +16,11 @@ import { ACCESS_TOKEN_KEY } from './auth/auth.service';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { ProfileComponent } from './users/profile/profile.component';
+import { CommonModule } from '@angular/common';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { NotificationListComponent } from './notifications/notification.component';
 
-export function tokenGetter() 
+export function tokenGetter()
 {
       const stringToken = localStorage.getItem(ACCESS_TOKEN_KEY);
 
@@ -40,14 +43,17 @@ export function tokenGetter()
     CreateArticleComponent,
     SignInComponent,
     SignUpComponent,
-    ProfileComponent
+    ProfileComponent,
+    NotificationListComponent
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    FlexLayoutModule,
 
     JwtModule.forRoot({
       config: {
@@ -60,7 +66,7 @@ export function tokenGetter()
   providers: [
     { provide: AUTH_API_URL, useValue: environment.authApi },
     { provide: BLOG_API_URL, useValue: environment.blogApi },
-    { provide: USERS_API_URL, useValue: environment.usersApi }
+    { provide: USERS_API_URL, useValue: environment.usersApi },
   ],
   bootstrap: [AppComponent]
 })
