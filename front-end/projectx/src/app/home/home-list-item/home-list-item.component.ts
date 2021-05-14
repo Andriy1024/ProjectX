@@ -8,8 +8,9 @@ import { Component, Input, OnInit } from '@angular/core';
 export class HomeListItemComponent implements OnInit {
 
   @Input()
-  public title : string = '';
+  public title: string = '';
 
+  @Input()
   public toggleValue: boolean = false;
 
   constructor() { }

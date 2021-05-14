@@ -1,0 +1,47 @@
+.services {
+  // background: green;
+  // color: white;
+  text-align: center;
+  background-color:rgba(0, 0, 0, 0.6);
+
+  a {
+    font-weight: 800;
+    color: white;
+    font-size: 1.5rem;
+    display: block;
+  }
+
+  div {
+    transition: background-color 0.3s ease-in-out;
+
+    &:hover {
+      background-color:rgba(0, 0, 0, 0.7);
+    }
+  }
+}
+
+.list-content {
+    background-color:rgba(0, 0, 0, 0.6);
+    padding: 1%;
+    color: white;
+    font-weight: 500;
+    font-size: 18px;
+
+    ul {
+        list-style-type: disc;
+        list-style-position: inside;
+        margin-left: 9px;
+
+        li {
+          padding: 2px 0px;
+        }
+    }
+
+    hr{
+        border: none; /* Убираем границу для браузера Firefox */
+        color: white; /* Цвет линии для остальных браузеров */
+        background-color: white; /* Цвет линии для браузера Firefox и Opera */
+        height: 2px; /* Толщина линии */
+        margin: 10px 0px;
+    }
+}
