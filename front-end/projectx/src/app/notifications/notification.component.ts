@@ -27,8 +27,10 @@ export class NotificationListComponent {
 
     public ngOnInit(): void {
         this._subscription = this._notificationSvc.getObservable().subscribe(notification => this._addNotification(notification));
-        this._addNotification(new Notification(1, NotificationType.info, 'title', 'message', 3000));
-        this._addNotification(new Notification(2, NotificationType.info, 'title', 'message', 3000));
+        this._addNotification(new Notification(1, NotificationType.info, 'info', 'info', 0));
+        this._addNotification(new Notification(2, NotificationType.error, 'error', 'error', 0));
+        this._addNotification(new Notification(2, NotificationType.success, 'success', 'success', 0));
+        this._addNotification(new Notification(2, NotificationType.warning, 'warning', 'warning', 0));
     }
 
     public ngOnDestroy(): void {
