@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -20,6 +20,7 @@ import { CommonModule } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { NotificationListComponent } from './notifications/notification.component';
 import { HomeListItemComponent } from './home/home-list-item/home-list-item.component';
+import { ErrorInterceptor } from './http/error.interceptor';
 
 export function tokenGetter()
 {
@@ -69,6 +70,7 @@ export function tokenGetter()
     { provide: AUTH_API_URL, useValue: environment.authApi },
     { provide: BLOG_API_URL, useValue: environment.blogApi },
     { provide: USERS_API_URL, useValue: environment.usersApi },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })
