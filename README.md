@@ -3,6 +3,10 @@
 
 This is an application of moderate complexity built using .NET and designed for the cloud and using as a playground for experimentation. It is heavily centered around the Microsoft .NET technology stacks as these are what I have the most experience in & just like building things with. 😀
 
+
+![plot](./ProjectX.png)
+
+
 ### Why is this here? 
 
 This is where I mess around with code. I wanted something to try new things out on, without the risk of substantially endangering an actual production environment used by actual people. It was for this reason that I built the ProjectX app as a way to test out tools, libraries, patterns, frameworks & various other stuff. This application is also used as a reference for configuring/wiring up some common things I sometimes forget how to do. Living Documentation if you will. So this repo hopefully may contain something for everyone, fill in the potential gaps across the whole spectrum of application development. It falls somewhere between a template/boilerplate project, a real-world production open-source application. <br/>
