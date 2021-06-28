@@ -71,15 +71,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectX.Realtime", "Common
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileStorage", "FileStorage", "{E6162C64-91F9-4903-A15A-99DF09946A92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectX.FileStorage.API", "Services\ProjectX.FileStorage\ProjectX.FileStorage.API\ProjectX.FileStorage.API.csproj", "{0CD805A4-0C0B-44C4-A208-FFFE48A8F57E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectX.FileStorage.API", "Services\ProjectX.FileStorage\ProjectX.FileStorage.API\ProjectX.FileStorage.API.csproj", "{0CD805A4-0C0B-44C4-A208-FFFE48A8F57E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectX.FileStorage.Application", "Services\ProjectX.FileStorage\ProjectX.FileStorage.Application\ProjectX.FileStorage.Application.csproj", "{CDCE324F-8A00-4F98-BD90-8DAF7C25B9B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectX.FileStorage.Application", "Services\ProjectX.FileStorage\ProjectX.FileStorage.Application\ProjectX.FileStorage.Application.csproj", "{CDCE324F-8A00-4F98-BD90-8DAF7C25B9B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectX.FileStorage.Infrastructure", "Services\ProjectX.FileStorage\ProjectX.FileStorage.Infrastructure\ProjectX.FileStorage.Infrastructure.csproj", "{190E4A27-1623-4B0C-BA33-D99BCF3DCB7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectX.FileStorage.Infrastructure", "Services\ProjectX.FileStorage\ProjectX.FileStorage.Infrastructure\ProjectX.FileStorage.Infrastructure.csproj", "{190E4A27-1623-4B0C-BA33-D99BCF3DCB7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectX.FileStorage.Domain", "Services\ProjectX.FileStorage\ProjectX.FileStorage.Domain\ProjectX.FileStorage.Domain.csproj", "{DB61ACA5-6D24-454F-9020-144A209EE7ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectX.FileStorage.Domain", "Services\ProjectX.FileStorage\ProjectX.FileStorage.Domain\ProjectX.FileStorage.Domain.csproj", "{DB61ACA5-6D24-454F-9020-144A209EE7ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectX.FileStorage.Persistence", "Services\ProjectX.FileStorage\ProjectX.FileStorage.Persistence\ProjectX.FileStorage.Persistence.csproj", "{11BDA565-EF94-4EB5-A4B2-25C8D4B60308}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectX.FileStorage.Persistence", "Services\ProjectX.FileStorage\ProjectX.FileStorage.Persistence\ProjectX.FileStorage.Persistence.csproj", "{11BDA565-EF94-4EB5-A4B2-25C8D4B60308}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectX.Observability", "Common\ProjectX.Observability\ProjectX.Observability.csproj", "{5E44F081-2CE8-4370-8DDD-241CCF6A69B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -215,6 +217,10 @@ Global
 		{11BDA565-EF94-4EB5-A4B2-25C8D4B60308}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11BDA565-EF94-4EB5-A4B2-25C8D4B60308}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11BDA565-EF94-4EB5-A4B2-25C8D4B60308}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E44F081-2CE8-4370-8DDD-241CCF6A69B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E44F081-2CE8-4370-8DDD-241CCF6A69B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E44F081-2CE8-4370-8DDD-241CCF6A69B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E44F081-2CE8-4370-8DDD-241CCF6A69B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -257,6 +263,7 @@ Global
 		{190E4A27-1623-4B0C-BA33-D99BCF3DCB7D} = {E6162C64-91F9-4903-A15A-99DF09946A92}
 		{DB61ACA5-6D24-454F-9020-144A209EE7ED} = {E6162C64-91F9-4903-A15A-99DF09946A92}
 		{11BDA565-EF94-4EB5-A4B2-25C8D4B60308} = {E6162C64-91F9-4903-A15A-99DF09946A92}
+		{5E44F081-2CE8-4370-8DDD-241CCF6A69B9} = {C21E3B5B-260D-4EB5-8D3D-F3EC97ADC34C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AAD73823-E426-4F23-B791-C0572279EE50}
