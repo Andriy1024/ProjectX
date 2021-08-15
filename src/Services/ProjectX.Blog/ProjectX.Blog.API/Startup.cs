@@ -8,6 +8,7 @@ using ProjectX.Blog.Application;
 using ProjectX.Blog.Infrastructure.Extensions;
 using ProjectX.Blog.Persistence;
 using ProjectX.Infrastructure.Setup;
+using ProjectX.Observability;
 using ProjectX.Outbox;
 using ProjectX.RabbitMq.Configuration;
 using ProjextX.DataAccess.Extensions;
@@ -24,6 +25,7 @@ namespace ProjectX.Blog.API
 
         public void ConfigureServices(IServiceCollection services)
                  => BaseConfigure(services)
+                   .AddObservabilityServices(Configuration, Environment)
                    .AddDbServices<BlogDbContext>(o => o.UseNpgsql(DBConnectionString))
                    .AddTransactinBehaviour()
                    .AddRabbitMqMessageBus(Configuration)

@@ -40,9 +40,9 @@ namespace ProjectX.Observability.Tracer
                 {
                     var result = await func();
 
-                    var code = result is IResponse r && !r.IsSuccess
-                                      ? TraceCode.Error
-                                      : TraceCode.Success;
+                    var code = result is IResponse r && r.IsSuccess
+                                      ? TraceCode.Success
+                                      : TraceCode.Error;
 
                     Trace(code, result.ToString());
 

@@ -21,6 +21,7 @@ using ProjectX.RabbitMq.Configuration;
 using Microsoft.EntityFrameworkCore;
 using ProjectX.Outbox;
 using ProjextX.DataAccess.Extensions;
+using ProjectX.Observability;
 
 namespace ProjectX.Identity.API
 {
@@ -45,6 +46,7 @@ namespace ProjectX.Identity.API
                    .Services
                    .AddIdentityServer4(DBConnectionString, AppOptions.IdentityUrl, typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name)
                    .AddStartupTasks()
+                   .AddObservabilityServices(Configuration, Environment)
                    .AddTransactinBehaviour()
                    .AddScopedCache()
                    .AddRabbitMqMessageBus(Configuration)

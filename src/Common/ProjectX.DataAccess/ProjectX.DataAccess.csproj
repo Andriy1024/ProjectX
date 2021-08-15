@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProjectX.Core\ProjectX.Core.csproj" />
+    <ProjectReference Include="..\ProjectX.Observability\ProjectX.Observability.csproj" />
   </ItemGroup>
 
 </Project>

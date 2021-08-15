@@ -7,6 +7,7 @@ using ProjectX.Infrastructure.Setup;
 using ProjectX.Messenger.Application;
 using ProjectX.Messenger.Infrastructure.Extensions;
 using ProjectX.Messenger.Persistence;
+using ProjectX.Observability;
 using ProjectX.RabbitMq.Configuration;
 using ProjectX.Realtime.Setup;
 
@@ -27,6 +28,7 @@ namespace ProjectX.Messenger.API
                    .AddScoped<IEventStore, MartenEventStore>()
                    .AddRealtimeServices()
                    .AddRabbitMqMessageBus(Configuration)
+                   .AddObservabilityServices(Configuration, Environment)
                    .AddStartupTasks();
 
         public void Configure(IApplicationBuilder app) => BaseConfigure(app); 

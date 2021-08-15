@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using ProjectX.Core;
+using ProjectX.Observability.Tracer;
 using System;
 using System.Data;
 using System.Linq;
@@ -17,10 +18,13 @@ namespace ProjectX.DataAccess
 
         protected readonly IMediator Mediator;
 
-        public UnitOfWork(T dbContext, IMediator mediator)
+        private readonly ITracer _tracer;
+
+        public UnitOfWork(T dbContext, IMediator mediator, ITracer tracer)
         {
             DbContext = dbContext;
             Mediator = mediator;
+            _tracer = tracer;
         }
 
         private IDbContextTransaction _currentTransaction;
@@ -119,9 +123,16 @@ namespace ProjectX.DataAccess
 
             await DbContext.SaveChangesAsync(cancellationToken);
 
-            for (int i = 0; i < domainEvents.Length; i++)
-                await Mediator.Publish(domainEvents[i], cancellationToken);
+            for (int i = 0; i < domainEvents.Length; i++) 
+            {
+                var domainEvent = domainEvents[i];
 
+                await _tracer.Trace(domainEvent.GetType().Name, async() => 
+                {
+                    await Mediator.Publish(domainEvent, cancellationToken);
+                });
+            }
+                
             return true;
         }
     }
