@@ -3,3 +3,33 @@ docker-compose -f docker-compose.yml up
 
 //jaeger, UI - http://localhost:16686/search
 docker run -d -p 6831:6831/udp -p 6832:6832/udp -p 14268:14268 -p 14250:14250 -p 16686:16686 -p 5778:5778 --name jaeger jaegertracing/all-in-one:1.22
+
+
+//Database migrations for IdentityServer
+add-migration -c PersistedGrantDbContext -o "Migrations/PersistedGrant" "initial"
+add-migration -c ConfigurationDbContext -o "Migrations/Configuration" "initial"
+add-migration -c IdentityDbContext -o "Migrations/Identity" "initial"
+add-migration -c OutboxDbContext -o "Migrations/Outbox" "initial" 
+
+//Build
+dotnet build C:\My\ProjectX\src\Services\ProjectX.Identity\ProjectX.Identity.API --configuration release
+dotnet run --project C:\My\ProjectX\src\Services\ProjectX.Identity\ProjectX.Identity.API --configuration release
+
+http://localhost:5000/.well-known/openid-configuration
+http://172.21.0.6:5000/.well-known/openid-configuration
+
+
+//docker
+docker network create name
+docker network ls
+docker network rm idofnetwork
+docker network inspect idofnetwork
+
+//build image
+docker build -t projectx/realtime . 
+docker exec -it ContainerId bash
+
+//add https certificate 
+dotnet tool install --global dotnet-dev-certs
+dotnet dev-certs https –trust
+
