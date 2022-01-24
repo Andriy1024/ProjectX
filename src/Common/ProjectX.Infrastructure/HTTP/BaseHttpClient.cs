@@ -281,20 +281,20 @@ namespace ProjectX.Infrastructure.HTTP
 
         private async Task EnsureSuccessStatusCodeAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
         {
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode) return;
+            
+            var error = await DeserializeResponseAsync<Error>(response);
+            
+            switch (response.StatusCode)
             {
-                var error = await DeserializeResponseAsync<Error>(response);
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.BadRequest:
-                        throw new InvalidDataException(error);
-                    case HttpStatusCode.NotFound:
-                        throw new NotFoundException(error);
-                    case HttpStatusCode.Forbidden:
-                        throw new InvalidPermissionException(error);
-                    default:
-                        throw new Exception($"Internal http error. Request url: {response.RequestMessage.RequestUri}. Response: {error.Message} {response.StatusCode}.");
-                }
+                case HttpStatusCode.BadRequest:
+                    throw new InvalidDataException(error);
+                case HttpStatusCode.NotFound:
+                    throw new NotFoundException(error);
+                case HttpStatusCode.Forbidden:
+                    throw new InvalidPermissionException(error);
+                default:
+                    throw new Exception($"Internal http error. Request url: {response.RequestMessage.RequestUri}. Response: {error.Message} {response.StatusCode}.");
             }
         }
 
