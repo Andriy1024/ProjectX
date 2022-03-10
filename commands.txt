@@ -4,6 +4,17 @@ docker-compose -f docker-compose.yml up
 //jaeger, UI - http://localhost:16686/search
 docker run -d -p 6831:6831/udp -p 6832:6832/udp -p 14268:14268 -p 14250:14250 -p 16686:16686 -p 5778:5778 --name jaeger jaegertracing/all-in-one:1.22
 
+// PostgreSQL
+docker run -p 5432:5432 --name my-postgres -e 'POSTGRES_USER=postgres' -e 'POSTGRES_PASSWORD=root' -d postgres
+
+// PdAdmin4
+docker run -p 5050:80 -e 'PGADMIN_DEFAULT_EMAIL=postgres@test.com' -e 'PGADMIN_DEFAULT_PASSWORD=root' -d dpage/pgadmin4
+
+// Redis
+docker run --name redis-server -p6379:6379 -d redis --requirepass "RedisPassword"
+
+//RabbitMq
+docker run -d -p 15672:15672 -p 5672:5672 --name rabbit-test-for-medium rabbitmq:3-management // quest quest
 
 //Database migrations for IdentityServer
 add-migration -c PersistedGrantDbContext -o "Migrations/PersistedGrant" "initial"
@@ -22,8 +33,8 @@ http://172.21.0.6:5000/.well-known/openid-configuration
 //docker
 docker network create name
 docker network ls
-docker network rm idofnetwork
-docker network inspect idofnetwork
+docker network rm id_of_network
+docker network inspect id_of_network
 
 //build image
 docker build -t projectx/realtime . 

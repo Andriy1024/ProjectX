@@ -7,7 +7,7 @@ namespace ProjectX.Redis.Implementations
 {
     public class SessionsRedisClient : BaseRedisClient<DB1>, ISessionsRedisClient
     {
-        public SessionsRedisClient(IRedisCacheClient redisClient,
+        public SessionsRedisClient(StackExchange.Redis.Extensions.Core.Abstractions.IRedisClient redisClient,
             ILoggerFactory loggerFactory,
             IOptions<RedisOptions> redisOptions)
             : base(redisClient, loggerFactory, redisOptions)

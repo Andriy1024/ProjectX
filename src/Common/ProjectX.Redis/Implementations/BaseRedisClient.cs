@@ -10,7 +10,7 @@ using ProjectX.Redis.Abstractions;
 
 namespace ProjectX.Redis.Implementations
 {
-    public abstract class BaseRedisClient<TDataBase> : IRedisClient
+    public abstract class BaseRedisClient<TDataBase> : ProjectX.Redis.Abstractions.IRedisClient
         where TDataBase : DbNumber, new()
     {
         readonly static IEnumerable<RedisKey> _emptyKeys = Array.Empty<RedisKey>();
@@ -23,7 +23,7 @@ namespace ProjectX.Redis.Implementations
         readonly TimeSpan _defaultWaitLockMilisecondsLockTimeMiliseconds;
         readonly TimeSpan _defaulTakeRetryDelayMilliseconds;
 
-        public BaseRedisClient(IRedisCacheClient redisClient,
+        public BaseRedisClient(StackExchange.Redis.Extensions.Core.Abstractions.IRedisClient redisClient,
             ILoggerFactory loggerFactory,
             IOptions<RedisOptions> redisOptions)
         {
@@ -68,7 +68,7 @@ namespace ProjectX.Redis.Implementations
 
         public Task<long> DeleteAsync(IEnumerable<RedisKey> keys)
         {
-            return _database.RemoveAllAsync(keys.Cast<string>());
+            return _database.RemoveAllAsync(keys.Cast<string>().ToArray());
         }
 
         public async Task<long> DeleteByPatternAsync(RedisKey pattern)
@@ -87,7 +87,7 @@ namespace ProjectX.Redis.Implementations
 
         public async Task<IDictionary<RedisKey, T>> GetAllAsync<T>(IEnumerable<RedisKey> keys)
         {
-            var result = await _database.GetAllAsync<T>(keys.Cast<string>());
+            var result = await _database.GetAllAsync<T>(keys.Cast<string>().ToArray());
             if (result == null || !result.Any())
                 return new Dictionary<RedisKey, T>(0);
 
